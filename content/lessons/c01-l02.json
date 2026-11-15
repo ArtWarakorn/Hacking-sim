@@ -1,0 +1,37 @@
+{
+  "id": "c01-l02",
+  "title": "Encoding, Hashing, Encryption — ต่างกันอย่างไร",
+  "sections": [
+    {
+      "title": "สามคำที่คนมักสับสน",
+      "body": ["การแยกสามคำนี้ให้ออกเป็นทักษะพื้นฐานของ pentester เพราะนักพัฒนาจำนวนมากใช้ผิดแล้วคิดว่าปลอดภัย:"],
+      "list": [
+        "**Encoding** — แปลงรูปแบบข้อมูลเพื่อให้ส่ง/เก็บได้ (Base64, hex, URL encoding) *ไม่มีกุญแจ* ใครก็ถอดกลับได้",
+        "**Hashing** — แปลงเป็นค่าสั้นแบบทางเดียว (MD5, SHA-256, bcrypt) ย้อนกลับไม่ได้ แต่เดาจาก wordlist ได้ (บท 5)",
+        "**Encryption** — ล็อกด้วยกุญแจ (AES, RSA) ถอดได้เฉพาะผู้มีกุญแจ"
+      ]
+    },
+    {
+      "title": "Base64 และ hex",
+      "body": [
+        "Base64 ใช้ตัวอักษร A–Z a–z 0–9 + / และมักลงท้ายด้วย `=` พบบ่อยใน cookie, header `Authorization: Basic ...` และ JWT",
+        "hex เขียนแต่ละไบต์เป็นเลขฐานสิบหกสองหลัก ใช้ `xxd` ดู/แปลง"
+      ],
+      "code": ["echo 'hello' | base64", "echo 'aGVsbG8K' | base64 -d", "echo 'hello' | xxd -p", "echo '68656c6c6f0a' | xxd -r -p"]
+    },
+    {
+      "title": "ROT13 และ tr",
+      "body": [
+        "ROT13 สลับตัวอักษรไป 13 ตำแหน่ง (A↔N) รันซ้ำสองรอบได้ข้อความเดิม — เป็นแค่ปริศนาเด็กๆ ไม่ใช่การเข้ารหัสจริง ใช้ `tr` ทำได้:",
+        "ในงานจริง ข้อมูลที่ถูก \"ซ่อน\" ด้วยหลายชั้นของ encoding ยังคงเป็นข้อมูลเปิด แค่ถอดตามลำดับย้อนกลับ"
+      ],
+      "code": ["echo 'URYYB' | tr 'A-Za-z' 'N-ZA-Mn-za-m'", "cat secret.b64 | base64 -d | tr 'A-Za-z' 'N-ZA-Mn-za-m'"],
+      "tip": "ถ้าข้อความดูเป็นตัวอักษรสุ่มแต่ใช้แค่ A-Z a-z 0-9 และลงท้าย `=` ให้ลอง `base64 -d` ก่อนเสมอ"
+    }
+  ],
+  "quiz": [
+    { "q": "Base64 จัดเป็นอะไร", "choices": ["Encryption", "Hashing", "Encoding", "Signature"], "answer": 2, "explain": "Base64 ไม่มีกุญแจ ใครก็ถอดกลับได้ จึงเป็นแค่ encoding" },
+    { "q": "รหัสผ่านควรถูกเก็บในฐานข้อมูลอย่างไร", "choices": ["Base64", "ROT13", "Hash แบบช้า มี salt (เช่น bcrypt)", "เก็บข้อความธรรมดาแต่ซ่อนตาราง"], "answer": 2, "explain": "Hash ย้อนกลับไม่ได้และ salt กัน rainbow table; encoding ใดๆ ก็ถอดกลับได้" },
+    { "q": "คำสั่งใดถอดข้อความ Base64 ที่ซ่อนอยู่ใน data.txt", "choices": ["base64 data.txt", "cat data.txt | base64 -d", "xxd data.txt", "tr data.txt"], "answer": 1, "explain": "-d คือ decode" }
+  ]
+}

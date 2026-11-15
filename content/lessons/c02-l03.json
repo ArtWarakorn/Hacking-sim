@@ -1,0 +1,39 @@
+{
+  "id": "c02-l03",
+  "title": "HTTP ด้วย curl และ banner grabbing ด้วย nc",
+  "sections": [
+    {
+      "title": "HTTP: คำขอและคำตอบ",
+      "body": ["เว็บคุยกันด้วยข้อความธรรมดา: client ส่ง **request** (method + path + headers) server ตอบ **response** (status + headers + body):"],
+      "code": ["GET /robots.txt HTTP/1.1", "Host: 10.10.20.5", "User-Agent: curl/7.88.1", "", "HTTP/1.1 200 OK", "Server: Apache/2.4.41 (Ubuntu)", "X-Powered-By: PHP/7.4.3", "Content-Type: text/plain"],
+      "list": [
+        "**Status code**: 2xx สำเร็จ, 3xx redirect, 4xx ผิดที่ client (401 ต้อง login, 403 ห้าม, 404 ไม่พบ), 5xx ผิดที่ server",
+        "**Header สำคัญ**: `Server` และ `X-Powered-By` บอกซอฟต์แวร์/เวอร์ชัน — ข้อมูลที่ผู้โจมตีใช้หาช่องโหว่ตามเวอร์ชัน (OWASP A02 Security Misconfiguration)"
+      ]
+    },
+    {
+      "title": "curl",
+      "body": ["`curl` คือเบราว์เซอร์ใน terminal ที่ pentester ใช้ที่สุด:"],
+      "code": ["curl http://10.10.20.5/            # ดู body", "curl -i http://10.10.20.5/         # ดู header ด้วย", "curl -I http://10.10.20.5/         # header อย่างเดียว (HEAD)", "curl -v http://10.10.20.5/         # ดู request/response ทั้งหมด", "curl -X POST -d 'user=a&pass=b' http://10.10.20.5/login", "curl -L http://...                 # ตาม redirect"]
+    },
+    {
+      "title": "robots.txt คือป้ายบอกทาง ไม่ใช่กุญแจล็อก",
+      "body": ["ไฟล์ `/robots.txt` บอกบอตของ search engine ว่าอย่าเข้าที่ใด แต่สำหรับ pentester มันคือรายการของ path ที่เจ้าของ *ไม่อยากให้คนเห็น* จึงน่าสนใจที่สุด ไฟล์สำรอง (`backup`, `.old`, `.bak`) ที่ลืมทิ้งไว้บนเว็บเป็นต้นเหตุของการรั่วไหลจำนวนมาก"]
+    },
+    {
+      "title": "nc (netcat) — คุยกับพอร์ตตรงๆ",
+      "body": [
+        "`nc` เปิดการเชื่อมต่อ TCP ดิบ ใช้ทำ **banner grabbing**: หลาย service ส่งข้อความทักทายที่บอกชื่อและเวอร์ชัน (SSH, FTP, SMTP)",
+        "`-z` ตรวจว่าพอร์ตเปิดโดยไม่ส่งข้อมูล, `-v` พูดมากขึ้น, ใส่ช่วงพอร์ตได้ เช่น `20-25`"
+      ],
+      "code": ["nc -v 10.10.20.5 22", "nc -zv 10.10.20.5 21", "nc -zv 10.10.20.5 20-25", "echo -e 'GET / HTTP/1.1\\r\\nHost: x\\r\\n\\r\\n' | nc 10.10.20.5 80"],
+      "tip": "ผลลัพธ์ `Connection refused` = เครื่องอยู่แต่พอร์ตปิด, `timed out` = ไม่มีการตอบ (ถูกกรอง หรือเครื่องไม่อยู่) — สองอย่างนี้ต่างกันและบอกข้อมูลที่ต่างกัน"
+    }
+  ],
+  "quiz": [
+    { "q": "header ใดมักเผยเวอร์ชันของภาษา/framework ฝั่ง server", "choices": ["Content-Type", "X-Powered-By", "Content-Length", "Date"], "answer": 1, "explain": "X-Powered-By เช่น PHP/7.4.3 ควรปิดในระบบจริง" },
+    { "q": "curl -I ส่ง HTTP method ใด", "choices": ["GET", "POST", "HEAD", "OPTIONS"], "answer": 2, "explain": "-I ขอเฉพาะ header ด้วย HEAD" },
+    { "q": "nc ตอบ `Connection refused` แปลว่า", "choices": ["เครื่องปิดอยู่", "เครื่องอยู่ แต่ไม่มี service รอที่พอร์ตนั้น", "ถูกไฟร์วอลล์ทิ้งแพ็กเก็ต", "รหัสผ่านผิด"], "answer": 1, "explain": "เครื่องตอบกลับแล้วปฏิเสธ (RST) ต่างจาก timeout ที่ไม่มีการตอบเลย" },
+    { "q": "ทำไม robots.txt จึงน่าสนใจสำหรับ pentester", "choices": ["เพราะมีรหัสผ่านอยู่", "เพราะรายการ Disallow มักชี้ไปยังส่วนที่เจ้าของไม่อยากให้เห็น", "เพราะเป็นไฟล์ที่ห้ามอ่าน", "เพราะมันเร็วกว่า nmap"], "answer": 1, "explain": "มันไม่ใช่การควบคุมการเข้าถึง แค่ขอร้องบอต จึงกลายเป็นแผนที่ของส่วนที่อาจอ่อนไหว" }
+  ]
+}

@@ -1,0 +1,9 @@
+[
+  { "name": "Script Kiddie", "xp": 0 },
+  { "name": "Intern", "xp": 300 },
+  { "name": "Junior Pentester", "xp": 900 },
+  { "name": "Pentester", "xp": 2000 },
+  { "name": "Senior Pentester", "xp": 3800 },
+  { "name": "Red Team Operator", "xp": 6000 },
+  { "name": "Elite", "xp": 9000 }
+]

@@ -1,0 +1,10 @@
+{
+  "id": "py-devserver",
+  "server": "SimpleHTTP/0.6 Python/3.8.10",
+  "routes": {
+    "/": {
+      "body": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n<html>\n<head><title>Directory listing for /</title></head>\n<body>\n<h1>Directory listing for /</h1>\n<hr>\n<ul>\n<li><a href=\"deploy.sh\">deploy.sh</a></li>\n</ul>\n<hr>\n</body>\n</html>\n"
+    },
+    "/deploy.sh": { "type": "text/x-sh", "body": "#!/bin/sh\n# quick deploy helper - temporary, started by hand on 2026-10-30\nrsync -a build/ web01:/var/www/html/\n" }
+  }
+}

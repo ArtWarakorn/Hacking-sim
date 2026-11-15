@@ -1,0 +1,28 @@
+{
+  "id": "c00-m04",
+  "chapter": "c00",
+  "title": "man, pipe และ history",
+  "difficulty": "tutorial",
+  "xp": 150,
+  "estMinutes": 8,
+  "lesson": "c00-l02",
+  "briefing": "ก่อนเริ่มงานจริง ฝึกทักษะ terminal ที่ใช้ทุกวัน: อ่านคู่มือ ต่อคำสั่งด้วย pipe และดูประวัติคำสั่ง จากนั้นตอบว่าไฟล์ ~/Documents/todo.txt มีกี่บรรทัด",
+  "scope": { "inScope": ["kali (เครื่องของคุณเอง)"], "outOfScope": [] },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    { "id": "o1", "text": "เปิดคู่มือของ grep ด้วย `man grep`", "type": "command", "match": "^man\\b.*\\bgrep" },
+    { "id": "o2", "text": "ใช้ pipe ส่งผลลัพธ์เข้า `wc` (เช่น `cat ... | wc -l`)", "type": "command", "match": "\\|\\s*wc\\b" },
+    { "id": "o3", "text": "ดูประวัติคำสั่งด้วย `history`", "type": "command", "match": "^history\\b" },
+    { "id": "o4", "text": "ไฟล์ ~/Documents/todo.txt มีกี่บรรทัด? (ตอบเป็นตัวเลข)", "type": "answer", "answerHash": "c641b324182185b23147fd29bb51afe5be4c216fcfd381778618a98b3a77a83f" }
+  ],
+  "hints": [
+    { "cost": 5, "text": "`wc -l` นับจำนวนบรรทัดที่รับเข้ามา" },
+    { "cost": 15, "text": "`cat Documents/todo.txt | wc -l`" }
+  ],
+  "debrief": [
+    "ชุดคำสั่ง `cat | grep | wc` คือสูตรพื้นฐานของการกรอง log และผลสแกนที่คุณจะใช้ซ้ำอีกนับร้อยครั้ง",
+    "เคล็ดลับในงานจริง: ประวัติคำสั่งช่วยเขียนรายงาน (ใช้เป็นหลักฐานว่าทำอะไรเมื่อไร) และบางครั้ง `.bash_history` ของ *เป้าหมาย* ก็มีรหัสผ่านที่ผู้ดูแลพิมพ์ผิดช่อง"
+  ],
+  "references": ["The Linux Command Line (W. Shotts) — Redirection & Pipelines"]
+}

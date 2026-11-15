@@ -1,0 +1,657 @@
+[
+  {
+    "name": "ls",
+    "category": "ระบบไฟล์",
+    "summary": "แสดงรายการไฟล์ในโฟลเดอร์",
+    "synopsis": "ls [-lahA] [path...]",
+    "description": "แสดงไฟล์และโฟลเดอร์ -l แสดงสิทธิ์/เจ้าของ/ขนาด, -a แสดงไฟล์ซ่อน (ชื่อขึ้นต้นด้วย .), -h ขนาดอ่านง่าย",
+    "examples": [
+      "ls",
+      "ls -la /etc",
+      "ls -la ~"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "cd",
+    "category": "ระบบไฟล์",
+    "summary": "เปลี่ยนโฟลเดอร์ปัจจุบัน",
+    "synopsis": "cd [path | -]",
+    "description": "ย้ายไปยังโฟลเดอร์ที่ระบุ ไม่ใส่ path = กลับ home, `cd -` = กลับโฟลเดอร์ก่อนหน้า",
+    "examples": [
+      "cd /var/log",
+      "cd ..",
+      "cd ~"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "pwd",
+    "category": "ระบบไฟล์",
+    "summary": "แสดงโฟลเดอร์ปัจจุบัน",
+    "synopsis": "pwd",
+    "description": "พิมพ์ path เต็มของโฟลเดอร์ที่ทำงานอยู่",
+    "examples": [
+      "pwd"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "cat",
+    "category": "ระบบไฟล์",
+    "summary": "แสดงเนื้อหาไฟล์",
+    "synopsis": "cat [-n] [file...]",
+    "description": "พิมพ์เนื้อหาของไฟล์ออกหน้าจอ ถ้าไม่ใส่ไฟล์จะอ่านจาก pipe",
+    "examples": [
+      "cat /etc/hosts",
+      "cat -n todo.txt"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "head",
+    "category": "ระบบไฟล์",
+    "summary": "แสดงบรรทัดแรกของไฟล์",
+    "synopsis": "head [-n N] [file...]",
+    "description": "แสดง 10 บรรทัดแรก (หรือ N บรรทัด)",
+    "examples": [
+      "head -n 3 /var/log/auth.log"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "tail",
+    "category": "ระบบไฟล์",
+    "summary": "แสดงบรรทัดท้ายของไฟล์",
+    "synopsis": "tail [-n N] [file...]",
+    "description": "แสดง 10 บรรทัดสุดท้าย (หรือ N บรรทัด) มีประโยชน์กับไฟล์ log",
+    "examples": [
+      "tail -n 5 /var/log/auth.log"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "wc",
+    "category": "ระบบไฟล์",
+    "summary": "นับบรรทัด/คำ/ไบต์",
+    "synopsis": "wc [-lwc] [file...]",
+    "description": "-l นับบรรทัด, -w นับคำ, -c นับไบต์",
+    "examples": [
+      "wc -l /etc/hosts",
+      "cat /var/log/auth.log | wc -l"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "grep",
+    "category": "ค้นหา",
+    "summary": "ค้นหาข้อความตามรูปแบบ",
+    "synopsis": "grep [-ivncrlFE] [-e pattern] pattern [file...]",
+    "description": "-i ไม่สนตัวพิมพ์, -v กลับผล, -n แสดงเลขบรรทัด, -c นับ, -r ค้นย้อนโฟลเดอร์, -l แสดงเฉพาะชื่อไฟล์, -F ค้นแบบข้อความตรงๆ",
+    "examples": [
+      "grep Failed /var/log/auth.log",
+      "grep -rn FLAG /home/kali",
+      "cat file | grep -i admin"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "find",
+    "category": "ค้นหา",
+    "summary": "ค้นหาไฟล์ตามเงื่อนไข",
+    "synopsis": "find [path...] [-name pat] [-iname pat] [-type f|d] [-user u] [-perm mode] [-maxdepth n]",
+    "description": "เดินค้นในโฟลเดอร์ย่อยทั้งหมด -perm -4000 หาไฟล์ที่มี SUID bit; ใช้ 2>/dev/null ซ่อนข้อความ Permission denied",
+    "examples": [
+      "find / -name '*.txt' 2>/dev/null",
+      "find / -perm -4000 -type f 2>/dev/null"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "touch",
+    "category": "ระบบไฟล์",
+    "summary": "สร้างไฟล์ว่าง",
+    "synopsis": "touch file...",
+    "description": "สร้างไฟล์ว่างถ้ายังไม่มี",
+    "examples": [
+      "touch /tmp/test"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "mkdir",
+    "category": "ระบบไฟล์",
+    "summary": "สร้างโฟลเดอร์",
+    "synopsis": "mkdir [-p] dir...",
+    "description": "-p สร้างโฟลเดอร์แม่ให้ด้วยถ้ายังไม่มี",
+    "examples": [
+      "mkdir -p /tmp/work/notes"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "rm",
+    "category": "ระบบไฟล์",
+    "summary": "ลบไฟล์/โฟลเดอร์",
+    "synopsis": "rm [-rf] path...",
+    "description": "-r ลบโฟลเดอร์ทั้งก้อน, -f ไม่ถามและไม่แจ้งถ้าไม่พบ ระวัง: ลบแล้วกู้ไม่ได้",
+    "examples": [
+      "rm /tmp/test",
+      "rm -rf /tmp/work"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "chmod",
+    "category": "สิทธิ์",
+    "summary": "เปลี่ยนสิทธิ์ของไฟล์",
+    "synopsis": "chmod mode file...",
+    "description": "รับเลขฐานแปด (755, 600, 4755) หรือแบบสัญลักษณ์ (u+x, go-w, a=r) เจ้าของไฟล์หรือ root เท่านั้นที่เปลี่ยนได้",
+    "examples": [
+      "chmod 600 key.pem",
+      "chmod +x script.sh"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "sort",
+    "category": "ประมวลผลข้อความ",
+    "summary": "เรียงบรรทัด",
+    "synopsis": "sort [-rnu] [file...]",
+    "description": "-r เรียงย้อน, -n เรียงตามตัวเลข, -u ตัดบรรทัดซ้ำ",
+    "examples": [
+      "cat users.txt | sort -u"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "uniq",
+    "category": "ประมวลผลข้อความ",
+    "summary": "ตัดบรรทัดซ้ำที่ติดกัน",
+    "synopsis": "uniq [-cd] [file]",
+    "description": "ใช้คู่กับ sort; -c แสดงจำนวนครั้ง, -d แสดงเฉพาะบรรทัดที่ซ้ำ",
+    "examples": [
+      "cut -d' ' -f1 access.log | sort | uniq -c | sort -rn"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "cut",
+    "category": "ประมวลผลข้อความ",
+    "summary": "ตัดคอลัมน์ข้อความ",
+    "synopsis": "cut -d DELIM -f LIST [file]",
+    "description": "แยกบรรทัดด้วยตัวคั่น แล้วเลือกคอลัมน์ที่ต้องการ",
+    "examples": [
+      "cut -d: -f1 /etc/passwd"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "base64",
+    "category": "Encoding",
+    "summary": "เข้ารหัส/ถอดรหัส Base64",
+    "synopsis": "base64 [-d] [file]",
+    "description": "Base64 เป็น encoding ไม่ใช่การเข้ารหัสลับ ใครก็ถอดได้ -d = decode",
+    "examples": [
+      "echo hello | base64",
+      "echo aGVsbG8K | base64 -d"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "whoami",
+    "category": "ข้อมูลระบบ",
+    "summary": "แสดงชื่อผู้ใช้ปัจจุบัน",
+    "synopsis": "whoami",
+    "description": "พิมพ์ชื่อ user ที่กำลังใช้งาน — คำสั่งแรกที่ pentester มักรันหลังได้ shell",
+    "examples": [
+      "whoami"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "id",
+    "category": "ข้อมูลระบบ",
+    "summary": "แสดง uid/gid/กลุ่ม",
+    "synopsis": "id [user]",
+    "description": "แสดงตัวเลข user, group และกลุ่มทั้งหมดที่สังกัด (เช่น sudo)",
+    "examples": [
+      "id",
+      "id root"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "hostname",
+    "category": "ข้อมูลระบบ",
+    "summary": "แสดงชื่อเครื่อง",
+    "synopsis": "hostname",
+    "description": "พิมพ์ hostname ของเครื่อง",
+    "examples": [
+      "hostname"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "uname",
+    "category": "ข้อมูลระบบ",
+    "summary": "แสดงข้อมูลเคอร์เนล/ระบบ",
+    "synopsis": "uname [-asrvmn]",
+    "description": "-a แสดงทั้งหมด (ใช้ตรวจเวอร์ชันเคอร์เนลตอน enumerate)",
+    "examples": [
+      "uname -a"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "env",
+    "category": "ข้อมูลระบบ",
+    "summary": "แสดงตัวแปรสภาพแวดล้อม",
+    "synopsis": "env",
+    "description": "แสดง environment variables เช่น HOME, PATH — บางครั้งมีรหัสผ่านหรือ key หลุดอยู่",
+    "examples": [
+      "env | grep -i pass"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "export",
+    "category": "ข้อมูลระบบ",
+    "summary": "ตั้งค่าตัวแปร",
+    "synopsis": "export NAME=value",
+    "description": "ตั้งตัวแปรสภาพแวดล้อมในเชลล์ปัจจุบัน",
+    "examples": [
+      "export TARGET=10.10.20.5",
+      "echo $TARGET"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "echo",
+    "category": "ประมวลผลข้อความ",
+    "summary": "พิมพ์ข้อความ",
+    "synopsis": "echo [-ne] text...",
+    "description": "พิมพ์ข้อความ ใช้คู่กับ > หรือ >> เพื่อเขียนลงไฟล์",
+    "examples": [
+      "echo hello",
+      "echo test > /tmp/a.txt"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "date",
+    "category": "ข้อมูลระบบ",
+    "summary": "แสดงวันเวลา",
+    "synopsis": "date",
+    "description": "แสดงวันเวลาปัจจุบัน",
+    "examples": [
+      "date"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "history",
+    "category": "เชลล์",
+    "summary": "ประวัติคำสั่งที่พิมพ์",
+    "synopsis": "history",
+    "description": "แสดงคำสั่งที่เคยพิมพ์ในเซสชันนี้ (กด ↑/↓ เพื่อเรียกซ้ำ)",
+    "examples": [
+      "history"
+    ],
+    "unlockChapter": 0
+  },
+  {
+    "name": "clear",
+    "category": "เชลล์",
+    "summary": "ล้างหน้าจอ",
+    "synopsis": "clear",
+    "description": "ล้างหน้าจอ terminal (ทางลัด: Ctrl+L)",
+    "examples": [
+      "clear"
+    ],
+    "unlockChapter": 0
+  },
+  {
+    "name": "exit",
+    "category": "เชลล์",
+    "summary": "ออกจากเชลล์ปัจจุบัน",
+    "synopsis": "exit",
+    "description": "ออกจากเชลล์ย่อย (เช่น ssh) กลับไปเชลล์ก่อนหน้า",
+    "examples": [
+      "exit"
+    ],
+    "unlockChapter": 0
+  },
+  {
+    "name": "true",
+    "category": "เชลล์",
+    "summary": "คืนค่าสำเร็จเสมอ",
+    "synopsis": "true",
+    "description": "ไม่ทำอะไรและจบด้วย exit code 0",
+    "examples": [
+      "true && echo ok"
+    ],
+    "unlockChapter": 0
+  },
+  {
+    "name": "false",
+    "category": "เชลล์",
+    "summary": "คืนค่าล้มเหลวเสมอ",
+    "synopsis": "false",
+    "description": "ไม่ทำอะไรและจบด้วย exit code 1",
+    "examples": [
+      "false || echo failed"
+    ],
+    "unlockChapter": 0
+  },
+  {
+    "name": "help",
+    "category": "เชลล์",
+    "summary": "แสดงรายการคำสั่ง",
+    "synopsis": "help",
+    "description": "แสดงคำสั่งทั้งหมดที่ใช้ได้ พร้อมคำอธิบายสั้นๆ",
+    "examples": [
+      "help"
+    ],
+    "unlockChapter": 0
+  },
+  {
+    "name": "man",
+    "category": "เชลล์",
+    "summary": "เปิดคู่มือของคำสั่ง",
+    "synopsis": "man command",
+    "description": "แสดงคำอธิบายและตัวอย่างของคำสั่ง (หรือพิมพ์ `<คำสั่ง> --help`)",
+    "examples": [
+      "man grep"
+    ],
+    "unlockChapter": 0
+  },
+  {
+    "name": "xxd",
+    "category": "Encoding",
+    "summary": "แสดง/แปลงข้อมูลเป็นเลขฐานสิบหก",
+    "synopsis": "xxd [-p] [-r] [file]",
+    "description": "แสดง hex dump ของข้อมูล -p แสดงเป็น hex ต่อเนื่อง, -r -p แปลง hex กลับเป็นข้อความ",
+    "examples": [
+      "echo hello ",
+      " xxd -p",
+      "echo 68656c6c6f0a ",
+      " xxd -r -p"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "tr",
+    "category": "Encoding",
+    "summary": "แทนที่หรือลบตัวอักษร",
+    "synopsis": "tr [-d] SET1 [SET2]",
+    "description": "อ่านจาก pipe แล้วแทนที่ตัวอักษรใน SET1 ด้วย SET2 ตามลำดับ รองรับช่วง (a-z) ใช้ทำ ROT13 ได้",
+    "examples": [
+      "echo URYYB ",
+      " tr 'A-Za-z' 'N-ZA-Mn-za-m'",
+      "echo a-b-c ",
+      " tr -d '-'"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "ps",
+    "category": "Process/เครือข่ายบนเครื่อง",
+    "summary": "แสดง process ที่กำลังรัน",
+    "synopsis": "ps [aux | -ef]",
+    "description": "ps เฉยๆ แสดงเชลล์ของคุณ, `ps aux` แสดงทุก process พร้อมผู้ใช้ที่รัน (USER) และคำสั่ง ใช้ตรวจว่ามี service อะไรทำงานอยู่",
+    "examples": [
+      "ps aux",
+      "ps aux ",
+      " grep mysql"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "ss",
+    "category": "Process/เครือข่ายบนเครื่อง",
+    "summary": "แสดง socket และพอร์ตที่เปิด",
+    "synopsis": "ss [-tulnp]",
+    "description": "-t TCP, -u UDP, -l เฉพาะที่ listening, -n ตัวเลข, -p แสดง process (ถ้าไม่ใช่ root จะเห็นเฉพาะของตัวเอง) ดูคอลัมน์ Local Address: 127.0.0.1 = เฉพาะในเครื่อง, 0.0.0.0 = ทุกที่",
+    "examples": [
+      "ss -tulnp"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "netstat",
+    "category": "Process/เครือข่ายบนเครื่อง",
+    "summary": "แสดงพอร์ตที่เปิด (รูปแบบเก่า)",
+    "synopsis": "netstat [-tulnp]",
+    "description": "เหมือน ss แต่รูปแบบเก่า ยังพบบ่อยบนเซิร์ฟเวอร์ที่ไม่ได้อัปเดต",
+    "examples": [
+      "netstat -tulnp"
+    ],
+    "unlockChapter": 1
+  },
+  {
+    "name": "ip",
+    "category": "เครือข่าย",
+    "summary": "แสดง interface และ route",
+    "synopsis": "ip a | ip route | ip link",
+    "description": "`ip a` แสดง IP ของแต่ละ interface พร้อม prefix (/24), `ip route` แสดง default gateway และเครือข่ายที่เชื่อมอยู่",
+    "examples": [
+      "ip a",
+      "ip route"
+    ],
+    "unlockChapter": 2
+  },
+  {
+    "name": "ifconfig",
+    "category": "เครือข่าย",
+    "summary": "แสดง interface (รูปแบบเก่า)",
+    "synopsis": "ifconfig",
+    "description": "แสดง IP, netmask, broadcast และ MAC ของแต่ละ interface",
+    "examples": [
+      "ifconfig"
+    ],
+    "unlockChapter": 2
+  },
+  {
+    "name": "ping",
+    "category": "เครือข่าย",
+    "summary": "ตรวจว่าเครื่องปลายทางตอบสนองไหม",
+    "synopsis": "ping [-c N] host",
+    "description": "ส่ง ICMP echo ดูเวลาไป-กลับและ TTL (ใช้เดา OS และจำนวน hop) เครื่องที่ไม่ตอบไม่ได้แปลว่าปิดอยู่เสมอ -c N จำกัดจำนวนครั้ง (ค่าเริ่มต้นในเกม = 4)",
+    "examples": [
+      "ping -c 4 10.10.20.5",
+      "ping web01.acme.test"
+    ],
+    "unlockChapter": 2
+  },
+  {
+    "name": "traceroute",
+    "category": "เครือข่าย",
+    "summary": "แสดงเส้นทางแพ็กเก็ตไปยังปลายทาง",
+    "synopsis": "traceroute host",
+    "description": "แสดงเราเตอร์ทุก hop ระหว่างทาง `* * *` = hop นั้นไม่ตอบ ระวังเราเตอร์ระหว่างทางอาจอยู่นอก scope",
+    "examples": [
+      "traceroute 10.10.20.5"
+    ],
+    "unlockChapter": 2
+  },
+  {
+    "name": "dig",
+    "category": "DNS",
+    "summary": "สืบค้น DNS record",
+    "synopsis": "dig [@server] name [type] [+short]",
+    "description": "ชนิด: A MX TXT NS SOA CNAME ANY, +short แสดงเฉพาะค่า, `dig axfr domain` ขอ zone transfer (ใช้ได้เฉพาะเมื่อ server ตั้งค่าหลวม)",
+    "examples": [
+      "dig acme.test TXT",
+      "dig acme.test MX +short"
+    ],
+    "unlockChapter": 2
+  },
+  {
+    "name": "nslookup",
+    "category": "DNS",
+    "summary": "สืบค้น DNS แบบง่าย",
+    "synopsis": "nslookup [-type=TYPE] name [server]",
+    "description": "แปลงชื่อเป็น IP (และกลับกัน) หรือดู record ชนิดอื่นด้วย -type=",
+    "examples": [
+      "nslookup web01.acme.test",
+      "nslookup -type=MX acme.test"
+    ],
+    "unlockChapter": 2
+  },
+  {
+    "name": "host",
+    "category": "DNS",
+    "summary": "สืบค้น DNS แบบสั้น",
+    "synopsis": "host [-t TYPE] name",
+    "description": "สรุปผลบรรทัดเดียวต่อ record",
+    "examples": [
+      "host acme.test",
+      "host -t TXT acme.test"
+    ],
+    "unlockChapter": 2
+  },
+  {
+    "name": "curl",
+    "category": "เว็บ",
+    "summary": "ส่ง HTTP request จาก terminal",
+    "synopsis": "curl [-iIsvLG] [-X METHOD] [-d data] [--data-urlencode k=v] [-H header] [-b cookie] [-o file] url",
+    "description": "-i แสดง header ด้วย, -I ขอเฉพาะ header (HEAD), -v แสดง request/response ทั้งหมด, -L ตาม redirect, -X เปลี่ยน method, -d ส่งข้อมูล (POST), -H เพิ่ม header, -b ส่ง cookie, -o บันทึกลงไฟล์ -G ส่งค่า -d เป็น query string แทน POST body (ใช้คู่กับ --data-urlencode เวลาสร้าง payload ที่มีอักขระพิเศษ เช่น SQLi/XSS), --data-urlencode เข้ารหัส URL ให้ส่วนค่าอัตโนมัติ",
+    "examples": [
+      "curl -i http://10.10.20.5/",
+      "curl -X POST -d 'user=a&pass=b' http://10.10.20.5/login",
+      "curl -s -G --data-urlencode \"q=' OR '1'='1\" http://target/search"
+    ],
+    "unlockChapter": 2
+  },
+  {
+    "name": "nc",
+    "category": "เครือข่าย",
+    "summary": "เชื่อมต่อพอร์ต TCP โดยตรง (netcat)",
+    "synopsis": "nc [-zv] host port[-port]",
+    "description": "อ่าน banner ของ service (SSH, FTP ฯลฯ), -z ตรวจพอร์ตโดยไม่ส่งข้อมูล, -v แสดงรายละเอียด, ใส่ช่วงพอร์ตได้ pipe ข้อความเข้าไปเพื่อส่งให้ server ได้ (เช่น HTTP แบบดิบ)",
+    "examples": [
+      "nc -v 10.10.20.5 22",
+      "nc -zv 10.10.20.5 20-25"
+    ],
+    "unlockChapter": 2
+  },
+  {
+    "name": "whois",
+    "category": "Recon (passive)",
+    "summary": "ค้นข้อมูลเจ้าของโดเมน",
+    "synopsis": "whois domain",
+    "description": "แสดงข้อมูลการจดทะเบียนโดเมน: องค์กร ผู้ติดต่อ อีเมล name server เป็น passive recon (ไม่ส่งอะไรถึงเป้าหมาย)",
+    "examples": [
+      "whois acme.test"
+    ],
+    "unlockChapter": 3
+  },
+  {
+    "name": "subfinder",
+    "category": "Recon (passive)",
+    "summary": "รวบรวม subdomain จากแหล่งสาธารณะ",
+    "synopsis": "subfinder -d domain [-silent]",
+    "description": "ค้นหา subdomain จาก certificate log และแหล่งข้อมูลสาธารณะ ไม่แตะเซิร์ฟเวอร์เป้าหมาย -silent พิมพ์เฉพาะชื่อ",
+    "examples": [
+      "subfinder -d acme.test",
+      "subfinder -d acme.test -silent"
+    ],
+    "unlockChapter": 3
+  },
+  {
+    "name": "nmap",
+    "category": "Recon (active)",
+    "summary": "สแกนหาเครื่อง พอร์ต และเวอร์ชัน",
+    "synopsis": "nmap [-sn] [-Pn] [-sV] [-sC] [-O] [-A] [-p ports | -p-] [-oN file] target...",
+    "description": "-sn ตรวจว่าเครื่องอยู่ไหม (ไม่สแกนพอร์ต), -Pn ข้ามการตรวจ ping, -sV เวอร์ชัน service, -sC สคริปต์พื้นฐาน, -O เดา OS, -A ทั้งหมด, -p ระบุพอร์ต (-p- = ทุกพอร์ต), -oN บันทึกผล เป้าหมาย: IP, ชื่อ, CIDR (/22 ขึ้นไป) หรือช่วงเช่น 10.10.20.5-7 **ระวัง scope**: เครื่องนอก scope ที่ถูกสแกนจะถูกหัก XP (ในเกมไม่ต้องใช้ sudo)",
+    "examples": [
+      "nmap -sn 10.10.20.5-7",
+      "nmap -sV -sC 10.10.20.5",
+      "nmap -p- 10.10.20.6",
+      "nmap -Pn 10.10.20.7"
+    ],
+    "unlockChapter": 3
+  },
+  {
+    "name": "gobuster",
+    "category": "Recon (active)",
+    "summary": "ค้นหา directory/ไฟล์ที่ซ่อนบนเว็บ",
+    "synopsis": "gobuster dir -u URL -w wordlist [-x ext,ext] [-q]",
+    "description": "ลอง path จาก wordlist แล้วแสดงตัวที่ server ตอบ (ไม่ใช่ 404) พร้อมสถานะ: 200 มีอยู่, 301/302 redirect, 403 ห้ามเข้า wordlist: /usr/share/wordlists/dirb/common.txt",
+    "examples": [
+      "gobuster dir -u http://10.10.20.5 -w /usr/share/wordlists/dirb/common.txt",
+      "gobuster dir -u http://10.10.20.5 -w /usr/share/wordlists/dirb/common.txt -x php,txt -q"
+    ],
+    "unlockChapter": 3
+  },
+  {
+    "name": "nikto",
+    "category": "Recon (active)",
+    "summary": "ตรวจการตั้งค่าเว็บที่ผิดพลาดที่รู้จัก",
+    "synopsis": "nikto -h host [-p port]",
+    "description": "เทียบเว็บเซิร์ฟเวอร์กับรายการปัญหาที่รู้จัก (ซอฟต์แวร์เก่า, header ที่ขาด, ไฟล์ default) ส่งคำขอจำนวนมาก — ผลลัพธ์ดังใน log ของเป้าหมาย",
+    "examples": [
+      "nikto -h 10.10.20.5"
+    ],
+    "unlockChapter": 3
+  },
+  {
+    "name": "whatweb",
+    "category": "Recon (active)",
+    "summary": "ระบุเทคโนโลยีของเว็บ",
+    "synopsis": "whatweb url...",
+    "description": "สรุปเว็บเซิร์ฟเวอร์ ภาษา framework และเวอร์ชันในบรรทัดเดียว",
+    "examples": [
+      "whatweb 10.10.20.5"
+    ],
+    "unlockChapter": 3
+  },
+  {
+    "name": "ftp",
+    "category": "Enumeration",
+    "summary": "เชื่อมต่อ FTP server (interactive)",
+    "synopsis": "ftp host",
+    "description": "ถามชื่อและรหัสผ่านแล้วเข้า prompt `ftp>` คำสั่ง: ls, cd, pwd, get <ไฟล์>, bye ลอง user `anonymous` เสมอ ไฟล์ที่ get จะอยู่ในโฟลเดอร์ปัจจุบันของคุณ กด Ctrl+C เพื่อออก",
+    "examples": [
+      "ftp 10.10.20.6"
+    ],
+    "unlockChapter": 3
+  },
+  {
+    "name": "smbclient",
+    "category": "Enumeration",
+    "summary": "เชื่อมต่อ SMB share",
+    "synopsis": "smbclient -L //host [-N] | smbclient //host/share [-N] [-U user%pass]",
+    "description": "-L แสดงรายการ share, -N ไม่ใช้รหัสผ่าน (null session), -U ระบุ user%password เมื่อเข้า share จะได้ prompt `smb: \\>` คำสั่ง: ls, cd, pwd, get, exit",
+    "examples": [
+      "smbclient -L //10.10.20.6 -N",
+      "smbclient //10.10.20.6/public -N"
+    ],
+    "unlockChapter": 3
+  },
+  {
+    "name": "enum4linux",
+    "category": "Enumeration",
+    "summary": "สำรวจ SMB: workgroup, share, user",
+    "synopsis": "enum4linux [-a | -U | -S] host",
+    "description": "รวมการตรวจ SMB: ชื่อ workgroup, รายการ share (ที่เข้าได้/ไม่ได้), รายชื่อ user ผ่านการไล่ RID — รายชื่อ user ใช้ต่อใน password attack",
+    "examples": [
+      "enum4linux -a 10.10.20.6",
+      "enum4linux -U 10.10.20.6"
+    ],
+    "unlockChapter": 3
+  },
+  {
+    "name": "crackmapexec",
+    "category": "Enumeration",
+    "summary": "ตรวจ SMB หลายเครื่องพร้อมกัน",
+    "synopsis": "crackmapexec smb target [-u user -p pass] [--shares]",
+    "description": "แสดง hostname/workgroup ของเครื่องที่รัน SMB, ทดสอบ credential, และ --shares แสดงสิทธิ์ของแต่ละ share",
+    "examples": [
+      "crackmapexec smb 10.10.20.6",
+      "crackmapexec smb 10.10.20.6 -u '' -p '' --shares"
+    ],
+    "unlockChapter": 3
+  }
+]

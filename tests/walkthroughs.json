@@ -1,0 +1,230 @@
+{
+  "c00-m01": {
+    "steps": [
+      "help",
+      "ls",
+      "cat Documents/welcome.txt"
+    ],
+    "submit": {
+      "o4": "FLAG{welcome_to_hacksim}"
+    }
+  },
+  "c00-m02": {
+    "steps": [
+      "cat ~/Documents/engagement.txt"
+    ],
+    "submit": {
+      "o2": "10.10.20.1",
+      "o3": "no"
+    }
+  },
+  "c00-m03": {
+    "steps": [
+      "cat Documents/engagement_timeline.txt"
+    ],
+    "submit": {
+      "o2": "exploitation",
+      "o3": "post-exploitation",
+      "o4": "2"
+    }
+  },
+  "c00-m04": {
+    "steps": [
+      "man grep",
+      "cat Documents/todo.txt | wc -l",
+      "history"
+    ],
+    "submit": {
+      "o4": "3"
+    }
+  },
+  "c01-m01": {
+    "steps": [
+      "ls -la",
+      "cat .hidden_note"
+    ],
+    "submit": {
+      "o3": "FLAG{hidden_files_are_not_secret}"
+    }
+  },
+  "c01-m02": {
+    "steps": [
+      "grep Failed /var/log/auth.log"
+    ],
+    "submit": {
+      "o2": "10.10.14.77",
+      "o3": "2"
+    }
+  },
+  "c01-m03": {
+    "steps": [
+      "find /srv/share -perm -002 -type f",
+      "chmod 600 backup/db_creds.txt"
+    ],
+    "submit": {
+      "o2": "notice.txt"
+    }
+  },
+  "c01-m04": {
+    "steps": [
+      "cat Documents/intercepted.b64 | base64 -d | tr 'A-Za-z' 'N-ZA-Mn-za-m'"
+    ],
+    "submit": {
+      "o3": "encoding",
+      "o4": "FLAG{encoding_is_not_encryption}"
+    }
+  },
+  "c01-m05": {
+    "steps": [
+      "ps aux",
+      "ss -tulnp"
+    ],
+    "submit": {
+      "o3": "mysql",
+      "o4": "127.0.0.1"
+    }
+  },
+  "c02-m01": {
+    "steps": [
+      "ip a",
+      "ip route"
+    ],
+    "submit": {
+      "o3": "10.10.14.2",
+      "o4": "10.10.14.1",
+      "o5": "254"
+    }
+  },
+  "c02-m02": {
+    "steps": [
+      "ping -c 2 10.10.20.5",
+      {
+        "cmd": "ping -c 2 10.10.20.7",
+        "code": 1
+      },
+      "traceroute 10.10.20.5"
+    ],
+    "submit": {
+      "o4": "10.10.20.7",
+      "o5": "3"
+    }
+  },
+  "c02-m03": {
+    "steps": [
+      "dig acme.test TXT",
+      "dig acme.test MX +short"
+    ],
+    "submit": {
+      "o2": "FLAG{dns_txt_records_leak_info}",
+      "o3": "mail.acme.test."
+    }
+  },
+  "c02-m04": {
+    "steps": [
+      "curl -i http://10.10.20.5/",
+      "curl http://10.10.20.5/robots.txt",
+      "curl http://10.10.20.5/backup-old/"
+    ],
+    "submit": {
+      "o3": "7.4.3",
+      "o4": "FLAG{robots_txt_is_a_map_not_a_lock}"
+    }
+  },
+  "c02-m05": {
+    "steps": [
+      "nc -v 10.10.20.5 22",
+      {
+        "cmd": "nc -zv 10.10.20.5 21",
+        "code": 1
+      },
+      "nc -v 10.10.20.6 21"
+    ],
+    "submit": {
+      "o4": "8.2p1",
+      "o5": "3.0.3"
+    }
+  },
+  "c03-m01": {
+    "steps": [
+      "whois acme.test",
+      "subfinder -d acme.test"
+    ],
+    "submit": {
+      "o3": "somchai.j@acme.test",
+      "o4": "vpn.acme.test",
+      "o5": "TH"
+    }
+  },
+  "c03-m02": {
+    "steps": [
+      "dig axfr acme.test @ns1.acme.test",
+      "dig axfr acme-dev.test @10.10.20.6"
+    ],
+    "submit": {
+      "o3": "FLAG{zone_transfers_leak_the_map}",
+      "o4": "10.10.20.52"
+    }
+  },
+  "c03-m03": {
+    "steps": [
+      "nmap -sn 10.10.20.5-7",
+      "nmap -Pn 10.10.20.7"
+    ],
+    "submit": {
+      "o3": "2",
+      "o4": "3306"
+    }
+  },
+  "c03-m04": {
+    "steps": [
+      "nmap -sV 10.10.20.5",
+      "nmap -p- 10.10.20.6",
+      "nmap -sV -p 9999 10.10.20.6"
+    ],
+    "submit": {
+      "o3": "2.4.41",
+      "o4": "9999",
+      "o5": "python"
+    }
+  },
+  "c03-m05": {
+    "steps": [
+      "ftp 10.10.20.6",
+      "anonymous",
+      "guest@acme.test",
+      "ls",
+      "get notes.txt",
+      "bye",
+      "cat notes.txt"
+    ],
+    "submit": {
+      "o4": "FLAG{anonymous_ftp_is_an_open_door}"
+    }
+  },
+  "c03-m06": {
+    "steps": [
+      "smbclient -L //10.10.20.6 -N",
+      "enum4linux -U 10.10.20.6",
+      "smbclient //10.10.20.6/public -N",
+      "get it-notes.txt",
+      "exit",
+      "cat it-notes.txt"
+    ],
+    "submit": {
+      "o4": "hr_admin",
+      "o5": "FLAG{smb_null_session_lists_everything}"
+    }
+  },
+  "c03-m07": {
+    "steps": [
+      "whatweb 10.10.20.5",
+      "gobuster dir -u http://10.10.20.5 -w /usr/share/wordlists/dirb/common.txt",
+      "nikto -h 10.10.20.5",
+      "curl http://10.10.20.5/dev-notes/"
+    ],
+    "submit": {
+      "o4": "dev-notes",
+      "o5": "FLAG{dirbusting_finds_forgotten_pages}"
+    }
+  }
+}

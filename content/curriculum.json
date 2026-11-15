@@ -1,0 +1,170 @@
+{
+  "chapters": [
+    {
+      "id": "c00",
+      "title": "Onboarding & Rules of Engagement",
+      "difficulty": "tutorial",
+      "description": "Pentest คืออะไร ต่างจากการแฮ็กผิดกฎหมายอย่างไร อ่าน Scope/RoE และใช้ terminal ในเกม",
+      "unlock": {},
+      "missions": [
+        "c00-m01",
+        "c00-m02",
+        "c00-m03",
+        "c00-m04"
+      ]
+    },
+    {
+      "id": "c01",
+      "title": "Linux Fundamentals",
+      "difficulty": "tutorial",
+      "description": "นำทางไฟล์ ไฟล์ซ่อน อ่าน log สิทธิ์ไฟล์ encoding และ process",
+      "unlock": {
+        "requiresChapters": [
+          "c00"
+        ]
+      },
+      "missions": [
+        "c01-m01",
+        "c01-m02",
+        "c01-m03",
+        "c01-m04",
+        "c01-m05"
+      ]
+    },
+    {
+      "id": "c02",
+      "title": "Networking Fundamentals",
+      "difficulty": "easy",
+      "description": "IP/subnet, ping, DNS, HTTP พื้นฐานด้วย curl, banner grabbing ด้วย nc",
+      "unlock": {
+        "requiresChapters": [
+          "c01"
+        ]
+      },
+      "missions": [
+        "c02-m01",
+        "c02-m02",
+        "c02-m03",
+        "c02-m04",
+        "c02-m05"
+      ]
+    },
+    {
+      "id": "c03",
+      "title": "Reconnaissance & Enumeration",
+      "difficulty": "easy",
+      "description": "OSINT, nmap, FTP/SMB enumeration, web enumeration ด้วย gobuster/nikto",
+      "unlock": {
+        "requiresChapters": [
+          "c02"
+        ]
+      },
+      "missions": [
+        "c03-m01",
+        "c03-m02",
+        "c03-m03",
+        "c03-m04",
+        "c03-m05",
+        "c03-m06",
+        "c03-m07"
+      ]
+    },
+    {
+      "id": "c04",
+      "title": "Web Application Attacks — OWASP Top 10",
+      "difficulty": "medium",
+      "description": "ครอบคลุม OWASP Top 10 ครบ 10 หมวด: Access Control, Misconfiguration, Supply Chain, Crypto, Injection, Insecure Design, Auth, Integrity, Logging, Exceptional Conditions",
+      "unlock": {
+        "requiresChapters": [
+          "c03"
+        ]
+      },
+      "missions": []
+    },
+    {
+      "id": "c05",
+      "title": "Passwords & Cryptography",
+      "difficulty": "medium",
+      "description": "ระบุ hash, crack ด้วย john/hashcat, password reuse และ spraying",
+      "unlock": {
+        "requiresChapters": [
+          "c04"
+        ]
+      },
+      "missions": []
+    },
+    {
+      "id": "c06",
+      "title": "Exploitation & Initial Access",
+      "difficulty": "hard",
+      "description": "searchsploit, reverse shell, shell stabilization, msfconsole",
+      "unlock": {
+        "requiresChapters": [
+          "c05"
+        ]
+      },
+      "missions": []
+    },
+    {
+      "id": "c07",
+      "title": "Linux Privilege Escalation",
+      "difficulty": "hard",
+      "description": "sudo, SUID, cron, capabilities, PATH hijacking",
+      "unlock": {
+        "requiresChapters": [
+          "c06"
+        ]
+      },
+      "missions": []
+    },
+    {
+      "id": "c08",
+      "title": "Windows & Active Directory",
+      "difficulty": "insane",
+      "description": "Windows privesc, Kerberoasting, Pass-the-Hash, DCSync",
+      "unlock": {
+        "requiresChapters": [
+          "c07"
+        ]
+      },
+      "missions": []
+    },
+    {
+      "id": "c09",
+      "title": "Post-Exploitation & Pivoting",
+      "difficulty": "insane",
+      "description": "SSH tunneling, proxychains, lateral movement",
+      "unlock": {
+        "requiresChapters": [
+          "c08"
+        ]
+      },
+      "missions": []
+    },
+    {
+      "id": "c10",
+      "title": "Reporting",
+      "difficulty": "medium",
+      "description": "CVSS, เขียน finding, Executive Summary",
+      "unlock": {
+        "requiresChapters": [
+          "c07"
+        ]
+      },
+      "missions": []
+    },
+    {
+      "id": "c11",
+      "title": "Capstone: Full Engagement",
+      "difficulty": "insane",
+      "description": "งานทดสอบเต็มรูปแบบตั้งแต่ external recon ถึง Domain Admin พร้อมรายงาน",
+      "unlock": {
+        "requiresChapters": [
+          "c09",
+          "c10"
+        ]
+      },
+      "missions": []
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "id": "c02-m04",
+  "chapter": "c02",
+  "title": "HTTP ด้วย curl: อ่าน header และ robots.txt",
+  "difficulty": "easy",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c02-l03",
+  "briefing": "เว็บไซต์ ACME อยู่ที่ http://10.10.20.5/ ใช้ curl สำรวจ: ดู header ว่าเผยซอฟต์แวร์/เวอร์ชันอะไร จากนั้นดู robots.txt แล้วตามไปดู path ที่น่าสนใจที่สุด — ในนั้นมี flag",
+  "scope": {
+    "inScope": [
+      "web01 — 10.10.20.5 (พอร์ต 80)"
+    ],
+    "outOfScope": [
+      "10.10.20.1"
+    ],
+    "ips": [
+      "10.10.20.5"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ขอ /robots.txt ด้วย curl",
+      "type": "http",
+      "path": "^/robots\\.txt$",
+      "status": 200
+    },
+    {
+      "id": "o2",
+      "text": "เปิดดู /backup-old/ ที่ robots.txt ห้ามไว้",
+      "type": "http",
+      "path": "^/backup-old/$",
+      "status": 200
+    },
+    {
+      "id": "o3",
+      "text": "header `X-Powered-By` เผยเวอร์ชัน PHP อะไร? (เช่น 5.6.1)",
+      "type": "answer",
+      "answerHash": "a28d6a99e08e71c521be7756f5bdb2e9380c42fb054036c17e9a24ab2dd4fea0"
+    },
+    {
+      "id": "o4",
+      "text": "ส่ง flag ที่พบ",
+      "type": "flag",
+      "flagHash": "a0ad8af844a0b785d5534e7178322f7782995e85fe4c13bfebb33f8f3198c94a"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`curl -i http://10.10.20.5/` แสดง header ทั้งหมด ดูบรรทัด X-Powered-By"
+    },
+    {
+      "cost": 25,
+      "text": "`curl http://10.10.20.5/robots.txt` แล้ว `curl http://10.10.20.5/backup-old/` (ต้องมี / ท้าย path ไม่งั้นโดน redirect — หรือใช้ `-L`) flag อยู่ใน HTML comment"
+    }
+  ],
+  "debrief": [
+    "header `Server` และ `X-Powered-By` เผยเวอร์ชัน Apache 2.4.41 และ PHP 7.4.3 — ผู้โจมตีนำเวอร์ชันไปค้นหา CVE ที่ตรงกัน (บท 4 A03 Supply Chain/Outdated Components และบท 6)",
+    "`robots.txt` ที่ลิสต์ path ลับกลายเป็นป้ายบอกทางให้ทุกคน ไฟล์สำรองเก่า (`backup-old`) ที่ลืมทิ้งไว้เป็นสาเหตุอันดับต้นๆ ของการรั่วไหลข้อมูล",
+    "ฝั่งป้องกัน: ปิดการแสดงเวอร์ชัน (`ServerTokens Prod`, `expose_php=Off`), อย่าเก็บ backup ไว้ใน web root, และใช้การยืนยันตัวตนจริงแทนการพึ่ง robots.txt"
+  ],
+  "references": [
+    "OWASP Top 10 A02:2025 Security Misconfiguration",
+    "OWASP WSTG-INFO-05 Review Webpage Content for Information Leakage",
+    "CWE-200 Exposure of Sensitive Information"
+  ]
+}

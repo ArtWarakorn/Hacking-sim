@@ -1,0 +1,79 @@
+{
+  "id": "c03-m06",
+  "chapter": "c03",
+  "title": "SMB: null session และ enum4linux",
+  "difficulty": "medium",
+  "xp": 350,
+  "estMinutes": 20,
+  "lesson": "c03-l03",
+  "briefing": "ftp01 (10.10.20.6) รัน Samba ด้วย ลองดูว่ามี share อะไรบ้างโดยไม่ใช้รหัสผ่าน เข้า share ที่เปิดสาธารณะ อ่านไฟล์ IT แล้วใช้ enum4linux รวบรวมรายชื่อ user ที่ใช้ในระบบ",
+  "scope": {
+    "inScope": [
+      "10.10.20.6 (ftp01)"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.6"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "แสดงรายการ share ด้วย `smbclient -L`",
+      "type": "command",
+      "match": "^smbclient\\b.*-L"
+    },
+    {
+      "id": "o2",
+      "text": "รัน `enum4linux` กับ ftp01",
+      "type": "command",
+      "match": "^enum4linux\\b"
+    },
+    {
+      "id": "o3",
+      "text": "ดาวน์โหลด it-notes.txt จาก share `public`",
+      "type": "event",
+      "name": "smb.get",
+      "where": {
+        "file": "^it-notes\\.txt$"
+      }
+    },
+    {
+      "id": "o4",
+      "text": "user ที่ชื่อสื่อถึงฝ่ายบุคคล (HR) คือ?",
+      "type": "answer",
+      "answerHash": "871eec6c97e190b6c0521bc5dfb77b1e7a2d755bf6056bebae8b117e5c7dc305"
+    },
+    {
+      "id": "o5",
+      "text": "ส่ง flag ที่พบ",
+      "type": "flag",
+      "flagHash": "48c20c311a4fc407a7def9ec612de941347b7f5b0ee6885a9364de15a97cc82f"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`smbclient -L //10.10.20.6 -N` แล้ว `smbclient //10.10.20.6/public -N` (share `hr` จะถูกปฏิเสธ — ปกติ)"
+    },
+    {
+      "cost": 25,
+      "text": "ใน `smb: \\>` พิมพ์ `get it-notes.txt` แล้ว `exit` และ `cat it-notes.txt`; ชื่อ user ดูได้ใน `enum4linux -U 10.10.20.6`"
+    }
+  ],
+  "debrief": [
+    "null session ให้รายชื่อ share และ user โดยไม่ต้องรู้รหัสผ่านใดๆ — `hr_admin` และ `ftpuser` คือเป้าหมายต่อไปของ password attack ในบท 5 (รหัสผ่านที่ใช้ซ้ำ/เดาได้ เช่น `Winter2024!`)",
+    "share `hr` ตอบ ACCESS_DENIED: การเข้าไม่ได้ไม่ใช่ทางตัน ข้อมูลที่ได้มา (ชื่อ share, ชื่อ user) ยังมีค่า",
+    "ฝั่งป้องกัน: ปิด null session (`restrict anonymous = 2`), จำกัด share สาธารณะให้เหลือน้อยที่สุด และอย่าเก็บบันทึกภายในใน share ที่ไม่ต้องยืนยันตัวตน"
+  ],
+  "references": [
+    "MITRE ATT&CK T1135 Network Share Discovery",
+    "MITRE ATT&CK T1087 Account Discovery",
+    "CWE-306 Missing Authentication for Critical Function"
+  ]
+}

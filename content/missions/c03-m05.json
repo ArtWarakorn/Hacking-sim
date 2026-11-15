@@ -1,0 +1,77 @@
+{
+  "id": "c03-m05",
+  "chapter": "c03",
+  "title": "FTP anonymous login",
+  "difficulty": "easy",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c03-l03",
+  "briefing": "ผลสแกนของ ftp01 (10.10.20.6) บอกว่ามี FTP ที่ยอมให้ anonymous login ลองเข้าดู: login ด้วย `anonymous` ดาวน์โหลดไฟล์ที่น่าสนใจ แล้วอ่านบนเครื่องของคุณ",
+  "scope": {
+    "inScope": [
+      "10.10.20.6 (ftp01)"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.6"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "login FTP ด้วย user anonymous สำเร็จ",
+      "type": "event",
+      "name": "ftp.login",
+      "where": {
+        "user": "^anonymous$",
+        "ok": "^true$"
+      }
+    },
+    {
+      "id": "o2",
+      "text": "ดาวน์โหลดไฟล์ notes.txt ด้วย `get`",
+      "type": "event",
+      "name": "ftp.get",
+      "where": {
+        "file": "^notes\\.txt$"
+      }
+    },
+    {
+      "id": "o3",
+      "text": "อ่านไฟล์ notes.txt บนเครื่องของคุณ",
+      "type": "file_read",
+      "path": "/home/kali/notes.txt"
+    },
+    {
+      "id": "o4",
+      "text": "ส่ง flag ที่พบ",
+      "type": "flag",
+      "flagHash": "2f74a7d6a299e4b1281d97d8f9f2fac8aa8fed364de48a997a994f2737dee49b"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`ftp 10.10.20.6` แล้วตอบ Name: `anonymous` และ Password: อะไรก็ได้"
+    },
+    {
+      "cost": 20,
+      "text": "ใน `ftp>` พิมพ์ `ls` แล้ว `get notes.txt` จากนั้น `bye` และ `cat notes.txt`"
+    }
+  ],
+  "debrief": [
+    "anonymous FTP ที่เปิดทิ้งไว้ทำให้ใครก็อ่านไฟล์ภายในได้ — ในงานจริงไฟล์บันทึกของพนักงานมักมีรหัสผ่าน ชื่อระบบ และคำใบ้ที่นำไปสู่การโจมตีขั้นต่อไป (ในที่นี้ notes.txt เอ่ยถึง user `ftpuser` และ admin panel ที่ลืมลบ)",
+    "สังเกตว่า `nmap -sC` บอกเรื่อง anonymous ได้ล่วงหน้า — scripts ของ nmap ประหยัดเวลาไปมาก แต่ต้องเข้าไปดูเองเพื่อยืนยัน",
+    "ฝั่งป้องกัน: ปิด anonymous login (`anonymous_enable=NO` ใน vsftpd), เลิกใช้ FTP ที่ไม่เข้ารหัสแล้วใช้ SFTP แทน"
+  ],
+  "references": [
+    "CWE-284 Improper Access Control",
+    "MITRE ATT&CK T1078.001 Default Accounts",
+    "OWASP A01:2025 Broken Access Control"
+  ]
+}

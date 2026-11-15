@@ -1,0 +1,72 @@
+{
+  "id": "c03-m01",
+  "chapter": "c03",
+  "title": "Passive OSINT: whois และ subdomain",
+  "difficulty": "easy",
+  "xp": 250,
+  "estMinutes": 15,
+  "lesson": "c03-l01",
+  "briefing": "งานจริงเริ่มแล้ว! ก่อนแตะระบบของ ACME ให้รวบรวมข้อมูลสาธารณะของโดเมน acme.test ด้วย `whois` และ `subfinder` (ยังไม่มีการส่งแพ็กเก็ตถึงเป้าหมาย) หาข้อมูลผู้ดูแลโดเมนและ subdomain ที่น่าสนใจ",
+  "scope": {
+    "inScope": [
+      "โดเมน acme.test (ข้อมูลสาธารณะเท่านั้น)"
+    ],
+    "outOfScope": [
+      "การสแกนหรือเชื่อมต่อเครื่องเป้าหมายโดยตรง (ขั้นนี้เป็น passive)"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ค้นข้อมูลโดเมนด้วย `whois acme.test`",
+      "type": "command",
+      "match": "^whois\\b.*acme\\.test"
+    },
+    {
+      "id": "o2",
+      "text": "รวบรวม subdomain ด้วย `subfinder -d acme.test`",
+      "type": "command",
+      "match": "^subfinder\\b.*acme\\.test"
+    },
+    {
+      "id": "o3",
+      "text": "อีเมลของผู้ดูแลโดเมน (Admin Email) คืออะไร?",
+      "type": "answer",
+      "answerHash": "1a78cc6123c71a951c4f48f6c28b8a11391f292e4ebca05b6e9bbc3f6e253ac8"
+    },
+    {
+      "id": "o4",
+      "text": "subdomain ที่น่าจะเป็นจุดเข้า VPN ของบริษัทคืออะไร? (เช่น x.acme.test)",
+      "type": "answer",
+      "answerHash": "380621e9d44b93abce5e8b832e3cd181bac4da4f7d3f13808bf25c034989f779"
+    },
+    {
+      "id": "o5",
+      "text": "ประเทศของ Registrant (รหัส 2 ตัวอักษร)?",
+      "type": "answer",
+      "answerHash": "d0e7c6500effafc8cb4df6cf77c1749928e72aad39b7abb7c958e6129cd5cd88"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`whois acme.test` — ดูบรรทัด Admin Email และ Registrant Country"
+    },
+    {
+      "cost": 20,
+      "text": "`subfinder -d acme.test -silent` แล้วหาชื่อที่ขึ้นต้นด้วย vpn"
+    }
+  ],
+  "debrief": [
+    "ข้อมูลที่ได้ล้วนเป็นสาธารณะ: อีเมลรูปแบบ `ชื่อ.อักษรแรกนามสกุล@acme.test` ช่วยเดา username/อีเมลของพนักงานอีกหลายคน (บท 5 password spraying) และ subdomain อย่าง `vpn` และ `staging` คือเป้าหมายที่ลูกค้ามักลืมดูแล",
+    "ฝั่งป้องกัน: ใช้บริการ privacy ของ registrar ไม่ใส่อีเมลส่วนตัวของบุคคลเป็นผู้ติดต่อ และตรวจรายการ subdomain ที่ปรากฏใน certificate log ของตัวเอง — ถ้ามองเห็นได้ ผู้โจมตีก็เห็นเช่นกัน"
+  ],
+  "references": [
+    "MITRE ATT&CK T1596 Search Open Technical Databases",
+    "MITRE ATT&CK T1589.002 Gather Victim Identity Information: Email Addresses",
+    "OWASP WSTG-INFO-01"
+  ]
+}

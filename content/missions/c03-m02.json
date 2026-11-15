@@ -1,0 +1,67 @@
+{
+  "id": "c03-m02",
+  "chapter": "c03",
+  "title": "DNS zone transfer",
+  "difficulty": "medium",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c03-l01",
+  "briefing": "ลองขอ zone transfer จาก name server ของ ACME โดเมนหลัก `acme.test` น่าจะถูกปฏิเสธ แต่ ACME ยังมีโดเมนสำหรับทีมพัฒนา `acme-dev.test` ที่ name server คือ 10.10.20.6 ลองทั้งสองโดเมน แล้วอ่านทุก record ที่ได้",
+  "scope": {
+    "inScope": [
+      "DNS ของ acme.test และ acme-dev.test"
+    ],
+    "outOfScope": [
+      "การเชื่อมต่อเครื่องที่ค้นพบ (ขั้นนี้เก็บข้อมูลอย่างเดียว)"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ขอ zone transfer ของ acme.test (`dig axfr acme.test ...`)",
+      "type": "command",
+      "match": "^dig\\b(?=.*\\baxfr\\b)(?=.*\\bacme\\.test\\b)"
+    },
+    {
+      "id": "o2",
+      "text": "ขอ zone transfer ของ acme-dev.test",
+      "type": "command",
+      "match": "^dig\\b(?=.*\\baxfr\\b)(?=.*\\bacme-dev\\.test\\b)"
+    },
+    {
+      "id": "o3",
+      "text": "ส่ง flag ที่ซ่อนอยู่ใน record ของโซน",
+      "type": "flag",
+      "flagHash": "bd9656782337120b474cfa2f35ee585f9f7951d75877813a1e31f2f2fe58ee85"
+    },
+    {
+      "id": "o4",
+      "text": "IP ของโฮสต์ jenkins.acme-dev.test คืออะไร?",
+      "type": "answer",
+      "answerHash": "eb8b6ec0bd913aa7a455b269ca0d8110188c824499871a07cbf827dd3c04c645"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`dig axfr acme.test @ns1.acme.test` ถูกปฏิเสธ ลอง `dig axfr acme-dev.test @10.10.20.6`"
+    },
+    {
+      "cost": 20,
+      "text": "อ่านทุกบรรทัดของผลลัพธ์ — flag อยู่ใน TXT record และ jenkins มี A record ของตัวเอง"
+    }
+  ],
+  "debrief": [
+    "zone transfer ที่เปิดอนุญาตให้ทุกคนให้แผนที่เครือข่ายทั้งหมดในคำสั่งเดียว: เห็น vpn, staging, jenkins (เครื่อง CI/CD ซึ่งมักมีสิทธิ์สูงและเก็บ secret), git — เป้าหมายที่คุณไม่มีทางเดาได้ง่ายๆ",
+    "สังเกตว่าโดเมนหลักปิดไว้ถูกต้อง แต่โดเมน dev ถูกลืม — นี่คือรูปแบบที่พบบ่อยในงานจริง: ความปลอดภัยแย่ที่สุดที่จุดที่ถูกลืม",
+    "ฝั่งป้องกัน: จำกัด zone transfer เฉพาะ IP ของ name server สำรอง (`allow-transfer`), ตรวจทุกโดเมนขององค์กร รวมถึงโดเมนทดสอบ"
+  ],
+  "references": [
+    "CWE-200 Exposure of Sensitive Information",
+    "MITRE ATT&CK T1590.002 DNS",
+    "OWASP A02:2025 Security Misconfiguration"
+  ]
+}

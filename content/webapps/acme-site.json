@@ -1,0 +1,90 @@
+{
+  "id": "acme-site",
+  "server": "Apache/2.4.41 (Ubuntu)",
+  "poweredBy": "PHP/7.4.3",
+  "routes": {
+    "/": {
+      "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>ACME Logistics</title></head>\n<body>\n<h1>ACME Logistics</h1>\n<p>Moving your freight, on time.</p>\n<a href=\"/about\">About</a> | <a href=\"/login\">Customer login</a>\n</body>\n</html>\n"
+    },
+    "/about": {
+      "body": "<!DOCTYPE html>\n<html><head><title>About - ACME</title></head>\n<body>\n<h1>About us</h1>\n<p>Founded 1998. 240 employees across 3 countries.</p>\n</body></html>\n"
+    },
+    "/robots.txt": {
+      "type": "text/plain",
+      "body": "User-agent: *\nDisallow: /admin/\nDisallow: /backup-old/\n"
+    },
+    "/admin/": {
+      "status": 403,
+      "body": "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head><title>403 Forbidden</title></head><body>\n<h1>Forbidden</h1>\n<p>You don't have permission to access this resource.</p>\n</body></html>\n"
+    },
+    "/backup-old/": {
+      "body": "<!DOCTYPE html>\n<html><head><title>Index of /backup-old</title></head>\n<body>\n<h1>Index of /backup-old</h1>\n<pre>\nnotes.txt        2026-10-02 09:14   212\nsite-2024.zip    2024-12-19 17:40   18M\n</pre>\n<!-- internal note: FLAG{robots_txt_is_a_map_not_a_lock} -->\n</body></html>\n"
+    },
+    "/login": {
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "responses": [
+        {
+          "when": {
+            "method": "POST",
+            "body": "^user=admin&pass=admin$"
+          },
+          "status": 302,
+          "headers": {
+            "Location": "/admin/",
+            "Set-Cookie": "session=demo; HttpOnly"
+          },
+          "body": ""
+        },
+        {
+          "when": {
+            "method": "POST"
+          },
+          "status": 200,
+          "body": "<html><body><p>Invalid username or password.</p></body></html>\n"
+        },
+        {
+          "status": 200,
+          "body": "<html><body>\n<h1>Customer login</h1>\n<form method=\"POST\" action=\"/login\">\n<input name=\"user\"><input name=\"pass\" type=\"password\"><button>Login</button>\n</form>\n</body></html>\n"
+        }
+      ]
+    },
+    "/index.php": {
+      "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head><title>ACME Logistics</title></head>\n<body>\n<h1>ACME Logistics</h1>\n<p>Moving your freight, on time.</p>\n<a href=\"/about\">About</a> | <a href=\"/login\">Customer login</a>\n</body>\n</html>\n"
+    },
+    "/uploads/": {
+      "body": "<!DOCTYPE html>\n<html><head><title>Index of /uploads</title></head>\n<body>\n<h1>Index of /uploads</h1>\n<pre>\n(empty)\n</pre>\n</body></html>\n"
+    },
+    "/config.php": {
+      "body": ""
+    },
+    "/api/": {
+      "type": "application/json",
+      "body": "{\"status\":\"ok\",\"version\":\"1.2\"}\n"
+    },
+    "/server-status": {
+      "status": 403,
+      "body": "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head><title>403 Forbidden</title></head><body>\n<h1>Forbidden</h1>\n</body></html>\n"
+    },
+    "/images/": {
+      "body": "<html><head><title>Index of /images</title></head><body><h1>Index of /images</h1><pre>\nlogo.png\ntruck.jpg\n</pre></body></html>\n"
+    },
+    "/css/": {
+      "body": "<html><head><title>Index of /css</title></head><body><h1>Index of /css</h1><pre>\nsite.css\n</pre></body></html>\n"
+    },
+    "/dev-notes/": {
+      "body": "<!DOCTYPE html>\n<html><head><title>Dev notes</title></head>\n<body>\n<h1>Dev notes</h1>\n<ul><li>TODO: remove debug login</li><li>TODO: move uploads out of web root</li></ul>\n<!-- FLAG{dirbusting_finds_forgotten_pages} -->\n</body></html>\n"
+    }
+  },
+  "tech": [
+    "Bootstrap[3.3.7]",
+    "JQuery[1.12.4]"
+  ],
+  "nikto": [
+    "/icons/README: Apache default file found. See: https://www.vntweb.co.uk/apache-restricting-access-to-iconsreadme/",
+    "/backup-old/: Directory indexing found.",
+    "/uploads/: Directory indexing found."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "c01-m01",
+  "chapter": "c01",
+  "title": "ล่าไฟล์ซ่อน",
+  "difficulty": "tutorial",
+  "xp": 150,
+  "estMinutes": 8,
+  "lesson": "c01-l01",
+  "briefing": "ผู้ดูแลระบบคนก่อนทิ้งบันทึกสำคัญไว้ในเครื่อง แต่ `ls` ธรรมดาไม่เห็น ลองหาไฟล์ซ่อนใน home ของคุณ อ่านมัน แล้วส่ง flag",
+  "scope": { "inScope": ["kali (เครื่องของคุณเอง)"], "outOfScope": [] },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    { "id": "o1", "text": "แสดงไฟล์ซ่อนด้วย ls -a", "type": "command", "match": "^ls\\b.*\\s-[a-zA-Z]*a" },
+    { "id": "o2", "text": "อ่านไฟล์ซ่อนที่ขึ้นต้นด้วย .hidden", "type": "file_read", "path": "/home/kali/.hidden_note" },
+    { "id": "o3", "text": "ส่ง flag", "type": "flag", "flagHash": "63bcc24299f296355ef918a39f389ac1665fe20087bb20aec69c760fd3c11da4" }
+  ],
+  "hints": [
+    { "cost": 10, "text": "ไฟล์ที่ขึ้นต้นด้วยจุดจะถูกซ่อน ลองดู option -a ของ `ls` (`man ls`)" },
+    { "cost": 25, "text": "`ls -la ~` แล้ว `cat ~/.hidden_note`" }
+  ],
+  "debrief": [
+    "ไฟล์ซ่อน (dotfiles) เป็นที่เก็บ config, ประวัติคำสั่ง (.bash_history), SSH key (.ssh/) และบางครั้งรหัสผ่าน — เป็นจุดแรกๆ ที่ pentester ตรวจหลังได้ shell",
+    "ฝั่งป้องกัน: อย่าเก็บ secret ไว้ในไฟล์ซ่อนโดยคิดว่าปลอดภัย ตั้งสิทธิ์ให้เหมาะสม (เช่น 600) และไม่เก็บรหัสผ่านเป็นข้อความธรรมดา"
+  ],
+  "references": ["MITRE ATT&CK T1083 File and Directory Discovery", "MITRE ATT&CK T1552.003 Bash History"]
+}

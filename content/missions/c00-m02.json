@@ -1,0 +1,34 @@
+{
+  "id": "c00-m02",
+  "chapter": "c00",
+  "title": "อ่าน Rules of Engagement",
+  "difficulty": "tutorial",
+  "xp": 150,
+  "estMinutes": 8,
+  "lesson": "c00-l01",
+  "briefing": "ACME Logistics จ้างทีมคุณทดสอบระบบ ก่อนสแกนอะไรทั้งนั้น ให้อ่านเอกสาร Rules of Engagement ที่ลูกค้าส่งมา (~/Documents/engagement.txt) แล้วตอบคำถามเรื่อง scope ให้ถูก — ความผิดพลาดตรงนี้แพงกว่าช่องโหว่ใดๆ",
+  "scope": { "inScope": ["ดูในเอกสาร"], "outOfScope": ["ดูในเอกสาร"] },
+  "machine": "training-box",
+  "startUser": "kali",
+  "fsPatch": {
+    "/home/kali/Documents/engagement.txt": {
+      "owner": "kali", "group": "kali",
+      "content": "=== ACME Logistics — Rules of Engagement ===\nประเภทงาน : External Network Penetration Test\nช่วงเวลา  : 22:00 - 04:00 (UTC+7) เท่านั้น\n\nIN SCOPE\n  10.10.20.5   web01 (เว็บไซต์บริษัท)\n  10.10.20.6   ftp01 (เซิร์ฟเวอร์แลกเปลี่ยนไฟล์)\n\nOUT OF SCOPE\n  10.10.20.1   เกตเวย์ของผู้ให้บริการอินเทอร์เน็ต (เป็นของบุคคลที่สาม)\n  ทุกอย่างที่ไม่ได้ระบุไว้ข้างต้น\n\nข้อห้าม\n  - ห้ามทำ Denial of Service หรือ stress test\n  - ห้ามส่งอีเมลฟิชชิงถึงพนักงาน\n  - หากพบข้อมูลส่วนบุคคล ให้หยุดและแจ้งผู้ประสานงานทันที\n\nผู้ประสานงานฝั่งลูกค้า : คุณสมชาย (ฝ่าย IT) โทร 02-000-0000\n"
+    }
+  },
+  "objectives": [
+    { "id": "o1", "text": "อ่านเอกสาร ~/Documents/engagement.txt", "type": "file_read", "path": "/home/kali/Documents/engagement.txt" },
+    { "id": "o2", "text": "IP ใดที่อยู่นอก scope และห้ามทดสอบ? (ตอบเป็น IP)", "type": "answer", "answerHash": "1da005e23835fef7ae0b1d72226e3d3694abbc32c5632b41923bc9c58f9abe3a" },
+    { "id": "o3", "text": "RoE อนุญาตให้ทำ Denial of Service ได้หรือไม่? (ตอบ yes หรือ no)", "type": "answer", "answerHash": "e5377269f2a3fde600947db4fac8e25bd69a6d7d00af2bfef027dcc81863e300" }
+  ],
+  "hints": [
+    { "cost": 10, "text": "ดูหัวข้อ OUT OF SCOPE ในเอกสาร" },
+    { "cost": 20, "text": "ดูหัวข้อ \"ข้อห้าม\" — มีบรรทัดเกี่ยวกับ Denial of Service" }
+  ],
+  "debrief": [
+    "RoE คือสัญญาที่คุ้มครองทั้งสองฝ่าย: ลูกค้ารู้ว่าคุณจะทำอะไร และคุณมีหลักฐานว่าได้รับอนุญาต",
+    "10.10.20.1 เป็นของบุคคลที่สาม — ลูกค้าไม่มีสิทธิ์อนุญาตให้ทดสอบมัน การสแกนอาจผิดกฎหมายแม้อยู่ \"ใกล้\" เป้าหมายก็ตาม",
+    "ถ้าพบสิ่งที่น่าสนใจนอก scope ให้บันทึกและแจ้งผู้ประสานงานเพื่อขอขยาย scope เป็นลายลักษณ์อักษร ไม่ใช่ทดสอบไปก่อน"
+  ],
+  "references": ["PTES — Pre-engagement Interactions", "พ.ร.บ.คอมพิวเตอร์ ม.5-7"]
+}

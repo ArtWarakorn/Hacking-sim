@@ -1,0 +1,118 @@
+{
+  "id": "training-box",
+  "hostname": "kali",
+  "ip": "10.10.14.2",
+  "os": "linux",
+  "kernel": {
+    "release": "6.1.0-kali9-amd64",
+    "version": "#1 SMP PREEMPT_DYNAMIC Debian 6.1.27-1kali1 (2023-05-12)",
+    "arch": "x86_64"
+  },
+  "startUser": "kali",
+  "users": [
+    {
+      "name": "root",
+      "uid": 0,
+      "gid": 0,
+      "home": "/root",
+      "shell": "/bin/bash",
+      "groups": [
+        {
+          "name": "root",
+          "gid": 0
+        }
+      ]
+    },
+    {
+      "name": "kali",
+      "uid": 1000,
+      "gid": 1000,
+      "home": "/home/kali",
+      "shell": "/bin/bash",
+      "groups": [
+        {
+          "name": "kali",
+          "gid": 1000
+        },
+        {
+          "name": "sudo",
+          "gid": 27
+        }
+      ]
+    }
+  ],
+  "fs": {
+    "/tmp": {
+      "type": "dir",
+      "mode": "1777"
+    },
+    "/root": {
+      "type": "dir",
+      "mode": "700",
+      "owner": "root"
+    },
+    "/root/secret.txt": {
+      "content": "FLAG{only_root_can_read_this}\n",
+      "mode": "600",
+      "owner": "root"
+    },
+    "/home/kali": {
+      "type": "dir",
+      "owner": "kali",
+      "group": "kali",
+      "mode": "755"
+    },
+    "/home/kali/Desktop": {
+      "type": "dir",
+      "owner": "kali",
+      "group": "kali"
+    },
+    "/home/kali/Documents": {
+      "type": "dir",
+      "owner": "kali",
+      "group": "kali"
+    },
+    "/home/kali/Documents/readme.txt": {
+      "owner": "kali",
+      "group": "kali",
+      "content": "ยินดีต้อนรับสู่ HackSim!\nนี่คือ sandbox สำหรับฝึกใช้ terminal\nลองพิมพ์: ls, cat, cd, grep, find, man ls\n"
+    },
+    "/home/kali/Documents/todo.txt": {
+      "owner": "kali",
+      "group": "kali",
+      "content": "1. ดู scope ของลูกค้า\n2. สแกน host\n3. เขียนรายงาน\n"
+    },
+    "/home/kali/.hidden_note": {
+      "owner": "kali",
+      "group": "kali",
+      "mode": "600",
+      "content": "FLAG{hidden_files_are_not_secret}\n"
+    },
+    "/home/kali/.bash_history": {
+      "owner": "kali",
+      "group": "kali",
+      "mode": "600",
+      "content": "ls\ncd Documents\ncat todo.txt\nping -c 1 10.10.20.5\n"
+    },
+    "/opt/tools/scan.sh": {
+      "mode": "755",
+      "content": "#!/bin/bash\necho 'scan placeholder'\n"
+    },
+    "/etc/os-release": {
+      "content": "PRETTY_NAME=\"Kali GNU/Linux Rolling\"\nNAME=\"Kali GNU/Linux\"\nID=kali\n"
+    },
+    "/etc/hosts": {
+      "content": "127.0.0.1\tlocalhost\n127.0.1.1\tkali\n"
+    },
+    "/var/log/auth.log": {
+      "mode": "644",
+      "content": "Nov 15 09:01:12 kali sshd[812]: Failed password for invalid user admin from 10.10.14.77 port 51122 ssh2\nNov 15 09:01:15 kali sshd[812]: Failed password for invalid user admin from 10.10.14.77 port 51122 ssh2\nNov 15 09:02:40 kali sshd[820]: Accepted password for kali from 10.10.14.9 port 40022 ssh2\nNov 15 09:05:03 kali sudo: kali : TTY=pts/0 ; PWD=/home/kali ; COMMAND=/usr/bin/apt update\n"
+    },
+    "/usr/share/wordlists/dirb/common.txt": {
+      "content": "about\nadmin\napi\nbackup\nbackup-old\nbin\ncgi-bin\nconfig\ncss\ndata\ndb\ndev\ndev-notes\ndocs\ndownload\ndownloads\nfiles\nimages\nimg\ninclude\nindex\ninc\njs\nlib\nlogin\nlogs\nold\nphpmyadmin\nprivate\nrobots.txt\nscripts\nsecret\nserver-status\nstaging\nstatic\ntemp\ntest\ntmp\nupload\nuploads\nvendor\nwp-admin\nwp-login\nxmlrpc\n"
+    },
+    "/usr/share/wordlists/rockyou-mini.txt": {
+      "content": "123456\npassword\nletmein\nwelcome1\nSummer2024!\nWinter2024!\nqwerty\nadmin\nacme2024\n"
+    }
+  }
+}

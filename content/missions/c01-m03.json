@@ -1,0 +1,37 @@
+{
+  "id": "c01-m03",
+  "chapter": "c01",
+  "title": "สิทธิ์ไฟล์และ world-writable",
+  "difficulty": "easy",
+  "xp": 200,
+  "estMinutes": 12,
+  "lesson": "c01-l01",
+  "briefing": "ทีมตรวจสอบพบว่าโฟลเดอร์แชร์ /srv/share มีไฟล์ที่ \"ทุกคนเขียนได้\" ซึ่งอันตรายเพราะใครก็แก้ไขเนื้อหาได้ ให้หาไฟล์นั้น แล้วปิดช่องโหว่อีกจุดคือไฟล์ ~/backup/db_creds.txt ที่เก็บรหัสผ่านฐานข้อมูลแต่ใครก็อ่านได้ ให้แก้สิทธิ์เป็น 600",
+  "scope": { "inScope": ["kali (เครื่องของคุณเอง)"], "outOfScope": [] },
+  "machine": "training-box",
+  "startUser": "kali",
+  "fsPatch": {
+    "/home/kali/backup": { "type": "dir", "owner": "kali", "group": "kali" },
+    "/home/kali/backup/db_creds.txt": { "owner": "kali", "group": "kali", "mode": "644", "content": "db_user=backup\ndb_pass=Sup3rS3cret!\n" },
+    "/srv/share": { "type": "dir", "owner": "root", "group": "root", "mode": "755" },
+    "/srv/share/payroll.csv": { "owner": "root", "group": "hr", "mode": "640", "content": "id,name,salary\n1,somchai,45000\n" },
+    "/srv/share/handbook.txt": { "owner": "root", "group": "root", "mode": "644", "content": "Employee handbook v3\n" },
+    "/srv/share/notice.txt": { "owner": "root", "group": "root", "mode": "666", "content": "Office closed on Friday.\n" },
+    "/srv/share/readme.md": { "owner": "root", "group": "root", "mode": "644", "content": "Shared files. Do not store secrets here.\n" }
+  },
+  "objectives": [
+    { "id": "o1", "text": "ใช้ `find` ที่มี `-perm` เพื่อค้นหาไฟล์ตามสิทธิ์", "type": "command", "match": "^find\\b.*-perm" },
+    { "id": "o2", "text": "ไฟล์ใดใน /srv/share ที่ทุกคนเขียนได้? (ตอบชื่อไฟล์)", "type": "answer", "answerHash": "82a61b9c73cf6ac398035433fb4fbaea39808d5d6f9b2d546296d6dd7885bb77" },
+    { "id": "o3", "text": "แก้สิทธิ์ ~/backup/db_creds.txt ให้เป็น 600", "type": "fs", "path": "/home/kali/backup/db_creds.txt", "mode": "600" }
+  ],
+  "hints": [
+    { "cost": 10, "text": "`find /srv/share -perm -002 -type f` — `-002` หมายถึงมีบิต write ของ \"others\"" },
+    { "cost": 20, "text": "ใช้ `ls -l /srv/share` ดูสิทธิ์ ไฟล์ที่ลงท้ายด้วย `rw-` (rw-rw-rw-) คือทุกคนเขียนได้ จากนั้น `chmod 600 ~/backup/db_creds.txt`" }
+  ],
+  "debrief": [
+    "ไฟล์ world-writable เปิดทางให้ผู้ใช้ที่มีสิทธิ์ต่ำแก้ไขเนื้อหา — ในบท 7 (Privilege Escalation) คุณจะเห็นว่าสคริปต์ที่ทุกคนเขียนได้และถูกรันโดย root เป็นทางลัดสู่ root",
+    "`find / -perm -4000` (SUID) และ `find / -perm -002` (world-writable) เป็นคำสั่งมาตรฐานในการ enumerate หลังได้ shell",
+    "ฝั่งป้องกัน: หลักการ least privilege — ไฟล์ที่มี secret ใช้ 600, สคริปต์ใช้ 750/755 ที่เจ้าของเป็น root และตรวจสอบสิทธิ์ด้วย audit เป็นระยะ"
+  ],
+  "references": ["CWE-732 Incorrect Permission Assignment for Critical Resource", "MITRE ATT&CK T1222 File and Directory Permissions Modification"]
+}

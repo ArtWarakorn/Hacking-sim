@@ -1,0 +1,34 @@
+{
+  "id": "c00-m01",
+  "chapter": "c00",
+  "title": "ก้าวแรกใน terminal",
+  "difficulty": "tutorial",
+  "xp": 100,
+  "estMinutes": 5,
+  "lesson": "c00-l01",
+  "briefing": "ยินดีต้อนรับสู่ทีม! วันแรกของคุณคือการทำความคุ้นเคยกับเครื่อง Kali ของตัวเอง หัวหน้าทีมทิ้งไฟล์ต้อนรับไว้ในโฟลเดอร์ Documents ภายในมี flag ซ่อนอยู่ — อ่านมันแล้วส่ง flag ในช่องด้านซ้าย",
+  "scope": { "inScope": ["kali (เครื่องของคุณเอง)"], "outOfScope": [] },
+  "machine": "training-box",
+  "startUser": "kali",
+  "fsPatch": {
+    "/home/kali/Documents/welcome.txt": {
+      "owner": "kali", "group": "kali",
+      "content": "สวัสดี น้องใหม่!\nรูปแบบของ flag คือ FLAG{...}\nflag ของด่านนี้: FLAG{welcome_to_hacksim}\n"
+    }
+  },
+  "objectives": [
+    { "id": "o1", "text": "ดูรายการคำสั่งที่ใช้ได้ด้วย help", "type": "command", "match": "^help\\b" },
+    { "id": "o2", "text": "ดูไฟล์ในโฟลเดอร์ปัจจุบันด้วย ls", "type": "command", "match": "^ls\\b" },
+    { "id": "o3", "text": "อ่านไฟล์ ~/Documents/welcome.txt", "type": "file_read", "path": "/home/kali/Documents/welcome.txt" },
+    { "id": "o4", "text": "ส่ง flag ที่อยู่ในไฟล์", "type": "flag", "flagHash": "a3feba08f6e572bff355bf8a51b169a7c96b9d79835a96279ac0ddecd18b855a" }
+  ],
+  "hints": [
+    { "cost": 5, "text": "ใช้ `cd Documents` เพื่อเข้าโฟลเดอร์ แล้ว `ls` ดูไฟล์" },
+    { "cost": 15, "text": "ไฟล์ชื่อ welcome.txt — ลอง `cat Documents/welcome.txt`" }
+  ],
+  "debrief": [
+    "คำสั่ง `ls` และ `cat` คือสองคำสั่งที่คุณจะใช้บ่อยที่สุดตลอดอาชีพ pentester",
+    "Flag ในเกมมีรูปแบบ FLAG{...} เหมือนการแข่ง CTF ส่วนในงานจริง \"flag\" ของคุณคือหลักฐาน (evidence) ที่พิสูจน์ว่าเข้าถึงข้อมูลได้ เช่น สกรีนช็อตหรือผลลัพธ์ของคำสั่ง"
+  ],
+  "references": ["PTES — Pre-engagement Interactions"]
+}

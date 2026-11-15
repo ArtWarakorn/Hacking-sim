@@ -1,0 +1,358 @@
+{
+  "name": "lab",
+  "resolver": "10.10.14.1",
+  "hosts": {
+    "10.10.14.1": {
+      "hostname": "gw.lab.test",
+      "up": true,
+      "hops": []
+    },
+    "10.10.20.1": {
+      "hostname": "isp-gw.acme.test",
+      "up": true,
+      "hops": [
+        "10.10.14.1"
+      ],
+      "os": {
+        "type": "router",
+        "running": "MikroTik RouterOS 6.X",
+        "cpe": "cpe:/o:mikrotik:routeros:6",
+        "details": "MikroTik RouterOS 6.40"
+      },
+      "services": {}
+    },
+    "10.10.20.5": {
+      "hostname": "web01.acme.test",
+      "up": true,
+      "hops": [
+        "10.10.14.1",
+        "10.10.20.1"
+      ],
+      "os": {
+        "type": "general purpose",
+        "running": "Linux 5.X",
+        "cpe": "cpe:/o:linux:linux_kernel:5",
+        "details": "Linux 5.0 - 5.4"
+      },
+      "serviceInfo": "OS: Linux; CPE: cpe:/o:linux:linux_kernel",
+      "services": {
+        "22": {
+          "name": "ssh",
+          "product": "OpenSSH",
+          "version": "8.2p1 Ubuntu 4ubuntu0.5",
+          "extrainfo": "Ubuntu Linux; protocol 2.0",
+          "banner": "SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.5",
+          "scripts": {
+            "ssh-hostkey": "3072 4a:1b:7c:90:aa:21:5e:d3:08:f1:62:cc:19:be:3d:70 (RSA)\n256 9d:44:b1:0e:77:c2:3a:85:f0:1c:6b:d9:42:e8:a1:5f (ECDSA)\n256 c3:0a:5d:e1:98:2f:b4:67:d0:7e:13:aa:5c:91:f6:28 (ED25519)"
+          }
+        },
+        "80": {
+          "name": "http",
+          "product": "Apache httpd",
+          "version": "2.4.41",
+          "extrainfo": "(Ubuntu)",
+          "http": "acme-site",
+          "scripts": {
+            "http-server-header": "Apache/2.4.41 (Ubuntu)",
+            "http-title": "ACME Logistics",
+            "http-robots.txt": "2 disallowed entries \n/admin/ /backup-old/"
+          }
+        }
+      }
+    },
+    "10.10.20.6": {
+      "hostname": "ftp01.acme.test",
+      "up": true,
+      "hops": [
+        "10.10.14.1",
+        "10.10.20.1"
+      ],
+      "os": {
+        "type": "general purpose",
+        "running": "Linux 4.X",
+        "cpe": "cpe:/o:linux:linux_kernel:4",
+        "details": "Linux 4.15 - 4.19"
+      },
+      "serviceInfo": "Host: FTP01; OS: Linux; CPE: cpe:/o:linux:linux_kernel",
+      "services": {
+        "21": {
+          "name": "ftp",
+          "product": "vsftpd",
+          "version": "3.0.3",
+          "banner": "220 (vsFTPd 3.0.3)",
+          "scripts": {
+            "ftp-anon": "Anonymous FTP login allowed (FTP code 230)\n-rw-r--r--    1 0        0             159 Oct 12 09:00 notes.txt\ndrwxr-xr-x    2 0        0            4096 Oct 12 09:02 pub"
+          }
+        },
+        "22": {
+          "name": "ssh",
+          "product": "OpenSSH",
+          "version": "7.9p1 Debian 10+deb10u2",
+          "extrainfo": "protocol 2.0",
+          "banner": "SSH-2.0-OpenSSH_7.9p1 Debian-10+deb10u2"
+        },
+        "139": {
+          "name": "netbios-ssn",
+          "product": "Samba smbd",
+          "version": "4.6.2"
+        },
+        "445": {
+          "name": "netbios-ssn",
+          "product": "Samba smbd",
+          "version": "4.6.2"
+        },
+        "9999": {
+          "name": "http",
+          "product": "Python http.server",
+          "version": "3.8.10",
+          "extrainfo": "SimpleHTTP/0.6",
+          "http": "py-devserver"
+        }
+      },
+      "ftp": {
+        "anonymous": true,
+        "tree": {
+          "notes.txt": "Team,\nthe file server password for 'ftpuser' was reset (see IT).\nAdmin panel is still on the old path, remember to remove.\nFLAG{anonymous_ftp_is_an_open_door}\n",
+          "pub": {
+            "readme.txt": "Public drop folder. Please do not upload customer data here.\n"
+          }
+        }
+      },
+      "smb": {
+        "workgroup": "ACMEGROUP",
+        "netbios": "FTP01",
+        "server": "Samba 4.6.2",
+        "users": [
+          {
+            "name": "ftpuser",
+            "rid": 1000
+          },
+          {
+            "name": "hr_admin",
+            "rid": 1001
+          }
+        ],
+        "shares": {
+          "print$": {
+            "type": "Disk",
+            "comment": "Printer Drivers",
+            "anonymous": false
+          },
+          "public": {
+            "type": "Disk",
+            "comment": "Public share",
+            "anonymous": true,
+            "tree": {
+              "welcome.txt": "Welcome to the ACME file server.\n",
+              "it-notes.txt": "IT notes\n- HR share is for hr_admin only\n- TODO: disable null sessions\nFLAG{smb_null_session_lists_everything}\n",
+              "docs": {
+                "policy.txt": "Password policy: min 8 chars. (not enforced on the file server)\n"
+              }
+            }
+          },
+          "hr": {
+            "type": "Disk",
+            "comment": "HR documents",
+            "anonymous": false,
+            "credentials": {
+              "hr_admin": "Winter2024!"
+            },
+            "tree": {
+              "salaries.csv": "id,name,salary\n1,somchai,45000\n"
+            }
+          },
+          "IPC$": {
+            "type": "IPC",
+            "comment": "IPC Service (ftp01 Samba)",
+            "anonymous": true
+          }
+        }
+      }
+    },
+    "10.10.20.7": {
+      "hostname": "db01.acme.test",
+      "up": true,
+      "stealth": true,
+      "hops": [
+        "10.10.14.1",
+        "10.10.20.1"
+      ],
+      "os": {
+        "type": "general purpose",
+        "running": "Linux 4.X",
+        "cpe": "cpe:/o:linux:linux_kernel:4",
+        "details": "Linux 4.15"
+      },
+      "serviceInfo": "OS: Linux; CPE: cpe:/o:linux:linux_kernel",
+      "services": {
+        "3306": {
+          "name": "mysql",
+          "product": "MySQL",
+          "version": "5.7.33-0ubuntu0.18.04.1"
+        }
+      }
+    },
+    "10.10.20.9": {
+      "hostname": "shop.acme.test",
+      "up": true,
+      "hops": [
+        "10.10.14.1",
+        "10.10.20.1"
+      ],
+      "os": {
+        "type": "general purpose",
+        "running": "Linux 5.X",
+        "cpe": "cpe:/o:linux:linux_kernel:5",
+        "details": "Linux 5.0 - 5.4"
+      },
+      "serviceInfo": "OS: Linux; CPE: cpe:/o:linux:linux_kernel",
+      "services": {
+        "80": {
+          "name": "http",
+          "product": "Apache httpd",
+          "version": "2.4.41",
+          "extrainfo": "(Ubuntu)",
+          "http": "shopzone",
+          "scripts": {
+            "http-server-header": "Apache/2.4.41 (Ubuntu)",
+            "http-title": "ShopZone"
+          }
+        }
+      }
+    }
+  },
+  "whois": {
+    "acme.test": "Domain Name: ACME.TEST\nRegistry Domain ID: D2998-ACME\nRegistrar: Example Registrar, Inc.\nCreation Date: 1998-03-14T00:00:00Z\nRegistry Expiry Date: 2027-03-14T00:00:00Z\nRegistrant Organization: ACME Logistics Co., Ltd.\nRegistrant State/Province: Bangkok\nRegistrant Country: TH\nAdmin Name: Somchai Jaidee\nAdmin Email: somchai.j@acme.test\nTech Email: it-support@acme.test\nName Server: NS1.ACME.TEST\nDNSSEC: unsigned\n>>> Last update of WHOIS database: 2026-11-15T00:00:00Z <<<\n",
+    "acme-dev.test": "Domain Name: ACME-DEV.TEST\nRegistrar: Example Registrar, Inc.\nCreation Date: 2023-06-01T00:00:00Z\nRegistrant Organization: ACME Logistics Co., Ltd.\nRegistrant Country: TH\nName Server: NS1.ACME-DEV.TEST\nDNSSEC: unsigned\n"
+  },
+  "ct_logs": {
+    "acme.test": [
+      "www.acme.test",
+      "mail.acme.test",
+      "vpn.acme.test",
+      "staging.acme.test",
+      "web01.acme.test",
+      "ftp01.acme.test",
+      "db01.acme.test"
+    ]
+  },
+  "dns": {
+    "acme.test": {
+      "ttl": 300,
+      "axfr": false,
+      "records": [
+        {
+          "name": "@",
+          "type": "SOA",
+          "value": "ns1.acme.test. admin.acme.test. 2026111501 7200 3600 1209600 300"
+        },
+        {
+          "name": "@",
+          "type": "NS",
+          "value": "ns1.acme.test"
+        },
+        {
+          "name": "@",
+          "type": "A",
+          "value": "10.10.20.5"
+        },
+        {
+          "name": "@",
+          "type": "MX",
+          "value": "10 mail.acme.test"
+        },
+        {
+          "name": "@",
+          "type": "TXT",
+          "value": "v=spf1 ip4:10.10.20.0/24 -all"
+        },
+        {
+          "name": "@",
+          "type": "TXT",
+          "value": "FLAG{dns_txt_records_leak_info}"
+        },
+        {
+          "name": "ns1",
+          "type": "A",
+          "value": "10.10.20.6"
+        },
+        {
+          "name": "www",
+          "type": "CNAME",
+          "value": "acme.test"
+        },
+        {
+          "name": "web01",
+          "type": "A",
+          "value": "10.10.20.5"
+        },
+        {
+          "name": "ftp01",
+          "type": "A",
+          "value": "10.10.20.6"
+        },
+        {
+          "name": "db01",
+          "type": "A",
+          "value": "10.10.20.7"
+        },
+        {
+          "name": "mail",
+          "type": "A",
+          "value": "10.10.20.8"
+        },
+        {
+          "name": "shop",
+          "type": "A",
+          "value": "10.10.20.9"
+        }
+      ]
+    },
+    "acme-dev.test": {
+      "ttl": 300,
+      "axfr": true,
+      "records": [
+        {
+          "name": "@",
+          "type": "SOA",
+          "value": "ns1.acme-dev.test. admin.acme-dev.test. 2026110101 7200 3600 1209600 300"
+        },
+        {
+          "name": "@",
+          "type": "NS",
+          "value": "ns1.acme-dev.test"
+        },
+        {
+          "name": "@",
+          "type": "TXT",
+          "value": "FLAG{zone_transfers_leak_the_map}"
+        },
+        {
+          "name": "ns1",
+          "type": "A",
+          "value": "10.10.20.6"
+        },
+        {
+          "name": "vpn",
+          "type": "A",
+          "value": "10.10.20.50"
+        },
+        {
+          "name": "staging",
+          "type": "A",
+          "value": "10.10.20.51"
+        },
+        {
+          "name": "jenkins",
+          "type": "A",
+          "value": "10.10.20.52"
+        },
+        {
+          "name": "git",
+          "type": "A",
+          "value": "10.10.20.53"
+        }
+      ]
+    }
+  }
+}

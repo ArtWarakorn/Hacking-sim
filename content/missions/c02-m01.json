@@ -1,0 +1,30 @@
+{
+  "id": "c02-m01",
+  "chapter": "c02",
+  "title": "ตรวจ interface และ route",
+  "difficulty": "easy",
+  "xp": 200,
+  "estMinutes": 10,
+  "lesson": "c02-l01",
+  "briefing": "ก่อนสแกนใคร ต้องรู้ก่อนว่าเครื่องคุณเองอยู่ตรงไหนในเครือข่าย ตรวจ interface ของเครื่อง Kali: IP, subnet และ gateway แล้วคำนวณขนาดเครือข่ายที่คุณอยู่",
+  "scope": { "inScope": ["kali (เครื่องของคุณเอง)"], "outOfScope": [] },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "objectives": [
+    { "id": "o1", "text": "แสดง interface ด้วย `ip a` (หรือ `ifconfig`)", "type": "command", "match": "^(ip\\s+(a|addr|address)\\b|ifconfig\\b)" },
+    { "id": "o2", "text": "แสดงตาราง route ด้วย `ip route`", "type": "command", "match": "^ip\\s+(r|route)\\b" },
+    { "id": "o3", "text": "IP ของ eth0 คือ?", "type": "answer", "answerHash": "ee6a324b12c514b7f14352cbacec4bf2d9b2d3f5a5d2fdd4d1395e1d24cfe3c5" },
+    { "id": "o4", "text": "default gateway คือ?", "type": "answer", "answerHash": "20f01536161ccd47a204d3e272d599a8350d1c9c904ac13f9cc7ed7fc91405a7" },
+    { "id": "o5", "text": "เครือข่ายขนาด /24 มีเครื่องที่ใช้งานได้กี่เครื่อง?", "type": "answer", "answerHash": "dfdb151c8a3097cba7b0cd6e945388cc70bf50f623bf08c4556c0d31483e6b5d" }
+  ],
+  "hints": [
+    { "cost": 10, "text": "ดูบรรทัด `inet` ภายใต้ eth0 ใน `ip a` ตัวเลขหลัง `/` คือ prefix length" },
+    { "cost": 20, "text": "gateway อยู่ในบรรทัด `default via ...` ของ `ip route` และ /24 → 2^(32−24) − 2 = 254" }
+  ],
+  "debrief": [
+    "เมื่อคุณรู้ว่าอยู่ใน 10.10.14.0/24 คุณก็รู้ว่า \"เพื่อนบ้าน\" มีได้สูงสุด 254 เครื่อง — ขนาดนี้ใช้ตัดสินใจเลือกวิธีสแกน",
+    "ในงานจริง การเปรียบเทียบ subnet ของเครื่องที่ยึดได้กับ subnet อื่นๆ ที่เห็นใน route/ARP คือวิธีค้นพบเครือข่ายภายในที่ต้อง pivot ไป (บท 9)"
+  ],
+  "references": ["RFC 1918 — Address Allocation for Private Internets", "MITRE ATT&CK T1016 System Network Configuration Discovery"]
+}

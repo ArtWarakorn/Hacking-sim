@@ -1,0 +1,29 @@
+{
+  "id": "c01-m05",
+  "chapter": "c01",
+  "title": "สำรวจ process และพอร์ตบนเครื่อง",
+  "difficulty": "easy",
+  "xp": 250,
+  "estMinutes": 12,
+  "lesson": "c01-l03",
+  "briefing": "คุณได้รับอนุญาตให้ทดสอบเว็บเซิร์ฟเวอร์ web01 (10.10.20.5) และมี shell ในชื่อ `www-data` (ผู้ใช้ของ Apache) แล้ว ก่อนไปไหนต่อ ให้ enumerate: เครื่องรันอะไรอยู่ และ service ฐานข้อมูลเปิดรับการเชื่อมต่อจากที่ใดบ้าง",
+  "scope": { "inScope": ["web01 — 10.10.20.5"], "outOfScope": ["เครื่องอื่นทั้งหมด"] },
+  "machine": "acme-web01",
+  "startUser": "www-data",
+  "objectives": [
+    { "id": "o1", "text": "ดู process ทั้งหมดด้วย `ps`", "type": "command", "match": "^ps\\b" },
+    { "id": "o2", "text": "ดูพอร์ตที่เปิดด้วย `ss` หรือ `netstat`", "type": "command", "match": "^(ss|netstat)\\b" },
+    { "id": "o3", "text": "process `mysqld` รันด้วยผู้ใช้ใด?", "type": "answer", "answerHash": "f9da72f64cb90eb307cce1eccb2fb308ec0b0e45ac600690b77fa6c481859ba2" },
+    { "id": "o4", "text": "MySQL ฟังอยู่ที่ address ใด? (0.0.0.0 หรือ 127.0.0.1)", "type": "answer", "answerHash": "3b4e2ad6e3ce044f1315d0ec74b32586d41489fb22f14fbe5b33baff3fabd805" }
+  ],
+  "hints": [
+    { "cost": 10, "text": "`ps aux | grep mysql` — คอลัมน์แรกคือผู้ใช้" },
+    { "cost": 25, "text": "`ss -tulnp` แล้วดูคอลัมน์ Local Address ของพอร์ต 3306 (ชื่อ process จะไม่แสดงเพราะคุณไม่ใช่ root — นี่คือพฤติกรรมจริง)" }
+  ],
+  "debrief": [
+    "MySQL ผูกกับ 127.0.0.1 หมายความว่าโจมตีจากภายนอกตรงๆ ไม่ได้ แต่เมื่อคุณมี shell บนเครื่องนี้แล้ว คุณคือ \"ภายใน\" และเข้าถึงมันได้ นี่คือเหตุผลที่ credential ในไฟล์ config ของเว็บ (บท 4–7) สำคัญมาก",
+    "สังเกตว่า `ss -p` ไม่แสดงชื่อ process ของ user อื่น — เมื่อได้เป็น root คุณจะเห็นครบ ข้อมูลที่ขาดหาย ≠ ไม่มี ให้ตรวจด้วยหลายวิธี",
+    "ฝั่งป้องกัน: ผูก service ภายในกับ loopback/ซ็อกเก็ตภายใน, รัน service ด้วยผู้ใช้เฉพาะที่สิทธิ์ต่ำ (เช่น `mysql`) และปิด service ที่ไม่ใช้"
+  ],
+  "references": ["MITRE ATT&CK T1057 Process Discovery", "MITRE ATT&CK T1049 System Network Connections Discovery"]
+}

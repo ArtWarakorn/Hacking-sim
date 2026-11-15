@@ -1,0 +1,32 @@
+{
+  "id": "c01-m04",
+  "chapter": "c01",
+  "title": "Encoding ไม่ใช่การเข้ารหัสลับ",
+  "difficulty": "easy",
+  "xp": 250,
+  "estMinutes": 12,
+  "lesson": "c01-l02",
+  "briefing": "ทีมดักได้ข้อความจากเครือข่ายของลูกค้า มันดูเป็นตัวอักษรมั่วๆ ซึ่งเจ้าของระบบเชื่อว่า \"เข้ารหัสแล้ว\" ลองถอดดูว่าจริงไหม ไฟล์อยู่ที่ ~/Documents/intercepted.b64 (ชั้นนอกสุดเป็น Base64 ชั้นในเป็นอะไรต้องดูเอง)",
+  "scope": { "inScope": ["kali (เครื่องของคุณเอง)"], "outOfScope": [] },
+  "machine": "training-box",
+  "startUser": "kali",
+  "fsPatch": {
+    "/home/kali/Documents/intercepted.b64": { "owner": "kali", "group": "kali", "content": "U1lOVHtyYXBicXZhdF92Zl9hYmdfcmFwZWxjZ3ZiYX0K\n" }
+  },
+  "objectives": [
+    { "id": "o1", "text": "ถอด Base64 ด้วย `base64 -d`", "type": "command", "match": "\\bbase64\\b.*(-d|--decode)" },
+    { "id": "o2", "text": "ใช้ `tr` ถอด ROT13 ของชั้นใน", "type": "command", "match": "\\btr\\b" },
+    { "id": "o3", "text": "Base64 จัดเป็น encoding, hashing หรือ encryption? (ตอบคำเดียว)", "type": "answer", "answerHash": "401c26425404bfe3db571bcac2b00b4aac44fdb306475ff2cdd3b2fe0c8a9eb3" },
+    { "id": "o4", "text": "ส่ง flag ที่ถอดได้", "type": "flag", "flagHash": "66c2e342c2bfb821d94db20263e4c828527a580ab092ccd91638d9e5526affd0" }
+  ],
+  "hints": [
+    { "cost": 10, "text": "`cat Documents/intercepted.b64 | base64 -d` แล้วดูผลลัพธ์ว่ายังอ่านไม่ออกไหม — รูปแบบ `XXXX{...}` ชวนให้นึกถึงการสลับตัวอักษร" },
+    { "cost": 25, "text": "ผลลัพธ์ชั้นในคือ ROT13: `... | tr 'A-Za-z' 'N-ZA-Mn-za-m'`" }
+  ],
+  "debrief": [
+    "ข้อมูลทั้งสองชั้นเป็น **encoding** — ไม่มีกุญแจเลย จึงถอดได้ทันที ผู้พัฒนาจำนวนมากใช้ Base64 กับข้อมูลที่ต้องการปกป้อง (เช่น รหัสผ่านใน config, cookie) แล้วเข้าใจว่าปลอดภัย",
+    "ในบทที่ 4 คุณจะเจอ cookie และ JWT ที่ตัวข้อมูลเป็น Base64 ธรรมดา ทำให้แก้ไขค่า เช่น `isAdmin` ได้ถ้าไม่มีลายเซ็นตรวจสอบ",
+    "ฝั่งป้องกัน: ใช้ encryption ที่ได้มาตรฐาน (AES-GCM) เมื่อต้องการความลับ, hash แบบช้า (bcrypt/argon2) สำหรับรหัสผ่าน และไม่เก็บ secret ฝั่ง client"
+  ],
+  "references": ["OWASP Top 10 A04:2025 Cryptographic Failures", "CWE-327 Use of a Broken or Risky Cryptographic Algorithm"]
+}

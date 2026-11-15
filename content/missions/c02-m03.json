@@ -1,0 +1,29 @@
+{
+  "id": "c02-m03",
+  "chapter": "c02",
+  "title": "DNS ที่เปิดเผยเกินไป",
+  "difficulty": "easy",
+  "xp": 250,
+  "estMinutes": 12,
+  "lesson": "c02-l02",
+  "briefing": "นี่คือ passive recon ที่ทุกงานเริ่มจาก: ตรวจ DNS record ของ acme.test ซึ่งเป็นข้อมูลสาธารณะ ดู TXT record ว่ามีอะไรที่เจ้าของไม่ควรเปิดเผยหรือไม่ และหาว่า mail server ของบริษัทคือเครื่องใด",
+  "scope": { "inScope": ["โดเมน acme.test (DNS record สาธารณะ)"], "outOfScope": [] },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "objectives": [
+    { "id": "o1", "text": "query TXT record ของ acme.test (`dig`, `host -t` หรือ `nslookup -type=`)", "type": "command", "match": "^(dig|host|nslookup)\\b.*\\bTXT\\b" },
+    { "id": "o2", "text": "ส่ง flag ที่ซ่อนอยู่ใน TXT record", "type": "flag", "flagHash": "2be924e29bb781ed2daf92c7cd51ff4adeaaa90161468be1f27615be801b09d5" },
+    { "id": "o3", "text": "mail server (MX) ของ acme.test คือชื่อโฮสต์ใด?", "type": "answer", "answerHash": "1c2dbe48452dd91572999df0f45d6b60db9961ba3bac18bb21f1e48928f74db0" }
+  ],
+  "hints": [
+    { "cost": 10, "text": "`dig acme.test TXT` — มีหลาย TXT record ลองอ่านทุกอัน" },
+    { "cost": 20, "text": "`dig acme.test MX +short` แล้วตอบเฉพาะชื่อโฮสต์ (ไม่ต้องใส่ตัวเลขนำหน้า)" }
+  ],
+  "debrief": [
+    "TXT record ใช้เก็บ SPF/DKIM และการยืนยันความเป็นเจ้าของโดเมน แต่ผู้ดูแลบางคนใส่ข้อความภายใน คำใบ้ หรือ token ไว้ — ทั้งหมดเป็นสาธารณะ",
+    "การ query DNS ปกติไม่ทิ้งร่องรอยที่เป้าหมายจะสังเกตเห็นได้ง่าย จึงเป็นจุดเริ่มต้นที่ดีของ recon (ต่างจากการสแกนพอร์ตที่ IDS อาจตรวจพบ)",
+    "ฝั่งป้องกัน: ตรวจ DNS record ของตัวเองเป็นระยะ ลบ record ที่ไม่ใช้ และอย่าใส่ข้อมูลภายในใน TXT"
+  ],
+  "references": ["MITRE ATT&CK T1590.002 Gather Victim Network Information: DNS", "OWASP WSTG-INFO-01 Conduct Search Engine Discovery"]
+}

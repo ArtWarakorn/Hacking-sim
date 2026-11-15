@@ -1,0 +1,27 @@
+{
+  "id": "c01-m02",
+  "chapter": "c01",
+  "title": "วิเคราะห์ auth.log",
+  "difficulty": "easy",
+  "xp": 200,
+  "estMinutes": 10,
+  "lesson": "c01-l01",
+  "briefing": "ทีม Blue Team สงสัยว่ามีคนพยายามเดารหัสผ่าน SSH เข้าเครื่องนี้ ช่วยตรวจ /var/log/auth.log ว่า IP ไหนเป็นผู้โจมตี และพยายามไปกี่ครั้ง",
+  "scope": { "inScope": ["kali (เครื่องของคุณเอง)"], "outOfScope": [] },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    { "id": "o1", "text": "ค้นหา \"Failed\" ใน /var/log/auth.log ด้วย grep", "type": "command", "match": "^grep\\b.*auth\\.log" },
+    { "id": "o2", "text": "IP ของผู้ที่พยายาม login ไม่สำเร็จคือ?", "type": "answer", "answerHash": "b493e2c07476046288f99aa5e2c2b00f219e1454497edf905f52b2cabd51b18c" },
+    { "id": "o3", "text": "มีความพยายาม login ล้มเหลวทั้งหมดกี่ครั้ง? (ตอบเป็นตัวเลข)", "type": "answer", "answerHash": "7afeae0f4dc91f23749d1acc077304a393fd97431567910334bb0fa9baf58d99" }
+  ],
+  "hints": [
+    { "cost": 10, "text": "`grep Failed /var/log/auth.log` จะแสดงเฉพาะบรรทัดที่ login ล้มเหลว" },
+    { "cost": 20, "text": "ใช้ `grep -c Failed /var/log/auth.log` เพื่อนับจำนวนบรรทัด" }
+  ],
+  "debrief": [
+    "Failed password ซ้ำๆ จาก IP เดียวกันในเวลาสั้นๆ คือลายเซ็นของ brute force ผู้โจมตีใช้ `hydra` หรือเครื่องมือคล้ายกัน — ในบท 4 คุณจะเป็นฝ่ายใช้เองและเห็นว่ามันทิ้งร่องรอยแบบนี้",
+    "ฝั่งป้องกัน: ใช้ fail2ban/rate limiting, ปิด password login แล้วใช้ SSH key, และตั้ง alert เมื่อ login ล้มเหลวเกินเกณฑ์ (ตรงกับ OWASP A09 Logging & Alerting Failures)"
+  ],
+  "references": ["MITRE ATT&CK T1110 Brute Force", "OWASP Top 10 A09 Security Logging and Alerting Failures"]
+}

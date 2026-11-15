@@ -1,0 +1,100 @@
+{
+  "id": "c03-l03",
+  "title": "Enumerate FTP และ SMB",
+  "sections": [
+    {
+      "title": "Service ที่ลืมล็อก",
+      "body": [
+        "เมื่อรู้ว่ามี service อะไรเปิด ขั้นต่อไปคือ **enumeration**: ดึงข้อมูลจาก service นั้นให้ได้มากที่สุดเท่าที่การตั้งค่าอนุญาต FTP และ SMB (file share) เป็นสองจุดที่ตั้งค่าหลวมบ่อย"
+      ]
+    },
+    {
+      "title": "FTP: anonymous login",
+      "body": [
+        "FTP บางเครื่องอนุญาตให้ login ด้วย user `anonymous` (รหัสผ่านอะไรก็ได้ มักใช้อีเมล) `nmap -sC` จะแจ้งไว้ใน `ftp-anon` ถ้าเป็นเช่นนั้น",
+        "ftp เป็นโปรแกรมแบบ interactive — prompt จะเปลี่ยนเป็น `ftp>` พิมพ์ `bye` เพื่อออก"
+      ],
+      "code": [
+        "ftp 10.10.20.6",
+        "Name: anonymous",
+        "Password: (อะไรก็ได้)",
+        "ftp> ls",
+        "ftp> get notes.txt",
+        "ftp> bye"
+      ],
+      "tip": "ไฟล์ที่ `get` จะถูกบันทึกในโฟลเดอร์ปัจจุบันบนเครื่องของคุณ แล้วอ่านด้วย `cat`"
+    },
+    {
+      "title": "SMB และ null session",
+      "body": [
+        "SMB คือโปรโตคอลแชร์ไฟล์ของ Windows/Samba (พอร์ต 445/139) บางเครื่องยอมให้ \"null session\" (ไม่ใส่ user/รหัสผ่าน) แสดงรายชื่อ share และเปิด share สาธารณะได้",
+        "`-N` = ไม่ใช้รหัสผ่าน, `-L` = แสดงรายการ share แล้ว `smbclient //host/share` เพื่อเข้า share (prompt `smb: \\>`)"
+      ],
+      "code": [
+        "smbclient -L //10.10.20.6 -N",
+        "smbclient //10.10.20.6/public -N",
+        "smb: \\> ls",
+        "smb: \\> get it-notes.txt",
+        "smb: \\> exit"
+      ]
+    },
+    {
+      "title": "enum4linux และ crackmapexec",
+      "body": [
+        "`enum4linux` รวมการตรวจ SMB หลายอย่าง: ชื่อ workgroup, รายชื่อ share (และ share ไหนเข้าได้), และ **รายชื่อ user** ผ่านการไล่ RID — รายชื่อ user ที่ได้คือวัตถุดิบของการเดารหัสผ่านในบท 5",
+        "`crackmapexec smb <target>` ให้ภาพรวมเร็วๆ ของ SMB บนหลายเครื่อง"
+      ],
+      "code": [
+        "enum4linux -a 10.10.20.6",
+        "crackmapexec smb 10.10.20.6 -u '' -p '' --shares"
+      ],
+      "tip": "Share ที่ตอบ `NT_STATUS_ACCESS_DENIED` ไม่ใช่ทางตัน — เก็บชื่อ user ที่เจอไว้ ในบทถัดไปคุณจะลองหารหัสผ่านที่ใช้ซ้ำ"
+    }
+  ],
+  "quiz": [
+    {
+      "q": "ข้อความ `ftp-anon: Anonymous FTP login allowed` หมายความว่า",
+      "choices": [
+        "ต้องมีรหัสผ่านพิเศษ",
+        "ใครก็ login ด้วย anonymous แล้วอ่านไฟล์ได้",
+        "FTP ถูกปิด",
+        "เซิร์ฟเวอร์ติดไวรัส"
+      ],
+      "answer": 1,
+      "explain": "นี่คือช่องโหว่การตั้งค่า หากมีข้อมูลสำคัญในนั้นต้องรายงาน"
+    },
+    {
+      "q": "`smbclient -L //host -N` ทำอะไร",
+      "choices": [
+        "ล็อกเครื่อง",
+        "แสดงรายการ share โดยไม่ใช้รหัสผ่าน",
+        "ดาวน์โหลดทุกไฟล์",
+        "สแกนพอร์ต"
+      ],
+      "answer": 1,
+      "explain": "-L = list, -N = no password (null session)"
+    },
+    {
+      "q": "เจอ share ที่ตอบ NT_STATUS_ACCESS_DENIED ควรสรุปว่า",
+      "choices": [
+        "ไม่มีทางเข้า",
+        "ต้องมีบัญชีที่ถูกต้อง — เก็บรายชื่อ user ไว้ใช้ต่อ",
+        "ปิดงาน",
+        "โจมตีด้วย DoS"
+      ],
+      "answer": 1,
+      "explain": "ข้อมูลที่ได้ (ชื่อ share, ชื่อ user) ยังมีค่าต่อขั้นถัดไป"
+    },
+    {
+      "q": "enum4linux ช่วยหาอะไรที่มีค่าที่สุดสำหรับการโจมตีขั้นถัดไป",
+      "choices": [
+        "สีของ terminal",
+        "รายชื่อ user และ share",
+        "ชื่อ ISP",
+        "เวอร์ชัน Kali"
+      ],
+      "answer": 1,
+      "explain": "รายชื่อ user ใช้ต่อใน password attack"
+    }
+  ]
+}

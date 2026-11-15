@@ -1,0 +1,128 @@
+[
+  {
+    "id": "first_blood",
+    "title": "First Blood",
+    "description": "จบภารกิจแรก",
+    "condition": {
+      "type": "missions_completed",
+      "count": 1
+    }
+  },
+  {
+    "id": "clean_run",
+    "title": "No Hints Needed",
+    "description": "จบภารกิจโดยไม่ใช้ hint เลย",
+    "condition": {
+      "type": "no_hints",
+      "count": 1
+    }
+  },
+  {
+    "id": "student",
+    "title": "Student",
+    "description": "ผ่านบทเรียน 3 บท",
+    "condition": {
+      "type": "lessons_done",
+      "count": 3
+    }
+  },
+  {
+    "id": "five_missions",
+    "title": "Getting Warmed Up",
+    "description": "จบ 5 ภารกิจ",
+    "condition": {
+      "type": "missions_completed",
+      "count": 5
+    }
+  },
+  {
+    "id": "chapter_0",
+    "title": "Rules Follower",
+    "description": "จบบท 0 (Onboarding & Rules of Engagement)",
+    "condition": {
+      "type": "chapter_complete",
+      "chapter": "c00"
+    }
+  },
+  {
+    "id": "chapter_1",
+    "title": "Shell Native",
+    "description": "จบบท 1 (Linux Fundamentals)",
+    "condition": {
+      "type": "chapter_complete",
+      "chapter": "c01"
+    }
+  },
+  {
+    "id": "rank_intern",
+    "title": "Hired!",
+    "description": "ได้ยศ Intern (300 XP)",
+    "condition": {
+      "type": "xp",
+      "amount": 300
+    }
+  },
+  {
+    "id": "chapter_2",
+    "title": "Packet Pusher",
+    "description": "จบบท 2 (Networking Fundamentals)",
+    "condition": {
+      "type": "chapter_complete",
+      "chapter": "c02"
+    }
+  },
+  {
+    "id": "scholar",
+    "title": "Scholar",
+    "description": "ผ่านบทเรียน 8 บท",
+    "condition": {
+      "type": "lessons_done",
+      "count": 8
+    }
+  },
+  {
+    "id": "ten_missions",
+    "title": "Double Digits",
+    "description": "จบ 10 ภารกิจ",
+    "condition": {
+      "type": "missions_completed",
+      "count": 10
+    }
+  },
+  {
+    "id": "rank_junior",
+    "title": "Moving Up",
+    "description": "ได้ยศ Junior Pentester (900 XP)",
+    "condition": {
+      "type": "xp",
+      "amount": 900
+    }
+  },
+  {
+    "id": "stay_in_scope",
+    "title": "Stay In Scope",
+    "description": "จบ 3 ภารกิจที่มีการตรวจ scope โดยไม่ละเมิดเลย",
+    "condition": {
+      "type": "clean_scope",
+      "count": 3
+    }
+  },
+  {
+    "id": "chapter_3",
+    "title": "Recon Master",
+    "description": "จบบท 3 (Reconnaissance & Enumeration)",
+    "condition": {
+      "type": "chapter_complete",
+      "chapter": "c03"
+    }
+  },
+  {
+    "id": "twenty_missions",
+    "title": "Veteran",
+    "description": "จบ 20 ภารกิจ",
+    "condition": {
+      "type": "missions_completed",
+      "count": 20
+    }
+  }
+]

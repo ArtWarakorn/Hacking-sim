@@ -1,0 +1,78 @@
+{
+  "id": "c02-m05",
+  "chapter": "c02",
+  "title": "Banner grabbing ด้วย nc",
+  "difficulty": "easy",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c02-l03",
+  "briefing": "ใช้ `nc` คุยกับพอร์ตโดยตรงเพื่ออ่าน banner ของ service: ระบุเวอร์ชัน SSH บน web01 และ FTP บน ftp01 และตรวจว่าพอร์ต 21 บน web01 เปิดอยู่หรือไม่",
+  "scope": {
+    "inScope": [
+      "10.10.20.5 (web01)",
+      "10.10.20.6 (ftp01)"
+    ],
+    "outOfScope": [
+      "10.10.20.1"
+    ],
+    "ips": [
+      "10.10.20.5",
+      "10.10.20.6"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "เชื่อมต่อพอร์ต 22 ของ web01 ด้วย `nc -v`",
+      "type": "command",
+      "match": "^nc\\b.*10\\.10\\.20\\.5\\s+22\\b"
+    },
+    {
+      "id": "o2",
+      "text": "ตรวจพอร์ต 21 ของ web01 ด้วย `nc -zv` (ควรเจอ Connection refused)",
+      "type": "command",
+      "match": "^nc\\b.*-\\w*z\\w*.*10\\.10\\.20\\.5\\s+21\\b",
+      "status": 1
+    },
+    {
+      "id": "o3",
+      "text": "เชื่อมต่อพอร์ต 21 ของ ftp01",
+      "type": "command",
+      "match": "^nc\\b.*10\\.10\\.20\\.6\\s+21\\b"
+    },
+    {
+      "id": "o4",
+      "text": "เวอร์ชัน OpenSSH บน web01 คือ? (เช่น 7.4p1)",
+      "type": "answer",
+      "answerHash": "58dd80063228203e324ab295ecc2c2a1f52b0bc09f4b0c3372dfc8305538440b"
+    },
+    {
+      "id": "o5",
+      "text": "FTP server บน ftp01 (vsFTPd) เวอร์ชันอะไร?",
+      "type": "answer",
+      "answerHash": "105093578b6170a3a0f22c1ba7de9f785d4ef7c390f9f9882b0982d02b43fd52"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`nc -v 10.10.20.5 22` — banner คือข้อความแรกที่ server ส่งมา ขึ้นต้นด้วย SSH-2.0-"
+    },
+    {
+      "cost": 20,
+      "text": "`nc -zv 10.10.20.5 21` (refused) และ `nc -v 10.10.20.6 21` ให้ banner `220 (vsFTPd x.y.z)`"
+    }
+  ],
+  "debrief": [
+    "banner บอกซอฟต์แวร์และเวอร์ชันโดยไม่ต้องล็อกอิน — ข้อมูลนี้ใช้ค้นหาช่องโหว่ที่ตรงกับเวอร์ชันนั้น (เช่น vsFTPd 2.3.4 มี backdoor ที่ดังมาก; บท 6)",
+    "`Connection refused` ต่างจาก `timed out`: refused = เครื่องอยู่แต่ไม่มี service, timed out = ไม่มีการตอบ (ไฟร์วอลล์ทิ้งแพ็กเก็ต หรือเครื่องไม่อยู่) ความต่างนี้ช่วยแยกพอร์ต \"ปิด\" ออกจาก \"ถูกกรอง\" ซึ่ง nmap จะรายงานเป็น closed/filtered",
+    "ฝั่งป้องกัน: ปรับ banner ให้เปิดเผยน้อยที่สุด, อัปเดตซอฟต์แวร์สม่ำเสมอ และจำกัดพอร์ตที่เปิดสู่ภายนอก"
+  ],
+  "references": [
+    "MITRE ATT&CK T1046 Network Service Discovery",
+    "CWE-200 Exposure of Sensitive Information"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "c00-m03",
+  "chapter": "c00",
+  "title": "ลำดับขั้นตอนของ Pentest",
+  "difficulty": "tutorial",
+  "xp": 120,
+  "estMinutes": 8,
+  "lesson": "c00-l01",
+  "briefing": "หัวหน้าทีมส่งบันทึกการทำงาน 5 วันของงาน ACME Logistics มาให้ ช่วยจัดแต่ละกิจกรรมเข้ากับขั้นตอนของ Pentest ให้ถูก ชื่อขั้นตอนที่ใช้ตอบ: `recon`, `scanning`, `exploitation`, `post-exploitation`, `reporting`",
+  "scope": { "inScope": ["kali (เครื่องของคุณเอง)"], "outOfScope": [] },
+  "machine": "training-box",
+  "startUser": "kali",
+  "fsPatch": {
+    "/home/kali/Documents/engagement_timeline.txt": {
+      "owner": "kali", "group": "kali",
+      "content": "=== ACME Logistics — บันทึกการทำงาน ===\nวันที่ 1  ค้นหาอีเมลพนักงานจาก LinkedIn และเว็บไซต์บริษัท\nวันที่ 1  ตรวจ DNS record ของ acme.test\nวันที่ 2  สแกนพอร์ตของ 10.10.20.5 ด้วย nmap\nวันที่ 2  ระบุเวอร์ชัน Apache ที่ใช้\nวันที่ 3  ใช้ช่องโหว่ใน plugin เก่าเพื่อได้ shell ในชื่อ www-data\nวันที่ 3  ยกระดับสิทธิ์เป็น root ด้วย sudo ที่ตั้งค่าผิด\nวันที่ 4  อ่านไฟล์ฐานข้อมูลเพื่อประเมินผลกระทบ\nวันที่ 5  เขียนรายงานและส่งมอบให้ลูกค้า\n"
+    }
+  },
+  "objectives": [
+    { "id": "o1", "text": "อ่านไฟล์ ~/Documents/engagement_timeline.txt", "type": "file_read", "path": "/home/kali/Documents/engagement_timeline.txt" },
+    { "id": "o2", "text": "กิจกรรม \"ใช้ช่องโหว่ใน plugin เก่าเพื่อได้ shell\" คือขั้นตอนใด?", "type": "answer", "answerHash": "2f2a4dbc14d87adc71b37615be214a319adc1633b0ead2cda5ce90143927acf0" },
+    { "id": "o3", "text": "กิจกรรม \"อ่านไฟล์ฐานข้อมูลเพื่อประเมินผลกระทบ\" คือขั้นตอนใด?", "type": "answer", "answerHash": "05c3c58b023723dccd5009cc78b7de9f42fdebae4b7bd7b99830ca9387b583c0" },
+    { "id": "o4", "text": "มีกี่กิจกรรมในบันทึกที่จัดเป็น recon? (ตอบเป็นตัวเลข)", "type": "answer", "answerHash": "0b3a5182caf47a0ea94dce845ee6b0933cc6e9df320d97b7db9793ef50157f39" }
+  ],
+  "hints": [
+    { "cost": 10, "text": "Recon = รวบรวมข้อมูลโดยยังไม่ได้ยุ่งกับเป้าหมายโดยตรง (ข้อมูลสาธารณะ) ส่วน scanning คือการสำรวจเครื่องเป้าหมายโดยตรง" },
+    { "cost": 20, "text": "ข้อ 4: ดูวันที่ 1 ทั้งสองบรรทัด — LinkedIn/เว็บบริษัท และ DNS record" }
+  ],
+  "debrief": [
+    "เมื่อได้ shell แล้ว งานยังไม่จบ: **post-exploitation** คือการประเมินว่าผู้โจมตีทำอะไรต่อได้ เช่น อ่านข้อมูลลูกค้า หรือเข้าไปเครื่องอื่น นี่คือสิ่งที่ทำให้รายงานมีน้ำหนัก",
+    "ขอบเขตระหว่างขั้นตอนไม่ได้ตายตัว แต่การแยกให้ออกช่วยวางแผนว่าตอนนี้ควรรู้อะไรและยังขาดอะไร และช่วยเขียนรายงานให้เป็นระเบียบ",
+    "สังเกตว่า Recon ทั้งหมดใช้ข้อมูลสาธารณะ — ลูกค้ามักไม่รู้ว่าข้อมูลของตัวเองเปิดเผยแค่ไหน นั่นเป็นหนึ่งในสิ่งที่คุณรายงานได้"
+  ],
+  "references": ["PTES — Penetration Testing Execution Standard", "MITRE ATT&CK — Reconnaissance (TA0043)"]
+}

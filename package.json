@@ -1,0 +1,13 @@
+{
+  "name": "hacksim",
+  "version": "0.1.0",
+  "description": "เกมจำลองการทำ Penetration Testing สำหรับฝึก pentester (จำลองทั้งหมดในเบราว์เซอร์)",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

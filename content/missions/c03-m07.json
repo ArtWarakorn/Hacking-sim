@@ -1,0 +1,76 @@
+{
+  "id": "c03-m07",
+  "chapter": "c03",
+  "title": "Web enumeration: whatweb, gobuster, nikto",
+  "difficulty": "medium",
+  "xp": 400,
+  "estMinutes": 25,
+  "lesson": "c03-l04",
+  "briefing": "เว็บของ ACME (10.10.20.5 พอร์ต 80) คือเป้าหมายหลัก รวบรวมข้อมูลให้ครบ: เทคโนโลยีที่ใช้ (whatweb), directory/ไฟล์ที่ซ่อนอยู่ (gobuster) และปัญหาการตั้งค่าที่รู้จัก (nikto) ในเส้นทางที่เจอมีหน้าหนึ่งที่ robots.txt ไม่ได้เอ่ยถึง — ไปอ่านมัน",
+  "scope": {
+    "inScope": [
+      "10.10.20.5 (web01) พอร์ต 80"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.5"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ระบุเทคโนโลยีด้วย `whatweb`",
+      "type": "command",
+      "match": "^whatweb\\b"
+    },
+    {
+      "id": "o2",
+      "text": "ค้นหา path ที่ซ่อนด้วย `gobuster dir`",
+      "type": "command",
+      "match": "^gobuster\\b.*\\bdir\\b"
+    },
+    {
+      "id": "o3",
+      "text": "ตรวจด้วย `nikto -h`",
+      "type": "command",
+      "match": "^nikto\\b"
+    },
+    {
+      "id": "o4",
+      "text": "path ที่ gobuster เจอ แต่ robots.txt ไม่ได้เอ่ยถึง และดูเหมือนบันทึกของนักพัฒนาคือ? (ตอบชื่อ ไม่ต้องใส่ /)",
+      "type": "answer",
+      "answerHash": "22864c2aaa647d0c623fcc8bb03adb5c92adcc8fbafa44f18feed243ada783d2"
+    },
+    {
+      "id": "o5",
+      "text": "ส่ง flag ที่อยู่ในหน้านั้น",
+      "type": "flag",
+      "flagHash": "a6034f8036b6a245de65b4bc037457973e4c8e8bd13784879aacfbe187cf661d"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`gobuster dir -u http://10.10.20.5 -w /usr/share/wordlists/dirb/common.txt` — ดูรายการที่ไม่ใช่ admin และ backup-old"
+    },
+    {
+      "cost": 25,
+      "text": "path ชื่อเกี่ยวกับ dev แล้ว `curl http://10.10.20.5/dev-notes/` (ต้องมี / ท้าย) flag อยู่ใน HTML comment"
+    }
+  ],
+  "debrief": [
+    "gobuster เจอหน้า `dev-notes` ที่ไม่ได้ลิงก์จากไหนและไม่อยู่ใน robots.txt — มีแต่การลองเดา path เท่านั้นที่จะพบ นี่คือเหตุผลที่ wordlist ที่ดีสำคัญ",
+    "ผล nikto ที่ดัง (8,000+ คำขอ) ไม่เหมาะกับงานที่ต้องเงียบ แต่ได้ภาพรวมการตั้งค่าที่ผิดพลาดเร็ว: เวอร์ชัน Apache เก่า, header ที่ขาด, directory indexing เปิดอยู่",
+    "ฝั่งป้องกัน: ลบหน้า dev/backup ออกจาก web root, ปิด directory indexing, อัปเดต Apache และเพิ่ม security headers (X-Frame-Options, X-Content-Type-Options)"
+  ],
+  "references": [
+    "OWASP Top 10 A02:2025 Security Misconfiguration",
+    "OWASP WSTG-CONF-04 Review Old Backup and Unreferenced Files",
+    "OWASP WSTG-INFO-07 Map Execution Paths"
+  ]
+}

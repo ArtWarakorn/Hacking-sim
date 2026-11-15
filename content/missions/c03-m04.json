@@ -1,0 +1,77 @@
+{
+  "id": "c03-m04",
+  "chapter": "c03",
+  "title": "สแกนพอร์ตและเวอร์ชัน",
+  "difficulty": "medium",
+  "xp": 350,
+  "estMinutes": 20,
+  "lesson": "c03-l02",
+  "briefing": "ตอนนี้ทดสอบ web01 (10.10.20.5) และ ftp01 (10.10.20.6) ระบุเวอร์ชันของ service บน web01 แล้วหา service ที่ซ่อนอยู่บน ftp01 ซึ่งการสแกนเริ่มต้นอาจไม่เจอ",
+  "scope": {
+    "inScope": [
+      "10.10.20.5 (web01)",
+      "10.10.20.6 (ftp01)"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด รวม 10.10.20.7 และ 10.10.20.1"
+    ],
+    "ips": [
+      "10.10.20.5",
+      "10.10.20.6"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ตรวจเวอร์ชัน service ด้วย `nmap -sV`",
+      "type": "command",
+      "match": "^nmap\\b.*-sV"
+    },
+    {
+      "id": "o2",
+      "text": "สแกนทุกพอร์ตด้วย `nmap -p-`",
+      "type": "command",
+      "match": "^nmap\\b.*(-p-|-p\\s*1-65535)"
+    },
+    {
+      "id": "o3",
+      "text": "Apache บน web01 เวอร์ชันอะไร?",
+      "type": "answer",
+      "answerHash": "ca1bc19f733f066b46d4fb5a9447d6da7ff4ea6af1dd4eb4152588585a61fd00"
+    },
+    {
+      "id": "o4",
+      "text": "พอร์ตผิดปกติที่ซ่อนบน ftp01 (ไม่โผล่ในการสแกนเริ่มต้น) คืออะไร?",
+      "type": "answer",
+      "answerHash": "67a536ba7a453c187d5a81360fad322b3b3b35e3039a7bacd39352e9601a0ac7"
+    },
+    {
+      "id": "o5",
+      "text": "service บนพอร์ตนั้นเป็นเว็บเซิร์ฟเวอร์ของภาษาโปรแกรมใด? (ตอบคำเดียว)",
+      "type": "answer",
+      "answerHash": "0706df950f236d60d96f4b4776da41bee122b8d6d49a94388a642cc78e2b4a64"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`nmap -sV 10.10.20.5` ดูคอลัมน์ VERSION ของพอร์ต 80 และ `nmap -p- 10.10.20.6` เพื่อดูทุกพอร์ต"
+    },
+    {
+      "cost": 25,
+      "text": "`nmap -sV -p 9999 10.10.20.6` เพื่อดูว่า service บนพอร์ตนั้นคืออะไร"
+    }
+  ],
+  "debrief": [
+    "พอร์ต 9999 รัน `python http.server` ที่นักพัฒนาเปิดทิ้งไว้ชั่วคราว — เซิร์ฟเวอร์ชั่วคราวแบบนี้มักไม่มีการยืนยันตัวตนและเปิดเผยไฟล์ใน directory (ในด่านนี้มี deploy.sh) การสแกนเริ่มต้นพลาดไปเพราะดู 1000 พอร์ตยอดนิยมเท่านั้น",
+    "`-p-` ช้ากว่าแต่ควรใช้ในงานที่มีเวลา กลยุทธ์ที่นิยม: สแกนเร็วก่อน (top ports) แล้วรัน `-p-` เบื้องหลัง",
+    "ฝั่งป้องกัน: ตรวจ inventory ของพอร์ตที่เปิดเป็นระยะ ปิด service ชั่วคราวเมื่อเลิกใช้ และใช้ไฟร์วอลล์แบบ default-deny"
+  ],
+  "references": [
+    "MITRE ATT&CK T1046 Network Service Discovery",
+    "CWE-1188 Insecure Default Initialization of Resource"
+  ]
+}
