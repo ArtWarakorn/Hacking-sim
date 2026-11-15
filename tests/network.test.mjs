@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { makeShell } from './helpers.mjs';
-import { ipToInt, intToIp, cidrContains, networkAddress, broadcastAddress, maskString, isIPv4 } from '../public/js/sim/network.js';
+import { makeShell, loadWorldFromDisk } from './helpers.mjs';
+import { ipToInt, intToIp, cidrContains, networkAddress, broadcastAddress, maskString, isIPv4, World } from '../public/js/sim/network.js';
 
 test('IPv4 helpers', () => {
   assert.equal(ipToInt('10.10.14.2'), 10 * 2 ** 24 + 10 * 2 ** 16 + 14 * 256 + 2);
@@ -218,7 +218,7 @@ test('nc: banner grabbing, port checks, ranges and raw HTTP', async () => {
   const raw = await sh.run("echo -e 'GET /robots.txt HTTP/1.1\\r\\nHost: x\\r\\n\\r\\n' | nc 10.10.20.5 80");
   assert.match(raw.out, /^HTTP\/1\.1 200 OK\n[\s\S]*\n\nUser-agent: \*/);
   assert.match((await sh.run("echo 'nonsense' | nc 10.10.20.5 80")).out, /^HTTP\/1\.1 400 Bad Request/);
-  assert.match((await sh.run('nc -l 4444')).err, /listening mode is not available yet/);
+  assert.equal((await sh.run('nc -l 4444')).code, 0, 'nc -l now registers a listener (see tests/crack.test.mjs / reverse-shell tests for the full behaviour)');
   assert.equal((await sh.run('nc 10.10.20.5 99999')).code, 1);
   assert.equal((await sh.run('nc nosuch.example 80')).code, 1);
 });
@@ -296,4 +296,43 @@ test('xxd and tr', async () => {
 test('echo -e handles \\r so raw HTTP can be typed', async () => {
   const sh = makeShell();
   assert.equal((await sh.run("echo -e 'a\\r\\nb'")).out, 'a\r\nb\n');
+});
+
+// ---------------- nc -l / reverse shell listener registry ----------------
+test('nc -l: registers a listener, rejects a duplicate port, silent without -v', async () => {
+  const sh = makeShell();
+  assert.equal((await sh.run('nc -lvnp 4444')).err, 'listening on [any] 4444 ...\n');
+  const dup = await sh.run('nc -lvnp 4444');
+  assert.equal(dup.code, 1);
+  assert.equal(dup.err, 'nc: Address already in use\n');
+  assert.equal((await sh.run('nc -lnp 5555')).err, '', 'no -v means no banner, matching real nc');
+  assert.equal((await sh.run('nc -l 0')).code, 1);
+  assert.equal((await sh.run('nc -l 70000')).code, 1);
+  assert.equal((await sh.run('nc -l notaport')).code, 1);
+});
+
+test('nc -l: plain "nc -l <port>" (no -p) also works', async () => {
+  const sh = makeShell();
+  assert.equal((await sh.run('nc -lv 4444')).err, 'listening on [any] 4444 ...\n');
+});
+
+test('World.acceptReverseShell: only connects back to the real listener on the right port, for the right attacker IP, and consumes the listener', () => {
+  const world = loadWorldFromDisk();
+  const stack = { push: (s) => { stack.pushed = s; } };
+  assert.equal(world.listen(4444, '10.10.14.2', stack), true);
+  assert.equal(world.listen(4444, '10.10.14.2', stack), false, 'port already in use');
+  assert.equal(world.acceptReverseShell(4444, '10.10.99.99', { fake: 1 }), false, 'wrong attacker ip');
+  assert.equal(stack.pushed, undefined);
+  assert.equal(world.acceptReverseShell(9999, '10.10.14.2', { fake: 1 }), false, 'nobody listening on this port');
+  assert.equal(world.acceptReverseShell(4444, '10.10.14.2', { fake: 1 }), true);
+  assert.deepEqual(stack.pushed, { fake: 1 });
+  assert.equal(world.listeners.has(4444), false, 'a successful connection consumes the listener, like real nc -l without -k');
+});
+
+test('World: each mission gets independently mutable host state (no cross-mission leakage via a shared cached def)', () => {
+  const def = { hosts: { '10.0.0.1': { up: true, services: {} } } };
+  const w1 = new World(def);
+  w1.host('10.0.0.1').services['6200'] = { name: 'shell', banner: 'root shell' };
+  const w2 = new World(def); // same `def` object, as loader.js's cache would hand back on a second mission
+  assert.equal(w2.host('10.0.0.1').services['6200'], undefined, 'w2 must not see the mutation made through w1');
 });

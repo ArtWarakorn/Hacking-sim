@@ -1,0 +1,21 @@
+{
+  "id": "legacy01",
+  "hostname": "legacy01",
+  "ip": "10.10.20.15",
+  "os": "linux",
+  "kernel": { "release": "2.6.32-5-amd64", "version": "#1 SMP Debian 2.6.32-48", "arch": "x86_64" },
+  "startUser": "root",
+  "interfaces": [{ "name": "eth0", "ip": "10.10.20.15", "prefix": 24, "mac": "08:00:27:aa:15:01", "gateway": "10.10.20.1" }],
+  "users": [
+    { "name": "root", "uid": 0, "gid": 0, "home": "/root", "shell": "/bin/bash", "groups": [{ "name": "root", "gid": 0 }] },
+    { "name": "ftp", "uid": 108, "gid": 65534, "home": "/home/ftp", "shell": "/bin/false", "groups": [{ "name": "nogroup", "gid": 65534 }] }
+  ],
+  "fs": {
+    "/root/flag.txt": { "content": "FLAG{vsftpd_234_backdoor_is_still_out_there}\n", "owner": "root", "mode": "600" },
+    "/root/note.txt": {
+      "owner": "root",
+      "content": "This box was decommissioned years ago and forgotten about - still running vsftpd 2.3.4.\nIT knows it is here somewhere but it never made it onto the asset list.\n"
+    },
+    "/etc/os-release": { "content": "PRETTY_NAME=\"Debian GNU/Linux 6 (squeeze)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"6\"\n" }
+  }
+}

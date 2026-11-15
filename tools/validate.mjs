@@ -8,7 +8,7 @@ import { objectiveHash } from '../public/js/core/hash.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const content = path.join(root, 'content');
 const OBJECTIVE_TYPES = new Set(['command', 'file_read', 'shell', 'privilege', 'answer', 'flag', 'http', 'fs', 'event', 'report']);
-const EVENT_NAMES = new Set(['ftp.login', 'ftp.get', 'smb.connect', 'smb.get', 'enum4linux.run', 'nikto.scan', 'hydra.run']);
+const EVENT_NAMES = new Set(['ftp.login', 'ftp.get', 'ftp.backdoor', 'smb.connect', 'smb.get', 'enum4linux.run', 'nikto.scan', 'hydra.run', 'searchsploit.search', 'searchsploit.mirror', 'shell.stabilize', 'msf.exploit', 'msf.search', 'msf.use', 'msf.set']);
 const DNS_TYPES = new Set(['A', 'AAAA', 'MX', 'TXT', 'NS', 'SOA', 'CNAME', 'PTR']);
 const DIFFICULTIES = new Set(['tutorial', 'easy', 'medium', 'hard', 'insane']);
 
@@ -88,6 +88,10 @@ export async function validate() {
       if (!exists(`machines/${m.machine}.json`)) err(file, `machine "${m.machine}" not found`);
       else if (m.startUser && !load(`machines/${m.machine}.json`).users.some((u) => u.name === m.startUser)) err(file, `startUser "${m.startUser}" is not a user of ${m.machine}`);
       if (m.network && !exists(`network/${m.network}.json`)) err(file, `network "${m.network}" not found`);
+      for (const r of m.reachableMachines || []) {
+        if (!exists(`machines/${r.machine}.json`)) err(file, `reachableMachines: machine "${r.machine}" not found`);
+        if (!/^\d+\.\d+\.\d+\.\d+$/.test(r.ip || '')) err(file, `reachableMachines: "${r.ip}" is not an IP`);
+      }
       if ((m.objectives || []).some((o) => ['http'].includes(o.type) || (o.type === 'command' && /^\^?\(?(curl|ping|nc|dig)/.test(o.match || ''))) && !exists(`network/${m.network || 'lab'}.json`)) err(file, 'uses network commands but the network file is missing');
       if (m.lesson && !exists(`lessons/${m.lesson}.json`)) err(file, `lesson "${m.lesson}" not found`);
       const ids = new Set();

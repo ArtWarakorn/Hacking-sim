@@ -2,6 +2,7 @@
 import { parseArgs, usageErr } from './util.js';
 import { PORT_NAMES, isIPv4, maskString, broadcastAddress, networkAddress } from '../sim/network.js';
 import { httpRequest } from '../sim/httpsim.js';
+import { createSession } from '../sim/session.js';
 
 const ok = (out = '') => ({ out, err: '', code: 0 });
 const fail = (err, code = 1) => ({ out: '', err, code });
@@ -291,7 +292,18 @@ const nc = {
   async run(ctx, args, input) {
     const { flags, values, rest, errors } = parseArgs(args, { flags: 'zvnulk', values: 'wpsq' });
     if (errors.length) return usageErr('nc', errors);
-    if (flags.has('l')) return fail('nc: listening mode is not available yet — it unlocks with reverse shells in chapter 6\n', 1);
+    if (flags.has('l')) {
+      const world = ctx.session.world;
+      if (!world) return noNet('nc');
+      const port = Number(values.p ?? rest[0]);
+      if (!Number.isFinite(port) || port < 1 || port > 65535) return fail(`nc: invalid port: ${values.p ?? rest[0] ?? ''}\n`, 1);
+      const self = ctx.session.machine.ip;
+      // A real `nc -l` blocks here until a connection arrives, which this turn-based terminal can't do -
+      // it registers the listener and returns immediately instead. Trigger the payload with another
+      // command next; when it calls back to this port, your prompt will become the new shell on its own.
+      if (!world.listen(port, self, ctx.stack)) return fail(`nc: Address already in use\n`, 1);
+      return { out: '', err: flags.has('v') ? `listening on [any] ${port} ...\n` : '', code: 0 };
+    }
     const [target, portSpec] = rest;
     if (!target || !portSpec) return fail('usage: nc [-46CDdFhklNnrStUuvZz] [-I length] [-i interval] [-M ttl]\n\t  [-m minttl] [-O length] [-P proxy_username] [-p source_port] [-q seconds]\n\t  [-s sourceaddr] [-T keyword] [-V rtable] [-W recvlimit] [-w timeout]\n\t  [-X proxy_protocol] [-x proxy_address[:port]] [destination] [port]\n', 1);
     const world = ctx.session.world;
@@ -321,6 +333,12 @@ const nc = {
       connected = true;
       if (verbose) err += `Connection to ${target} ${p} port [tcp/${pname}] succeeded!\n`;
       if (flags.has('z')) continue;
+      if (svc.name === 'shell' && world.machineFor(ipAddr)) {
+        const session = createSession(world.machineFor(ipAddr));
+        ctx.stack.push(session);
+        emitNet(ctx, 'shell', ipAddr, { port: p });
+        break; // the rest of the terminal now belongs to this new shell
+      }
       if (svc.http && input) out += rawHttp(world, input, target, p, self);
       else if (svc.banner) out += `${svc.banner}\n`;
     }

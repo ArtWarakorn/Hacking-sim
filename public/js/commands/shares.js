@@ -117,7 +117,19 @@ const ftp = {
     });
     const nameStep = {
       name: 'ftp', prompt: `Name (${target}:${user}): `,
-      async onLine(line) { const name = line.trim() || user; return { out: '331 Please specify the password.\n', interactive: passwordStep(name) }; },
+      async onLine(line) {
+        const name = line.trim() || user;
+        // CVE-2011-2523: vsftpd 2.3.4 contains a backdoor triggered by a ":)" smiley in the USER command -
+        // it silently opens a root shell on port 6200 instead of continuing the login, and the FTP
+        // connection itself just hangs from here (real write-ups describe exactly this).
+        if (data.backdoor && name.includes(':)')) {
+          const host = world.host(r.ip);
+          if (host) host.services['6200'] = { name: 'shell', banner: 'root@legacy01:/# ' };
+          game(ctx, 'ftp.backdoor', { host: r.ip, trigger: name });
+          return { out: '', err: '', code: 0, done: true };
+        }
+        return { out: '331 Please specify the password.\n', interactive: passwordStep(name) };
+      },
     };
     return { out: `Connected to ${target}.\n${svc.banner || '220 FTP server ready.'}\n`, err: '', code: 0, interactive: nameStep };
   },

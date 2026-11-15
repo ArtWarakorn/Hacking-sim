@@ -107,9 +107,10 @@ test('nmap host discovery: -sn lists only hosts that answer; stealth host needs 
   assert.match(pn, /Not shown: 999 filtered tcp ports \(no-response\)\nPORT     STATE SERVICE\n3306\/tcp open  mysql/);
 
   const whole = (await sh.run('nmap -sn 10.10.20.0/24')).out;
-  assert.match(whole, /256 IP addresses \(4 hosts up\)/);
+  assert.match(whole, /256 IP addresses \(5 hosts up\)/);
   assert.match(whole, /isp-gw\.acme\.test \(10\.10\.20\.1\)/, 'sweeping the /24 also hits the ISP router');
   assert.match(whole, /shop\.acme\.test \(10\.10\.20\.9\)/, 'and the ShopZone host introduced in chapter 4');
+  assert.match(whole, /legacy01 \(10\.10\.20\.15\)/, 'and the forgotten legacy01 host introduced in chapter 6');
 });
 
 test('nmap edge cases: closed host, bad input, options, output file', async () => {
@@ -152,11 +153,11 @@ test('scope: scanning the whole /24 touches the out-of-scope router exactly once
   const seen = [];
   engine.events.on('violation', (v) => seen.push(v));
   await run('nmap -sn 10.10.20.0/24');
-  assert.deepEqual(engine.violations.map((v) => v.ip), ['10.10.20.1', '10.10.20.9']);
-  assert.deepEqual(seen, [{ ip: '10.10.20.1', kind: 'scan', count: 1 }, { ip: '10.10.20.9', kind: 'scan', count: 2 }]);
+  assert.deepEqual(engine.violations.map((v) => v.ip), ['10.10.20.1', '10.10.20.9', '10.10.20.15']);
+  assert.deepEqual(seen, [{ ip: '10.10.20.1', kind: 'scan', count: 1 }, { ip: '10.10.20.9', kind: 'scan', count: 2 }, { ip: '10.10.20.15', kind: 'scan', count: 3 }]);
   await run('nmap -sn 10.10.20.0/24');
   await run('ping -c 1 10.10.20.1');
-  assert.equal(engine.violations.length, 2, 'the same host is only counted once');
+  assert.equal(engine.violations.length, 3, 'the same host is only counted once');
 });
 
 test('scope: in-scope targets and the right range are clean', async () => {

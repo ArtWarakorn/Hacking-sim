@@ -22,7 +22,8 @@ const missions = new Map(curriculum.chapters.flatMap((c) => c.missions).map((id)
 /** Start a mission exactly as the UI does and return helpers for typing commands. */
 function startMission(id) {
   const mission = missions.get(id);
-  const { stack, registry } = buildMissionShell(mission, readJSON(`content/machines/${mission.machine}.json`), docs, loadWorldFromDisk(mission.network || 'lab'));
+  const reachableDefs = Object.fromEntries((mission.reachableMachines || []).map((r) => [r.machine, readJSON(`content/machines/${r.machine}.json`)]));
+  const { stack, registry } = buildMissionShell(mission, readJSON(`content/machines/${mission.machine}.json`), docs, loadWorldFromDisk(mission.network || 'lab'), reachableDefs);
   const bus = new EventBus();
   const engine = new MissionEngine(mission, { bus }).attach();
   const history = { items: [] };
@@ -185,8 +186,8 @@ test('unlocking: lesson gate, sequential missions, chapter gate', () => {
 });
 
 test('planned chapters (no missions yet) show as coming soon and stay locked', () => {
-  const c06 = curriculum.chapters.find((c) => c.id === 'c06');
-  const s = chapterState(createDefaultProgress(), c06, curriculum, ranks);
+  const c07 = curriculum.chapters.find((c) => c.id === 'c07');
+  const s = chapterState(createDefaultProgress(), c07, curriculum, ranks);
   assert.equal(s.planned, true);
   assert.equal(s.unlocked, false);
 });

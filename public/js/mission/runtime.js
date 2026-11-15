@@ -9,10 +9,22 @@ export function patchMachine(machineDef, mission) {
   return def;
 }
 
-/** `world` is a fresh World for this mission (see loadWorld) or null for no network. */
-export function buildMissionShell(mission, machineDef, commandDocs, world = null) {
+/**
+ * `world` is a fresh World for this mission (see loadWorld) or null for no network.
+ * `reachableDefs` is { machineId: machineJSON } for every machine named in `mission.reachableMachines`
+ * (e.g. [{ ip, machine: 'legacy01' }]) - other hosts a player might land a real shell on mid-mission
+ * (an exploited backdoor, a reverse shell). Registered onto the World so any command can push a session
+ * for that host (`createSession(world.machineFor(ip), user)`) the moment it earns one.
+ */
+export function buildMissionShell(mission, machineDef, commandDocs, world = null, reachableDefs = {}) {
   const runtime = createRuntime(patchMachine(machineDef, mission), world);
   const stack = new SessionStack(createSession(runtime, mission.startUser || runtime.def.startUser));
   const registry = createRegistry(commandDocs);
+  if (world) {
+    for (const { ip, machine } of mission.reachableMachines || []) {
+      const def = reachableDefs[machine];
+      if (def) world.setMachine(ip, createRuntime(def, world));
+    }
+  }
   return { runtime, stack, registry };
 }

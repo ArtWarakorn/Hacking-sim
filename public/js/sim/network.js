@@ -62,11 +62,42 @@ const hash = (s) => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt
 export class World {
   constructor(def = {}, webapps = {}) {
     this.def = def;
-    this.hosts = new Map(Object.entries(def.hosts || {}));
+    // Deep-cloned: content loaders cache the parsed network JSON, so without this every mission built from
+    // the same cached def would share (and corrupt) the same live host objects - this matters once anything
+    // mutates host state at runtime, e.g. a backdoor that "opens" a port after being triggered.
+    this.hosts = new Map(Object.entries(JSON.parse(JSON.stringify(def.hosts || {}))));
     this.zones = def.dns || {};
     this.webapps = webapps;
     this.resolver = def.resolver || '10.10.14.1';
     this._appState = new Map();
+    // port -> { ip: attacker's real IP (who must be the one receiving the connection), stack: the
+    // SessionStack `nc -l` was run from. A listener is consumed (removed) by the first connection it
+    // accepts, exactly like real `nc -l` without `-k`.
+    this.listeners = new Map();
+    // ip -> runtime (see sim/session.js createRuntime), for hosts a player might land a real interactive
+    // shell on during a mission (an exploited backdoor, a reverse shell, a pivot). Populated at mission
+    // setup time from `mission.reachableMachines`; most hosts in the world never need one.
+    this.machines = new Map();
+  }
+
+  setMachine(ip, runtime) { this.machines.set(ip, runtime); }
+  machineFor(ip) { return this.machines.get(ip) || null; }
+
+  listen(port, ip, stack) {
+    if (this.listeners.has(port)) return false;
+    this.listeners.set(port, { ip, stack });
+    return true;
+  }
+
+  unlisten(port) { this.listeners.delete(port); }
+
+  /** A reverse shell calling back to attackerIp:port. Pushes `session` onto the waiting stack if one matches. */
+  acceptReverseShell(port, attackerIp, session) {
+    const l = this.listeners.get(port);
+    if (!l || l.ip !== attackerIp) return false;
+    this.listeners.delete(port);
+    l.stack.push(session);
+    return true;
   }
 
   /**

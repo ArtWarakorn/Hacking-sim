@@ -111,6 +111,66 @@
     "fs": {
       "/var/www/html/flag.txt": "FLAG{command_injection_pops_the_shell}\n",
       "/var/www/html/config.php": "<?php\n// DB_PASS kept here \"temporarily\" since 2023 - TODO move to env\ndefine('DB_HOST', 'localhost');\ndefine('DB_USER', 'shopzone');\ndefine('DB_PASS', 'Zone#2024root');\n"
+    },
+    "machine": {
+      "id": "shop01",
+      "hostname": "shop01",
+      "ip": "10.10.20.9",
+      "os": "linux",
+      "kernel": {
+        "release": "5.4.0-150-generic",
+        "version": "#167-Ubuntu SMP",
+        "arch": "x86_64"
+      },
+      "startUser": "www-data",
+      "users": [
+        {
+          "name": "root",
+          "uid": 0,
+          "gid": 0,
+          "home": "/root",
+          "shell": "/bin/bash",
+          "groups": [
+            {
+              "name": "root",
+              "gid": 0
+            }
+          ]
+        },
+        {
+          "name": "www-data",
+          "uid": 33,
+          "gid": 33,
+          "home": "/var/www",
+          "shell": "/usr/sbin/nologin",
+          "groups": [
+            {
+              "name": "www-data",
+              "gid": 33
+            }
+          ]
+        }
+      ],
+      "fs": {
+        "/var/www/shopzone": {
+          "type": "dir",
+          "owner": "www-data",
+          "group": "www-data"
+        },
+        "/var/www/shopzone/app.py": {
+          "owner": "www-data",
+          "group": "www-data",
+          "content": "# ShopZone backend (Flask)\n# TODO: validate the host parameter on /admin/diagnostics before next release\n"
+        },
+        "/var/www/shopzone/flag.txt": {
+          "owner": "www-data",
+          "group": "www-data",
+          "content": "FLAG{reverse_shell_from_command_injection}\n"
+        },
+        "/etc/os-release": {
+          "content": "NAME=\"Ubuntu\"\nVERSION=\"20.04.6 LTS (Focal Fossa)\"\n"
+        }
+      }
     }
   }
 }

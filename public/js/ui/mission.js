@@ -20,9 +20,13 @@ export async function mountMission(container, ctx, missionId) {
   if (gate.state === 'locked') { toast(gate.reason, 'warn'); go('/'); return () => {}; }
   if (gate.state === 'lesson') { go(`/lesson/${mission.lesson}`); return () => {}; }
 
-  const [machine, world] = await Promise.all([loadMachine(mission.machine), loadWorld(mission.network || 'lab')]);
+  const reachableIds = [...new Set((mission.reachableMachines || []).map((r) => r.machine))];
+  const [machine, world, ...reachableJson] = await Promise.all([
+    loadMachine(mission.machine), loadWorld(mission.network || 'lab'), ...reachableIds.map(loadMachine),
+  ]);
+  const reachableDefs = Object.fromEntries(reachableIds.map((id, i) => [id, reachableJson[i]]));
   const bus = new EventBus();
-  const { stack, registry } = buildMissionShell(mission, machine, content.commandDocs, world);
+  const { stack, registry } = buildMissionShell(mission, machine, content.commandDocs, world, reachableDefs);
   const engine = new MissionEngine(mission, { bus }).attach();
 
   // ---------- left panel ----------

@@ -223,6 +223,37 @@
           }
         }
       }
+    },
+    "10.10.20.15": {
+      "hostname": "legacy01",
+      "up": true,
+      "hops": [
+        "10.10.14.1",
+        "10.10.20.1"
+      ],
+      "os": {
+        "type": "general purpose",
+        "running": "Linux 2.6.X",
+        "cpe": "cpe:/o:linux:linux_kernel:2.6",
+        "details": "Linux 2.6.32 (Debian 6)"
+      },
+      "serviceInfo": "OS: Linux; CPE: cpe:/o:linux:linux_kernel",
+      "services": {
+        "21": {
+          "name": "ftp",
+          "product": "vsftpd",
+          "version": "2.3.4",
+          "banner": "220 (vsFTPd 2.3.4)",
+          "scripts": {
+            "ftp-vuln-cve2011-2523": "VULNERABLE:\nvsFTPd Backdoor\n  State: VULNERABLE (Exploitable)\n  IDs: CVE:CVE-2011-2523\n    vsFTPd version 2.3.4 backdoor, this was disclosed on 2011-07-04 by Derek Callaway\n  Disclosure date: 2011-07-03\n  Exploit results:\n    Shell command: id\n    Results: uid=0(root) gid=0(root)\n  References:\n    https://www.rapid7.com/db/modules/exploit/unix/ftp/vsftpd_234_backdoor/"
+          }
+        }
+      },
+      "ftp": {
+        "anonymous": false,
+        "backdoor": true,
+        "tree": {}
+      }
     }
   },
   "whois": {

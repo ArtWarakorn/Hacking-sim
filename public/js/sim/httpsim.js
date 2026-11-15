@@ -107,10 +107,10 @@ function respondStatic(app, req) {
 function respondDynamic(app, req, world) {
   const engine = getEngine(app.engine);
   if (!engine) return build(app, 500, { body: '<h1>Internal Server Error</h1>\n' }, req);
-  const state = world.appState(app.id, () => engine.init(app));
+  const state = world.appState(app.id, () => engine.init(app, world));
   req = { ...req, cookies: parseCookies(req.headers.cookie), query: Object.freeze(parseForm(req.query)) };
   try {
-    const res = engine.handle(app, req, state);
+    const res = engine.handle(app, req, state, world);
     return res instanceof Promise ? res : res; // handlers are synchronous; kept simple on purpose
   } catch (e) {
     return build(app, 500, { body: `<h1>Internal Server Error</h1>\n<!-- ${e.message.replace(/[<>]/g, '')} -->\n` }, req);

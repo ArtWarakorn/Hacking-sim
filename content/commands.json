@@ -724,5 +724,54 @@
       "hydra -L users.txt -P /usr/share/wordlists/rockyou-mini.txt 10.10.20.6 ftp"
     ],
     "unlockChapter": 5
+  },
+  {
+    "name": "searchsploit",
+    "category": "Exploitation",
+    "summary": "ค้นหา exploit จาก Exploit-DB ด้วยชื่อ/เวอร์ชันของ service",
+    "synopsis": "searchsploit <term...> | searchsploit -m <EDB-ID>",
+    "description": "ค้นหา exploit ที่ตรงกับชื่อ/เวอร์ชันของ service ที่เจอจาก nmap เทียบคำค้นกับฐานข้อมูล Exploit-DB จำลอง ใช้ -m <EDB-ID> เพื่อคัดลอก exploit มาไว้ในโฟลเดอร์ปัจจุบัน",
+    "examples": [
+      "searchsploit vsftpd 2.3.4",
+      "searchsploit -m 49757"
+    ],
+    "unlockChapter": 6
+  },
+  {
+    "name": "msfconsole",
+    "category": "Exploitation",
+    "summary": "console ของ Metasploit Framework จำลอง (search/use/set/run)",
+    "synopsis": "msfconsole",
+    "description": "เปิด console แบบ interactive: search <คำค้น> หาโมดูล, use <path> เลือกโมดูล, show options ดูตัวเลือกปัจจุบัน, set <KEY> <value> ตั้งค่า (เช่น RHOSTS), run หรือ exploit เพื่อยิงโมดูลที่เลือก มีโมดูลจำลองให้บางตัวเท่านั้น พิมพ์ exit เพื่อออก",
+    "examples": [
+      "msfconsole",
+      "search vsftpd",
+      "use exploit/unix/ftp/vsftpd_234_backdoor",
+      "set RHOSTS 10.10.20.15",
+      "run"
+    ],
+    "unlockChapter": 6
+  },
+  {
+    "name": "python3",
+    "category": "Post-Exploitation",
+    "summary": "ตีความ one-liner เฉพาะสำหรับ stabilize shell",
+    "synopsis": "python3 -c \"import pty; pty.spawn('/bin/bash')\"",
+    "description": "shell ที่ได้จาก reverse shell แบบง่าย (nc) มักเป็น shell แบบดิบ ไม่รองรับ tab-complete และ Ctrl+C อาจทำให้ session หลุด คำสั่งนี้ (คู่กับ stty) ใช้อัปเกรดเป็น shell เต็มรูปแบบ จำลองนี้รองรับเฉพาะ one-liner นี้",
+    "examples": [
+      "python3 -c \"import pty; pty.spawn('/bin/bash')\""
+    ],
+    "unlockChapter": 6
+  },
+  {
+    "name": "stty",
+    "category": "Post-Exploitation",
+    "summary": "ปรับโหมด terminal ใช้คู่กับ pty.spawn เพื่อ stabilize shell",
+    "synopsis": "stty raw -echo",
+    "description": "ขั้นที่สองของการ stabilize shell หลัง python3 pty.spawn: กด Ctrl+Z กลับมาที่เครื่องตัวเอง พิมพ์ stty raw -echo แล้ว fg กลับเข้าไปใหม่ เพื่อให้ terminal รองรับการแก้ไขบรรทัด/สัญญาณต่างๆ เหมือน shell ปกติ",
+    "examples": [
+      "stty raw -echo"
+    ],
+    "unlockChapter": 6
   }
 ]
