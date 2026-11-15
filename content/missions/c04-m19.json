@@ -1,0 +1,70 @@
+{
+  "id": "c04-m19",
+  "chapter": "c04",
+  "title": "Blue Team: สืบสวน Access Log",
+  "difficulty": "medium",
+  "xp": 300,
+  "estMinutes": 20,
+  "lesson": "c04-l09",
+  "briefing": "ACME สงสัยว่ามีการโจมตีเกิดขึ้นกับ web01 เมื่อไม่นานมานี้ และให้สิทธิ์ root ชั่วคราวบนเครื่องนี้เพื่อตรวจสอบ ลองเปิด access log แล้ววิเคราะห์ว่าเกิดอะไรขึ้น",
+  "scope": {
+    "inScope": [
+      "web01 — 10.10.20.5 (ตรวจสอบ log ภายในเครื่องเท่านั้น)"
+    ],
+    "outOfScope": [
+      "การโจมตีเพิ่มเติมใดๆ กับเครื่องนี้"
+    ]
+  },
+  "machine": "acme-web01",
+  "startUser": "root",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "เปิดอ่าน /var/log/apache2/access.log",
+      "type": "file_read",
+      "path": "/var/log/apache2/access.log"
+    },
+    {
+      "id": "o2",
+      "text": "IP ของผู้ที่พยายามโจมตีคือ?",
+      "type": "answer",
+      "answerHash": "dcd2f209a91659f4367fc265ae1965a18003d5e5e7c14e294932fdea474304aa"
+    },
+    {
+      "id": "o3",
+      "text": "เทคนิคการโจมตีที่ปรากฏตรงๆ ใน URL ของ log คือ? (ตอบเป็นคำภาษาอังกฤษคำเดียว)",
+      "type": "answer",
+      "answerHash": "f0325bdc02503789bca5567d2ba45785f8948ca82247feb6cd0e0af97ebef76d"
+    },
+    {
+      "id": "o4",
+      "text": "มีกี่คำขอจาก IP นี้ที่มี UNION หรือ ;id อยู่ใน URL และได้ status 200 (สำเร็จ ไม่ถูกบล็อก)?",
+      "type": "answer",
+      "answerHash": "706bd6c7e3afb51614f33fb0423fad15659390e00092e52e11927f382d0636bd"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`cat /var/log/apache2/access.log` หรือ `grep 10.10.14 /var/log/apache2/access.log`"
+    },
+    {
+      "cost": 20,
+      "text": "ลองนับด้วย `grep -E 'UNION|%3Bid' /var/log/apache2/access.log | grep ' 200 '`"
+    }
+  ],
+  "debrief": [
+    "IP เดิม (10.10.14.77 — เครื่องเดียวกับที่พยายาม brute-force SSH ในบทที่ 1!) ส่ง request ที่มีคำว่า UNION SELECT และแทรกคำสั่งระบบ (`;id`) เข้าไปใน URL — และ **ทุกคำขอเหล่านี้ได้ status 200** ไม่มีการบล็อกหรือแจ้งเตือนใดๆ เกิดขึ้นเลย",
+    "นี่คือหัวใจของ Logging & Alerting Failure: ข้อมูลถูกบันทึกไว้จริง (ดีกว่าไม่มี log เลย) แต่ไม่มีระบบใดตรวจจับหรือแจ้งเตือนทันทีเมื่อเกิดเหตุการณ์ผิดปกติ ทำให้กว่าจะรู้ตัวก็อาจสายเกินไปแล้ว",
+    "ฝั่งป้องกัน: ใช้ Web Application Firewall (WAF) บล็อก pattern ที่รู้จักก่อนถึงแอป และตั้งระบบแจ้งเตือนอัตโนมัติเมื่อพบ request ที่มีสัญญาณการโจมตีชัดเจน ไม่ใช่แค่เก็บ log ไว้เฉยๆ"
+  ],
+  "references": [
+    "OWASP Top 10 A09:2025 Security Logging and Alerting Failures",
+    "CWE-778 Insufficient Logging",
+    "MITRE ATT&CK T1562.001 Impair Defenses: Disable or Modify Tools"
+  ],
+  "owasp": {
+    "2025": "A09",
+    "2021": "A09"
+  }
+}

@@ -76,6 +76,10 @@
     },
     "/dev-notes/": {
       "body": "<!DOCTYPE html>\n<html><head><title>Dev notes</title></head>\n<body>\n<h1>Dev notes</h1>\n<ul><li>TODO: remove debug login</li><li>TODO: move uploads out of web root</li></ul>\n<!-- FLAG{dirbusting_finds_forgotten_pages} -->\n</body></html>\n"
+    },
+    "/.git/config": {
+      "type": "text/plain",
+      "body": "[core]\n\trepositoryformatversion = 0\n\tfilemode = true\n\tbare = false\n\tlogallrefupdates = true\n[remote \"origin\"]\n\turl = git@gitlab.acme.test:webteam/acme-site.git\n\tfetch = +refs/heads/*:refs/remotes/origin/*\n[branch \"main\"]\n\tremote = origin\n\tmerge = refs/heads/main\n# NOTE: deploy key rotated after the September audit, remove this folder before next deploy\n# FLAG{exposed_git_folder_leaks_your_source}\n"
     }
   },
   "tech": [

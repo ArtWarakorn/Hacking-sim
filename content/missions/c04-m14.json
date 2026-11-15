@@ -1,0 +1,75 @@
+{
+  "id": "c04-m14",
+  "chapter": "c04",
+  "title": "ซื้อของราคาถูกด้วยการแก้ price",
+  "difficulty": "medium",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c04-l06",
+  "briefing": "ShopZone มีหน้า \"ซื้อด่วน\" ที่ /buy ลองดูว่าราคาสินค้าที่ใช้คำนวณยอดเงินมาจากไหน",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "login แล้วเปิดหน้าซื้อด่วนของ Mechanical Keyboard (id=2)",
+      "type": "http",
+      "path": "^/buy$",
+      "query": "product_id=2"
+    },
+    {
+      "id": "o2",
+      "text": "ส่งค่า price ของตัวเองเข้าไปแทนราคาจริง",
+      "type": "http",
+      "path": "^/buy$",
+      "query": "price="
+    },
+    {
+      "id": "o3",
+      "text": "ยืนยันว่าสั่งซื้อสำเร็จในราคาที่คุณกำหนดเอง ($0.01)",
+      "type": "http",
+      "path": "^/buy$",
+      "response": "\\$0\\.01"
+    },
+    {
+      "id": "o4",
+      "text": "ราคาสินค้าควรถูกคำนวณจากฝั่งใดเสมอ? (ตอบเป็นภาษาอังกฤษ: client หรือ server)",
+      "type": "answer",
+      "answerHash": "2aa41d6edfb2283540a1a05ba06fe7556df4a2b78c997738078ea995ad8ce33c"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "login ก่อน (เช่น alice/alice123) แล้ว `curl -b 'session=...' http://shop.acme.test/buy?product_id=2` ดูฟอร์ม"
+    },
+    {
+      "cost": 25,
+      "text": "`curl -b 'session=...' -G --data-urlencode 'product_id=2' --data-urlencode 'qty=1' --data-urlencode 'price=0.01' --data-urlencode 'confirm=1' http://shop.acme.test/buy`"
+    }
+  ],
+  "debrief": [
+    "หน้าซื้อด่วนยอมรับค่า `price` จาก request โดยตรงแทนที่จะดึงราคาจริงจากฐานข้อมูลเสมอ — เหมือนเป็นโหมดทดสอบที่ลืมปิดก่อนขึ้น production การกำหนดราคาเองทำให้ซื้อสินค้าใดก็ได้ในราคาเท่าไรก็ได้ตามใจ",
+    "ฝั่งป้องกัน: ข้อมูลสำคัญทางธุรกิจอย่างราคาต้องคำนวณใหม่จากฐานข้อมูลฝั่งเซิร์ฟเวอร์เสมอ ไม่เคยเชื่อค่าที่ client ส่งมาโดยตรง"
+  ],
+  "references": [
+    "OWASP Top 10 A06:2025 Insecure Design",
+    "CWE-602 Client-Side Enforcement of Server-Side Security",
+    "CAPEC-141 Cache Poisoning"
+  ],
+  "owasp": {
+    "2025": "A06",
+    "2021": "A04"
+  }
+}

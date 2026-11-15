@@ -108,7 +108,12 @@ export async function validate() {
         }
         if (o.type === 'fs' && !o.path) err(file, `${o.id}: fs objective needs "path"`);
         if (o.type === 'fs' && o.mode === undefined && o.owner === undefined && o.contains === undefined && o.exists === undefined) err(file, `${o.id}: fs objective needs mode, owner, contains or exists`);
-        if (o.type === 'http') { try { new RegExp(o.path ?? '.*'); } catch { err(file, `${o.id}: invalid path regex`); } }
+        if (o.type === 'http') {
+          for (const field of ['path', 'query', 'body', 'response', 'cookie']) {
+            if (o[field] === undefined && field !== 'path') continue;
+            try { new RegExp(o[field] ?? '.*'); } catch { err(file, `${o.id}: invalid ${field} regex`); }
+          }
+        }
         if (o.type === 'flag' && !o.flagHash) err(file, `${o.id}: flag objective needs flagHash`);
         if (o.type === 'answer' && !o.answerHash) err(file, `${o.id}: answer objective needs answerHash`);
         if ((o.type === 'flag' || o.type === 'answer') && wt) {

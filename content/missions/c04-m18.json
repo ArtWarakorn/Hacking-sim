@@ -1,0 +1,77 @@
+{
+  "id": "c04-m18",
+  "chapter": "c04",
+  "title": "แก้ไขตะกร้าสินค้าใน Cookie",
+  "difficulty": "hard",
+  "xp": 400,
+  "estMinutes": 20,
+  "lesson": "c04-l08",
+  "briefing": "ShopZone เก็บตะกร้าสินค้าไว้ใน cookie เป็น JSON ที่เข้ารหัส base64 ลองดูว่าถ้าแก้ไขยอดรวมในนั้นโดยตรง ระบบจะเชื่อหรือไม่ตอน checkout",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "login แล้วเปิดหน้าตะกร้าสินค้าเพื่อรับ cart cookie",
+      "type": "http",
+      "path": "^/cart$",
+      "status": 200
+    },
+    {
+      "id": "o2",
+      "text": "ส่งคำสั่ง checkout พร้อม cart cookie ที่ถูกแก้ไขยอดรวมแล้ว",
+      "type": "http",
+      "path": "^/cart/checkout$",
+      "cookie": "cart=",
+      "status": 302
+    },
+    {
+      "id": "o3",
+      "text": "ยืนยันว่า order ที่สร้างขึ้นใช้ยอดที่ถูกแก้ไข ($0.01)",
+      "type": "http",
+      "path": "^/account$",
+      "response": "\\$0\\.01"
+    },
+    {
+      "id": "o4",
+      "text": "ยอดรวมของตะกร้าควรถูกคำนวณใหม่ที่ฝั่งใดก่อนบันทึกคำสั่งซื้อ? (ตอบเป็นภาษาอังกฤษ: client หรือ server)",
+      "type": "answer",
+      "answerHash": "56de699cddcc5a28d76117446886e89af9c1a5cd3c63f55ccc02ba58960ad9d9"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 15,
+      "text": "login แล้ว `curl -i -b 'session=...' http://shop.acme.test/cart` จะได้ Set-Cookie: cart=... (เป็น base64 ของ JSON)"
+    },
+    {
+      "cost": 30,
+      "text": "ถอดด้วย `base64 -d` แก้ field total เป็น 0.01 แล้วเข้ารหัสกลับด้วย `base64` จากนั้น `curl -b 'session=...;cart=<ค่าที่แก้แล้ว>' http://shop.acme.test/cart/checkout`"
+    }
+  ],
+  "debrief": [
+    "ตะกร้าสินค้าทั้งก้อน (รายการ + ยอดรวม) ถูกเก็บไว้ใน cookie ฝั่ง client โดยไม่มีลายเซ็นป้องกันการแก้ไข และตอน checkout เซิร์ฟเวอร์อ่านค่า `total` จาก cookie นั้นตรงๆ แทนที่จะคำนวณใหม่จากราคาสินค้าจริงในฐานข้อมูล",
+    "นี่คือ \"insecure deserialization\": แอป deserialize ข้อมูลที่ client ควบคุมได้ทั้งหมดแล้วใช้งานโดยไม่ตรวจสอบความถูกต้องอีกครั้งกับความจริงฝั่งเซิร์ฟเวอร์เลย",
+    "ฝั่งป้องกัน: ยอดเงินต้องคำนวณใหม่จากฐานข้อมูลฝั่งเซิร์ฟเวอร์เสมอตอน checkout หรือถ้าจำเป็นต้องเก็บ state ไว้ฝั่ง client จริงๆ ต้องเซ็นด้วย HMAC แล้วตรวจสอบลายเซ็นก่อนใช้งานทุกครั้ง"
+  ],
+  "references": [
+    "OWASP Top 10 A08:2025 Software or Data Integrity Failures",
+    "CWE-502 Deserialization of Untrusted Data",
+    "CWE-345 Insufficient Verification of Data Authenticity"
+  ],
+  "owasp": {
+    "2025": "A08",
+    "2021": "A08"
+  }
+}

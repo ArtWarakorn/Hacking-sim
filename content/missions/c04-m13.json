@@ -1,0 +1,62 @@
+{
+  "id": "c04-m13",
+  "chapter": "c04",
+  "title": "Dependency เสี่ยงที่หลุดใน package.json",
+  "difficulty": "easy",
+  "xp": 250,
+  "estMinutes": 12,
+  "lesson": "c04-l05",
+  "briefing": "ไฟล์ build บางไฟล์ของ ShopZone อาจหลุดออกมาที่ web root โดยไม่ตั้งใจ ลองหาไฟล์ manifest ของ dependency ดู",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "เข้าถึง /package.json บน ShopZone",
+      "type": "http",
+      "path": "^/package\\.json$",
+      "status": 200,
+      "response": "lodash"
+    },
+    {
+      "id": "o2",
+      "text": "เวอร์ชันของ lodash ที่พบในไฟล์นี้คือ?",
+      "type": "answer",
+      "answerHash": "e10da59382b57840a5d91c482a085ed1cabafbb0aea3d2f5b888b4752ded4aa8"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`curl http://shop.acme.test/package.json`"
+    },
+    {
+      "cost": 15,
+      "text": "ดูที่ field dependencies.lodash"
+    }
+  ],
+  "debrief": [
+    "ไฟล์ `package.json` ไม่ควรถูกเสิร์ฟออกจากเว็บสาธารณะเลย — มันเผยรายชื่อและเวอร์ชันที่แน่นอนของทุก dependency ที่แอปใช้ `lodash@4.17.4` มีช่องโหว่ Prototype Pollution ที่รู้จักกันดี (CVE-2019-10744) ซึ่งแก้ไขแล้วในเวอร์ชัน 4.17.12 ขึ้นไป",
+    "ฝั่งป้องกัน: ไม่เสิร์ฟไฟล์ manifest/config ของ build process ออกสู่ web root และอัปเดต dependency สม่ำเสมอ"
+  ],
+  "references": [
+    "OWASP Top 10 A03:2025 Software Supply Chain Failures",
+    "CVE-2019-10744 lodash Prototype Pollution",
+    "CWE-1395 Dependency on Vulnerable Third-Party Component"
+  ],
+  "owasp": {
+    "2025": "A03",
+    "2021": "A06"
+  }
+}

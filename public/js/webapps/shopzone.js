@@ -13,12 +13,27 @@ const randToken = () => Array.from({ length: 24 }, () => '0123456789abcdef'[Math
 
 function init(app) {
   const db = new Database({ name: 'shopzone', version: '5.7.33-0ubuntu0.18.04.1', user: 'shopzone@localhost', tables: app.data.tables });
-  return { db, sessions: new Map(), comments: app.data.comments.map((c) => ({ ...c })), nextCommentId: app.data.comments.length + 1, fs: app.data.fs || {} };
+  const maxOrderId = Math.max(0, ...app.data.tables.orders.rows.map((r) => r.id));
+  return {
+    db, sessions: new Map(), comments: app.data.comments.map((c) => ({ ...c })), nextCommentId: app.data.comments.length + 1,
+    nextOrderId: maxOrderId + 1, fs: app.data.fs || {},
+  };
 }
 
 function sessionOf(req, state) {
   const token = req.cookies?.session;
-  return token ? state.sessions.get(token) || null : null;
+  if (token && state.sessions.has(token)) return state.sessions.get(token);
+  // A04 Cryptographic Failures: "remember me" is just base64(username) with no signature or server-side
+  // record of who it was issued to - decode it (or forge your own) and you are logged in as that user
+  // with no password check at all.
+  const remember = req.cookies?.remember;
+  if (!remember) return null;
+  let username;
+  try { username = atob(remember); } catch { return null; }
+  // (this lookup itself is written safely on purpose - the vulnerability being taught here is the
+  // unsigned, forgeable cookie, not a second SQL injection)
+  const row = state.db.query(Database.bind('SELECT id, username, role FROM users WHERE username = ?', [username])).rows[0];
+  return row ? { userId: row[0], username: row[1], role: row[2] } : null;
 }
 
 function productCard(p) {
@@ -118,9 +133,14 @@ function routes(app, req, state) {
     try { rows = state.db.query(sql).rows; } catch (e) { return sqlErrorPage(app, req, e); }
     if (!rows.length) return build(app, 200, { body: PAGE('Login', '<h1>Login</h1><p class="error">Invalid username or password.</p><form method="POST" action="/login"><input name="username"><input name="password" type="password"><button>Login</button></form>') }, req);
     const [id, username, role] = rows[0];
-    const token = randToken();
+    // Vulnerable: a session cookie the visitor already had is reused as-is instead of always issuing a
+    // fresh one on login (Session Fixation, OWASP A07) - whoever set that cookie value beforehand is now
+    // logged in too, the moment this victim finishes logging in with it still attached.
+    const token = req.cookies?.session || randToken();
     state.sessions.set(token, { userId: id, username, role });
-    return build(app, 302, { headers: { Location: '/account', 'Set-Cookie': `session=${token}; HttpOnly; Path=/` }, body: '' }, req);
+    const setCookie = [`session=${token}; HttpOnly; Path=/`];
+    if (f.remember === '1') setCookie.push(`remember=${btoa(username)}; Path=/; Max-Age=2592000`);
+    return build(app, 302, { headers: { Location: '/account', 'Set-Cookie': setCookie }, body: '' }, req);
   }
 
   if (path === '/logout') return build(app, 302, { headers: { Location: '/', 'Set-Cookie': 'session=; Max-Age=0; Path=/' }, body: '' }, req);
@@ -143,6 +163,78 @@ function routes(app, req, state) {
     const ownerRow = state.db.query(`SELECT username FROM users WHERE id = ${ownerId}`).rows[0];
     const body = `<h1>Order #${oid}</h1><p>Customer: ${escapeHtml(ownerRow?.[0] ?? `user#${ownerId}`)}</p><p>Total: $${Number(total).toFixed(2)}</p><p>Ship to: ${escapeHtml(address)}</p>`;
     return build(app, 200, { body: PAGE(`Order #${oid}`, body) }, req);
+  }
+
+  if (path === '/package.json' && method === 'GET') {
+    // Vulnerable: a build artifact that should never ship to the web root is exposed as-is, revealing
+    // exact dependency versions an attacker can cross-reference against known CVEs (Software Supply
+    // Chain Failures, OWASP A03) without ever touching the application itself.
+    return build(app, 200, { type: 'application/json', body: `${JSON.stringify({
+      name: 'shopzone', version: '1.4.0', private: true,
+      dependencies: { express: '4.16.2', lodash: '4.17.4', jsonwebtoken: '8.3.0' },
+    }, null, 2)}\n` }, req);
+  }
+
+  if (path === '/forgot-password' && method === 'GET') {
+    const username = query.username;
+    if (username === undefined) {
+      return build(app, 200, { body: PAGE('Forgot password', '<h1>Forgot your password?</h1><form><input name="username" placeholder="username"><button>Check</button></form>') }, req);
+    }
+    // Vulnerable: the response text itself reveals whether the account exists at all, before any
+    // password is checked (Username Enumeration, OWASP A07).
+    const exists = state.db.query(Database.bind('SELECT id FROM users WHERE username = ?', [username])).rows.length > 0;
+    const msg = exists ? 'มีบัญชีนี้อยู่ในระบบ — เราได้ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลที่ลงทะเบียนไว้แล้ว' : `ไม่พบบัญชีผู้ใช้ชื่อ "${escapeHtml(username)}" ในระบบ`;
+    return build(app, 200, { body: PAGE('Forgot password', `<h1>Forgot your password?</h1><form><input name="username" value="${escapeHtml(username)}"><button>Check</button></form><p>${msg}</p>`) }, req);
+  }
+
+  if (path === '/buy' && method === 'GET') {
+    if (!session) return build(app, 302, { headers: { Location: '/login' }, body: '' }, req);
+    const productId = Number(query.product_id);
+    const productRow = state.db.query(`SELECT id, name, price FROM products WHERE id = ${Number.isFinite(productId) ? productId : -1}`).rows[0];
+    if (!productRow) return build(app, 404, { body: PAGE('Not found', '<h1>Product not found</h1>') }, req);
+    const [, name, realPrice] = productRow;
+    if (query.confirm === undefined) {
+      return build(app, 200, { body: PAGE('Buy now', `<h1>Buy: ${escapeHtml(name)}</h1><p>Price: $${Number(realPrice).toFixed(2)} each</p><form><input type="hidden" name="product_id" value="${productId}"><label>Quantity <input name="qty" value="1"></label><input type="hidden" name="confirm" value="1"><button>Buy now</button></form>`) }, req);
+    }
+    const qty = Number(query.qty);
+    // Vulnerable: the unit price is taken from the request when supplied (a leftover test-mode override)
+    // instead of always being looked up server-side, and quantity is never checked for being a sane,
+    // positive number either - either gap alone lets the client decide what the order actually costs
+    // (Insecure Design, OWASP A06).
+    const unitPrice = query.price !== undefined ? Number(query.price) : Number(realPrice);
+    const finalQty = Number.isFinite(qty) ? qty : 1;
+    const total = unitPrice * finalQty;
+    const orderId = state.nextOrderId++;
+    state.db.tables.orders.rows.push({ id: orderId, user_id: session.userId, total, shipping_address: '(quick buy)' });
+    return build(app, 200, { body: PAGE('Order placed', `<h1>Order #${orderId} placed</h1><p>${finalQty} × ${escapeHtml(name)} = $${total.toFixed(2)}</p><a href="/account">View my orders</a>`) }, req);
+  }
+
+  if (path === '/cart' && method === 'GET') {
+    let cart = null;
+    try { cart = JSON.parse(atob(cookies?.cart || '')); } catch { /* no/garbled cart cookie */ }
+    const setCookie = [];
+    if (!cart) {
+      const row = state.db.query('SELECT id, name, price FROM products WHERE id = 2').rows[0]; // a Mechanical Keyboard, added for you
+      cart = { items: [{ id: row[0], name: row[1], qty: 1 }], total: Number(row[2]) };
+      setCookie.push(`cart=${btoa(JSON.stringify(cart))}; Path=/`);
+    }
+    const summary = cart.items.map((i) => `${i.qty} × ${escapeHtml(i.name)}`).join(', ');
+    const body = PAGE('Cart', `<h1>Your cart</h1><p>${summary}</p><p>Total: $${Number(cart.total).toFixed(2)}</p><a href="/cart/checkout">Checkout</a>`);
+    return setCookie.length ? build(app, 200, { headers: { 'Set-Cookie': setCookie }, body }, req) : build(app, 200, { body }, req);
+  }
+
+  if (path === '/cart/checkout' && method === 'GET') {
+    if (!session) return build(app, 302, { headers: { Location: '/login' }, body: '' }, req);
+    let cart = null;
+    try { cart = JSON.parse(atob(cookies?.cart || '')); } catch { /* no/garbled cart cookie */ }
+    if (!cart) return build(app, 302, { headers: { Location: '/cart' }, body: '' }, req);
+    // Vulnerable: `total` comes from this client-held, unsigned cart object and is trusted as-is instead
+    // of being recalculated from the real catalogue prices server-side (Software/Data Integrity Failure -
+    // "insecure deserialization" of the cart - OWASP A08).
+    const orderId = state.nextOrderId++;
+    const total = Number(cart.total) || 0;
+    state.db.tables.orders.rows.push({ id: orderId, user_id: session.userId, total, shipping_address: '(cart checkout)' });
+    return build(app, 302, { headers: { Location: '/account' }, body: '' }, req);
   }
 
   if (path === '/admin/diagnostics' && method === 'GET') {

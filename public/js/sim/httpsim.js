@@ -65,11 +65,18 @@ function ruleMatches(when = {}, req) {
   return true;
 }
 
-/** Build a response object. Exported so webapp handlers (dynamic apps) can use the same shape. */
+/**
+ * Build a response object. Exported so webapp handlers (dynamic apps) can use the same shape.
+ * A header value may be an array (e.g. `'Set-Cookie': ['a=1', 'b=2']`) to emit it as two separate
+ * header lines, matching how a real server sends multiple cookies in one response.
+ */
 export function build(app, status, { headers = {}, body = '', type = 'text/html; charset=UTF-8' } = {}, req) {
   const list = [['Date', new Date().toUTCString()], ['Server', app.server || 'nginx']];
   if (app.poweredBy) list.push(['X-Powered-By', app.poweredBy]);
-  for (const [k, v] of Object.entries(headers)) list.push([k, v]);
+  for (const [k, v] of Object.entries(headers)) {
+    if (Array.isArray(v)) v.forEach((vv) => list.push([k, vv]));
+    else list.push([k, v]);
+  }
   const sendBody = req.method === 'HEAD' ? '' : body;
   list.push(['Content-Length', String(byteLength(body))], ['Content-Type', type]);
   return { status, reason: REASONS[status] || '', headers: list, body: sendBody };

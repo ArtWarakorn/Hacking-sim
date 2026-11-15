@@ -22,17 +22,19 @@ function makeJar() {
       return jar.get(host);
     },
     applySetCookie(host, headers) {
-      const raw = headers.find(([k]) => k.toLowerCase() === 'set-cookie')?.[1];
-      if (!raw) return;
-      const [pair, ...attrs] = raw.split(';').map((s) => s.trim());
-      const eq = pair.indexOf('=');
-      if (eq < 0) return;
-      const name = pair.slice(0, eq);
-      const value = pair.slice(eq + 1);
-      const m = this.map(host);
-      const maxAgeZero = attrs.some((a) => /^max-age=0$/i.test(a));
-      if (maxAgeZero || value === '') m.delete(name);
-      else m.set(name, value);
+      // a response may set several cookies at once (one Set-Cookie header line each)
+      for (const [k, raw] of headers) {
+        if (k.toLowerCase() !== 'set-cookie') continue;
+        const [pair, ...attrs] = raw.split(';').map((s) => s.trim());
+        const eq = pair.indexOf('=');
+        if (eq < 0) continue;
+        const name = pair.slice(0, eq);
+        const value = pair.slice(eq + 1);
+        const m = this.map(host);
+        const maxAgeZero = attrs.some((a) => /^max-age=0$/i.test(a));
+        if (maxAgeZero || value === '') m.delete(name);
+        else m.set(name, value);
+      }
     },
   };
 }

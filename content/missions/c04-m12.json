@@ -1,0 +1,65 @@
+{
+  "id": "c04-m12",
+  "chapter": "c04",
+  "title": "ไลบรารีเก่าที่เผยผ่าน whatweb",
+  "difficulty": "easy",
+  "xp": 250,
+  "estMinutes": 12,
+  "lesson": "c04-l05",
+  "briefing": "ใช้ whatweb สำรวจ acme-site อีกครั้ง คราวนี้มองหาเวอร์ชันของ JavaScript library ที่เว็บใช้อยู่",
+  "scope": {
+    "inScope": [
+      "acme-site (web01) — 10.10.20.5"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.5"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "สแกน acme-site ด้วย whatweb",
+      "type": "command",
+      "match": "^whatweb\\b.*10\\.10\\.20\\.5"
+    },
+    {
+      "id": "o2",
+      "text": "jQuery เวอร์ชันที่ whatweb เจอบน acme-site คืออะไร?",
+      "type": "answer",
+      "answerHash": "84b03304efcc020712322a43c3f9ed64961a0b50743cb31b2865883a8b86f093"
+    },
+    {
+      "id": "o3",
+      "text": "jQuery เวอร์ชันต่ำกว่า 3.0 มีความเสี่ยงต่อช่องโหว่ประเภทใดเป็นหลัก? (ตอบเป็นตัวย่อภาษาอังกฤษ 3 ตัวอักษร)",
+      "type": "answer",
+      "answerHash": "74c611be5d806c147f4faa6fff6dff487e6ced0bf5f34058ec520b3be58e2523"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`whatweb 10.10.20.5` แล้วดูรายการ plugin ที่เจอ"
+    },
+    {
+      "cost": 15,
+      "text": "jQuery เวอร์ชันเก่ามีช่องโหว่ในฟังก์ชันอย่าง .html() ที่นำไปสู่ XSS"
+    }
+  ],
+  "debrief": [
+    "การเผยเวอร์ชันที่แน่นอนของ library ผ่าน header หรือไฟล์ที่ดาวน์โหลดได้ ช่วยให้ผู้โจมตีค้นหาช่องโหว่ที่รู้จักแล้ว (known CVE) ของเวอร์ชันนั้นได้ทันทีโดยไม่ต้องเดา",
+    "ฝั่งป้องกัน: อัปเดต dependency สม่ำเสมอ และพิจารณาลบ/ซ่อน header ที่เผยเวอร์ชันซอฟต์แวร์ที่ไม่จำเป็น"
+  ],
+  "references": [
+    "OWASP Top 10 A03:2025 Software Supply Chain Failures",
+    "CWE-1104 Use of Unmaintained Third Party Components"
+  ],
+  "owasp": {
+    "2025": "A03",
+    "2021": "A06"
+  }
+}

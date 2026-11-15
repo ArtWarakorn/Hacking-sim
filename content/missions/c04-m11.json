@@ -1,0 +1,64 @@
+{
+  "id": "c04-m11",
+  "chapter": "c04",
+  "title": "บัญชีเริ่มต้นที่ไม่เคยเปลี่ยน",
+  "difficulty": "easy",
+  "xp": 250,
+  "estMinutes": 10,
+  "lesson": "c04-l04",
+  "briefing": "ลองเข้าสู่ระบบหน้า login ของ acme-site ด้วยบัญชีเริ่มต้นที่ระบบจำนวนมากมาพร้อมแต่ไม่เคยเปลี่ยนก่อนใช้งานจริง",
+  "scope": {
+    "inScope": [
+      "acme-site (web01) — 10.10.20.5"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.5"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ลอง login ด้วย user=admin, pass=admin",
+      "type": "http",
+      "host": "10.10.20.5",
+      "path": "^/login$",
+      "method": "POST",
+      "status": 302,
+      "body": "user=admin&pass=admin"
+    },
+    {
+      "id": "o2",
+      "text": "username และ password ที่ใช้เหมือนกันทั้งคู่ คืออะไร? (ตอบคำเดียว)",
+      "type": "answer",
+      "answerHash": "fd98fbe76e38239ee3be4bf249ff905ae89f30dbe6e8f4484526752b22a222ad"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "ลองหลายคู่ที่พบบ่อย: admin/admin, admin/password — เริ่มจาก admin/admin ก่อน"
+    },
+    {
+      "cost": 15,
+      "text": "`curl -i -d 'user=admin&pass=admin' http://10.10.20.5/login` ถ้าได้ 302 แปลว่าใช้ได้"
+    }
+  ],
+  "debrief": [
+    "บัญชีผู้ดูแลเริ่มต้น (admin/admin) ที่มากับระบบตั้งแต่ติดตั้ง ไม่เคยถูกเปลี่ยนก่อนเปิดใช้งานจริง — การลองบัญชีเริ่มต้นเป็นขั้นตอนพื้นฐานที่ pentester ทำเสมอเพราะง่ายและมักได้ผลเกินคาด",
+    "ฝั่งป้องกัน: บังคับให้ผู้ดูแลเปลี่ยนรหัสผ่านเริ่มต้นตั้งแต่ครั้งแรกที่ติดตั้งระบบ ก่อนอนุญาตให้ใช้งานต่อได้"
+  ],
+  "references": [
+    "OWASP Top 10 A02:2025 Security Misconfiguration",
+    "CWE-1392 Use of Default Credentials",
+    "MITRE ATT&CK T1078.001 Default Accounts"
+  ],
+  "owasp": {
+    "2025": "A02",
+    "2021": "A05"
+  }
+}

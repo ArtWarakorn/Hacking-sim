@@ -1,0 +1,71 @@
+{
+  "id": "c04-m17",
+  "chapter": "c04",
+  "title": "Session Fixation",
+  "difficulty": "hard",
+  "xp": 400,
+  "estMinutes": 20,
+  "lesson": "c04-l07",
+  "briefing": "ลองตั้งค่า session cookie ของตัวเองเป็นค่าที่กำหนดไว้ล่วงหน้า แล้วดูว่าระบบยังใช้ค่าเดิมนั้นต่อหลัง login หรือออกค่าใหม่ให้",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "login เป็น bob พร้อมตั้ง session cookie เป็นค่าที่กำหนดไว้ล่วงหน้า (fixedtoken123)",
+      "type": "http",
+      "path": "^/login$",
+      "method": "POST",
+      "cookie": "session=fixedtoken123",
+      "status": 302
+    },
+    {
+      "id": "o2",
+      "text": "ใช้ cookie ค่าเดิมนั้นเข้าหน้า /account สำเร็จในฐานะ bob",
+      "type": "http",
+      "path": "^/account$",
+      "cookie": "session=fixedtoken123",
+      "response": "Welcome, bob"
+    },
+    {
+      "id": "o3",
+      "text": "ช่องโหว่นี้เรียกว่าอะไร? (ตอบเป็นภาษาอังกฤษ 2 คำ)",
+      "type": "answer",
+      "answerHash": "226c8cba820a4c4ea48eb9f29737c62705386823d477ca72a3c907a2c0fd7d0c"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "ลองตั้ง cookie ของคุณเองก่อน login: `curl -i -b 'session=fixedtoken123' -d 'username=bob&password=Password1' http://shop.acme.test/login` แล้วดูว่า Set-Cookie ที่ตอบกลับมาค่าเท่าไร"
+    },
+    {
+      "cost": 25,
+      "text": "ถ้า server ยังใช้ค่า `fixedtoken123` เดิม (ไม่ออกค่าใหม่) แปลว่า `curl -b 'session=fixedtoken123' http://shop.acme.test/account` จะเข้าได้ในฐานะ bob ทันที — แม้คุณจะไม่เคยเห็นรหัสผ่านของ bob เลยก็ตาม"
+    }
+  ],
+  "debrief": [
+    "โดยปกติเซิร์ฟเวอร์ควรออก session token **ใหม่เสมอ** ทุกครั้งที่ login สำเร็จ แต่ที่นี่กลับใช้ค่า cookie ที่มีอยู่ก่อนแล้วซ้ำ — ผู้โจมตีตั้งค่า cookie เป็นค่าที่ตัวเองรู้อยู่แล้วให้เหยื่อ รอให้เหยื่อ login ด้วยค่านั้น แล้วใช้ค่าเดียวกันเข้าสู่ระบบเป็นเหยื่อได้ทันที",
+    "ฝั่งป้องกัน: ออก session token ใหม่ทุกครั้งที่ login สำเร็จเสมอ ไม่ว่าจะมี cookie เดิมติดมาจากก่อนหน้านี้หรือไม่"
+  ],
+  "references": [
+    "OWASP Top 10 A07:2025 Authentication Failures",
+    "CWE-384 Session Fixation",
+    "MITRE ATT&CK T1539 Steal Web Session Cookie"
+  ],
+  "owasp": {
+    "2025": "A07",
+    "2021": "A07"
+  }
+}

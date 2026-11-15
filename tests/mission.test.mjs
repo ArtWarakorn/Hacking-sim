@@ -42,10 +42,24 @@ for (const [id, wt] of Object.entries(walkthroughs)) {
     const { engine, run } = startMission(id);
     let completed = 0;
     engine.events.on('complete', () => completed++);
+    // Some chapter 4 missions need a value from one step's output (e.g. a random session token) inside a
+    // later step's command - exactly like a real player copy-pasting a cookie from `curl -i` into their
+    // next command. A step may capture named values via regex and reference them later as "${name}".
+    const vars = {};
+    const substitute = (s) => s.replace(/\$\{(\w+)\}/g, (_, k) => {
+      if (!(k in vars)) throw new Error(`walkthrough ${id}: no captured value for \${${k}}`);
+      return vars[k];
+    });
     for (const step of wt.steps) {
-      const { cmd, code = 0 } = typeof step === 'string' ? { cmd: step } : step;
+      const { cmd: rawCmd, code = 0, capture } = typeof step === 'string' ? { cmd: step } : step;
+      const cmd = substitute(rawCmd);
       const r = await run(cmd);
       assert.equal(r.code, code, `step "${cmd}" exited ${r.code}, expected ${code}: ${r.text}`);
+      for (const [name, pattern] of Object.entries(capture || {})) {
+        const m = new RegExp(pattern).exec(r.text);
+        if (!m) throw new Error(`walkthrough ${id}: capture "${name}" (/${pattern}/) did not match output of "${cmd}":\n${r.text}`);
+        vars[name] = m[1] ?? m[0];
+      }
     }
     for (const value of Object.values(wt.submit)) assert.equal((await engine.submit(value)).ok, true);
     assert.equal(engine.complete, true);
@@ -171,8 +185,8 @@ test('unlocking: lesson gate, sequential missions, chapter gate', () => {
 });
 
 test('planned chapters (no missions yet) show as coming soon and stay locked', () => {
-  const c04 = curriculum.chapters.find((c) => c.id === 'c04');
-  const s = chapterState(createDefaultProgress(), c04, curriculum, ranks);
+  const c05 = curriculum.chapters.find((c) => c.id === 'c05');
+  const s = chapterState(createDefaultProgress(), c05, curriculum, ranks);
   assert.equal(s.planned, true);
   assert.equal(s.unlocked, false);
 });
@@ -219,4 +233,58 @@ test('normalizeProgress fills in missing fields from older saves', () => {
   assert.deepEqual(p.lessonsDone, []);
   assert.equal(p.settings.scanlines, false);
   assert.deepEqual(normalizeProgress(null), createDefaultProgress());
+});
+
+// ---------------- http objective: query/body/response matching (chapter 4) ----------------
+function bareEngine(objectives) {
+  const bus = new EventBus();
+  const engine = new MissionEngine({ id: 'synthetic', objectives }, { bus }).attach();
+  return { bus, engine };
+}
+const fullHttp = (over) => ({ host: 'shop.acme.test', method: 'GET', path: '/search', status: 200, query: '', reqBody: '', resBody: '', ...over });
+
+test('http objective: query regex only matches the right payload shape', () => {
+  const { bus, engine } = bareEngine([{ id: 'o1', type: 'http', path: '^/search$', query: 'UNION\\s+SELECT' }]);
+  bus.emit('http', fullHttp({ query: 'q=hammer' }));
+  assert.equal(engine.done.has('o1'), false);
+  bus.emit('http', fullHttp({ query: "q=zzz' UNION SELECT 1,2,3-- -" }));
+  assert.equal(engine.done.has('o1'), true);
+});
+
+test('http objective: body regex checks the request payload (e.g. a login bypass attempt)', () => {
+  const { bus, engine } = bareEngine([{ id: 'o1', type: 'http', path: '^/login$', method: 'POST', body: "username=[^&]*'" }]);
+  bus.emit('http', fullHttp({ path: '/login', method: 'POST', reqBody: 'username=alice&password=x' }));
+  assert.equal(engine.done.has('o1'), false);
+  bus.emit('http', fullHttp({ path: '/login', method: 'POST', reqBody: "username=admin'-- &password=x" }));
+  assert.equal(engine.done.has('o1'), true);
+});
+
+test('http objective: response regex confirms the exploit actually worked, any payload that achieves it counts', () => {
+  const { bus, engine } = bareEngine([{ id: 'o1', type: 'http', path: '^/search$', response: 'alice123' }]);
+  bus.emit('http', fullHttp({ resBody: '<div>No results</div>' }));
+  assert.equal(engine.done.has('o1'), false);
+  // two completely different valid UNION payloads both satisfy it, because both leak the same data
+  bus.emit('http', fullHttp({ resBody: '<div>admin:Adm1n_P@ss_2024</div><div>alice:alice123</div>' }));
+  assert.equal(engine.done.has('o1'), true);
+});
+
+test('http objective: query/body/response default to "match anything" when omitted', () => {
+  const { bus, engine } = bareEngine([{ id: 'o1', type: 'http', path: '^/$' }]);
+  bus.emit('http', fullHttp({ path: '/', query: 'anything=1', reqBody: 'whatever' }));
+  assert.equal(engine.done.has('o1'), true);
+});
+
+test('http objective: events without full detail (e.g. from gobuster) just never match a body/response check', () => {
+  const { bus, engine } = bareEngine([{ id: 'o1', type: 'http', path: '^/search$', response: 'alice123' }]);
+  bus.emit('http', { host: 'shop.acme.test', method: 'GET', path: '/search', status: 200 }); // no resBody at all
+  assert.equal(engine.done.has('o1'), false);
+});
+
+test('http objective: cookie regex pins down which specific technique was used', () => {
+  const { bus, engine } = bareEngine([{ id: 'o1', type: 'http', path: '^/account$', response: 'Welcome, admin', cookie: 'remember=' }]);
+  // reaching the same page via a DIFFERENT technique (e.g. the SQLi login bypass) must not satisfy it
+  bus.emit('http', fullHttp({ path: '/account', resBody: 'Welcome, admin', reqHeaders: { cookie: 'session=abc123' } }));
+  assert.equal(engine.done.has('o1'), false);
+  bus.emit('http', fullHttp({ path: '/account', resBody: 'Welcome, admin', reqHeaders: { cookie: 'remember=YWRtaW4=' } }));
+  assert.equal(engine.done.has('o1'), true);
 });

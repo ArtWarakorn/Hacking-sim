@@ -3,37 +3,110 @@
   "engine": "shopzone",
   "server": "Apache/2.4.41 (Ubuntu)",
   "poweredBy": "PHP/7.4.3",
-  "tech": ["Bootstrap[3.3.7]"],
+  "tech": [
+    "Bootstrap[3.3.7]"
+  ],
   "data": {
     "tables": {
       "users": {
-        "columns": ["id", "username", "password", "role"],
+        "columns": [
+          "id",
+          "username",
+          "password",
+          "role"
+        ],
         "rows": [
-          { "id": 1, "username": "admin", "password": "Adm1n_P@ss_2024", "role": "admin" },
-          { "id": 2, "username": "alice", "password": "alice123", "role": "customer" },
-          { "id": 3, "username": "bob", "password": "Password1", "role": "customer" }
+          {
+            "id": 1,
+            "username": "admin",
+            "password": "Adm1n_P@ss_2024",
+            "role": "admin"
+          },
+          {
+            "id": 2,
+            "username": "alice",
+            "password": "alice123",
+            "role": "customer"
+          },
+          {
+            "id": 3,
+            "username": "bob",
+            "password": "Password1",
+            "role": "customer"
+          }
         ]
       },
       "products": {
-        "columns": ["id", "name", "price", "description"],
+        "columns": [
+          "id",
+          "name",
+          "price",
+          "description"
+        ],
         "rows": [
-          { "id": 1, "name": "Wireless Mouse", "price": 19.99, "description": "Ergonomic wireless mouse with USB receiver." },
-          { "id": 2, "name": "Mechanical Keyboard", "price": 59.99, "description": "RGB mechanical keyboard, blue switches." },
-          { "id": 3, "name": "USB-C Hub", "price": 29.5, "description": "7-in-1 USB-C hub with HDMI and card reader." },
-          { "id": 4, "name": "1080p Webcam", "price": 34.0, "description": "Full HD webcam with built-in microphone." }
+          {
+            "id": 1,
+            "name": "Wireless Mouse",
+            "price": 19.99,
+            "description": "Ergonomic wireless mouse with USB receiver."
+          },
+          {
+            "id": 2,
+            "name": "Mechanical Keyboard",
+            "price": 59.99,
+            "description": "RGB mechanical keyboard, blue switches."
+          },
+          {
+            "id": 3,
+            "name": "USB-C Hub",
+            "price": 29.5,
+            "description": "7-in-1 USB-C hub with HDMI and card reader."
+          },
+          {
+            "id": 4,
+            "name": "1080p Webcam",
+            "price": 34.0,
+            "description": "Full HD webcam with built-in microphone."
+          }
         ]
       },
       "orders": {
-        "columns": ["id", "user_id", "total", "shipping_address"],
+        "columns": [
+          "id",
+          "user_id",
+          "total",
+          "shipping_address"
+        ],
         "rows": [
-          { "id": 101, "user_id": 2, "total": 19.99, "shipping_address": "12 Sukhumvit Rd, Bangkok (Alice Supaporn)" },
-          { "id": 102, "user_id": 3, "total": 59.99, "shipping_address": "99 Silom Rd, Bangkok (Bob Anan) - card ending 4471" },
-          { "id": 103, "user_id": 2, "total": 29.5, "shipping_address": "12 Sukhumvit Rd, Bangkok (Alice Supaporn)" }
+          {
+            "id": 101,
+            "user_id": 2,
+            "total": 19.99,
+            "shipping_address": "12 Sukhumvit Rd, Bangkok (Alice Supaporn)"
+          },
+          {
+            "id": 102,
+            "user_id": 3,
+            "total": 59.99,
+            "shipping_address": "99 Silom Rd, Bangkok (Bob Anan) - card ending 4471 - FLAG{idor_lets_you_read_anyones_order}"
+          },
+          {
+            "id": 103,
+            "user_id": 2,
+            "total": 29.5,
+            "shipping_address": "12 Sukhumvit Rd, Bangkok (Alice Supaporn)"
+          }
         ]
       }
     },
     "comments": [
-      { "id": 1, "productId": 1, "author": "ShopZone Team", "body": "Thanks for shopping with us! Reviews help other customers.", "postedAt": "2026-09-01T10:00:00.000Z" }
+      {
+        "id": 1,
+        "productId": 1,
+        "author": "ShopZone Team",
+        "body": "Thanks for shopping with us! Reviews help other customers.",
+        "postedAt": "2026-09-01T10:00:00.000Z"
+      }
     ],
     "fs": {
       "/var/www/html/flag.txt": "FLAG{command_injection_pops_the_shell}\n",

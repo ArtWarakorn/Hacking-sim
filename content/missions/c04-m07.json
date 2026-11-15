@@ -1,0 +1,68 @@
+{
+  "id": "c04-m07",
+  "chapter": "c04",
+  "title": "Reflected XSS บนช่องค้นหา",
+  "difficulty": "medium",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c04-l02",
+  "briefing": "ช่อง /search ของ ShopZone สะท้อนคำค้นหากลับมาแสดงในหน้าเว็บ — ลองดูว่ามันทำ encode อักขระพิเศษก่อนแสดงผลหรือไม่",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ส่งคำค้นหาที่มี <script> เข้าไป",
+      "type": "http",
+      "path": "^/search$",
+      "query": "script"
+    },
+    {
+      "id": "o2",
+      "text": "ยืนยันว่า payload ปรากฏแบบไม่ถูก encode ในหน้าเว็บ",
+      "type": "http",
+      "path": "^/search$",
+      "response": "<script>"
+    },
+    {
+      "id": "o3",
+      "text": "เว็บควรทำอะไรกับค่า q ก่อนแสดงผล เพื่อป้องกันปัญหานี้? (ตอบเป็นคำภาษาอังกฤษ เช่น escape)",
+      "type": "answer",
+      "answerHash": "44c49cfa6d891b9a1f0cc4cb29a829354d9e66884fe86e64c9acf0142deba778"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`curl -s -G --data-urlencode 'q=<script>alert(1)</script>' http://shop.acme.test/search`"
+    },
+    {
+      "cost": 20,
+      "text": "ดูผลลัพธ์ที่ได้ — ถ้าเห็น `<script>` ตรงๆ ไม่ใช่ `&lt;script&gt;` แปลว่าไม่ถูก encode"
+    }
+  ],
+  "debrief": [
+    "เพราะค่า q ถูกต่อเข้าไปในหน้า HTML โดยตรงโดยไม่ผ่านฟังก์ชัน escape ใดๆ เบราว์เซอร์จริงที่เรนเดอร์หน้านี้จะรันสคริปต์นั้นทันที — HackSim ไม่รันสคริปต์จริงเพื่อความปลอดภัย แต่การเห็น payload ไม่ถูก encode ในหน้าเว็บก็เพียงพอจะยืนยันช่องโหว่แล้ว เหมือนที่ pentester มืออาชีพใช้ \"View Source\" ยืนยัน",
+    "ฝั่งป้องกัน: encode ทุกค่าที่มาจากผู้ใช้ก่อนแทรกลง HTML เสมอ (`escapeHtml()`) หรือใช้ template engine ที่ escape อัตโนมัติ และตั้งค่า Content-Security-Policy เป็นเกราะป้องกันชั้นที่สอง"
+  ],
+  "references": [
+    "OWASP Top 10 A05:2025 Injection",
+    "CWE-79 Cross-site Scripting",
+    "OWASP WSTG-INPV-01 Testing for Reflected XSS"
+  ],
+  "owasp": {
+    "2025": "A05",
+    "2021": "A03"
+  }
+}

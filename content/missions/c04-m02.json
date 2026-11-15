@@ -1,0 +1,68 @@
+{
+  "id": "c04-m02",
+  "chapter": "c04",
+  "title": "สิทธิ์ admin ที่ตัดสินจาก cookie",
+  "difficulty": "medium",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c04-l01",
+  "briefing": "หน้า /admin/diagnostics ของ ShopZone ควรเข้าได้เฉพาะ admin เท่านั้น ลองดูว่าระบบตรวจสอบสิทธิ์อย่างไร แล้วหาทางผ่านมันโดยไม่ต้องมีบัญชี admin จริง",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "เข้า /admin/diagnostics โดยไม่มีสิทธิ์ใดๆ (ควรโดนปฏิเสธ)",
+      "type": "http",
+      "path": "^/admin/diagnostics$",
+      "status": 403
+    },
+    {
+      "id": "o2",
+      "text": "ตั้ง cookie role=admin แล้วลองใหม่",
+      "type": "http",
+      "path": "^/admin/diagnostics$",
+      "status": 200,
+      "cookie": "role=admin"
+    },
+    {
+      "id": "o3",
+      "text": "ระบบตัดสินสิทธิ์ admin จากอะไร? (ตอบคำเดียวเป็นภาษาอังกฤษ)",
+      "type": "answer",
+      "answerHash": "e772fdabec4194a5e23a9dbc0ddf9df3bd5071e31de8a373412fd735ff1294fe"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`curl -i http://shop.acme.test/admin/diagnostics` ก่อน จะเจอ 403"
+    },
+    {
+      "cost": 20,
+      "text": "ลอง `curl -b 'role=admin' http://shop.acme.test/admin/diagnostics` — หรือใช้ Browser ▸ Cookies เพิ่ม cookie นี้เอง"
+    }
+  ],
+  "debrief": [
+    "แอปตรวจสอบสิทธิ์ admin จาก cookie ธรรมดาที่ฝั่ง client แก้ไขได้เอง (`role=admin`) แทนที่จะตรวจสอบกับ session ฝั่งเซิร์ฟเวอร์ — ไม่มีอะไรยืนยันว่า cookie นี้ถูกออกให้โดยระบบจริงๆ เลย",
+    "การเข้าถึงหน้านี้ได้คือกุญแจสำคัญสู่ด่านถัดไป: หน้า diagnostics มีช่องโหว่ command injection ซ่อนอยู่ (บทต่อไป)"
+  ],
+  "references": [
+    "OWASP Top 10 A01:2025 Broken Access Control",
+    "CWE-602 Client-Side Enforcement of Server-Side Security"
+  ],
+  "owasp": {
+    "2025": "A01",
+    "2021": "A01"
+  }
+}

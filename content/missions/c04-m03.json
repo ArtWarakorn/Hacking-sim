@@ -1,0 +1,72 @@
+{
+  "id": "c04-m03",
+  "chapter": "c04",
+  "title": "SQL Injection: Login Bypass",
+  "difficulty": "medium",
+  "xp": 350,
+  "estMinutes": 15,
+  "lesson": "c04-l02",
+  "briefing": "ลองเข้าสู่ระบบ ShopZone ด้วยชื่อผู้ใช้ปกติก่อนเพื่อดูพฤติกรรมเมื่อผิด แล้วลองใช้ SQL injection เข้าสู่ระบบในฐานะ admin โดยไม่ต้องรู้รหัสผ่านจริง",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ลอง login ด้วยรหัสผ่านผิดก่อน (ดูข้อความปกติ)",
+      "type": "http",
+      "path": "^/login$",
+      "method": "POST",
+      "status": 200,
+      "response": "Invalid username or password"
+    },
+    {
+      "id": "o2",
+      "text": "ใช้ SQL injection ใน username เพื่อ bypass การเช็กรหัสผ่าน",
+      "type": "http",
+      "path": "^/login$",
+      "method": "POST",
+      "status": 302,
+      "body": "username=[^&]*'"
+    },
+    {
+      "id": "o3",
+      "text": "payload ของคุณทำให้ล็อกอินเป็นผู้ใช้ชื่ออะไร?",
+      "type": "answer",
+      "answerHash": "d97669a76ba1fe5c3383417d687cd5e909e5fb31a6092cad8f8b7a5dbcad1653"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "ลองดูก่อนว่า query ที่เสี่ยงคือ `WHERE username='<u>' AND password='<p>'` — ถ้าปิด string ก่อนแล้วคอมเมนต์ส่วนที่เหลือจะเกิดอะไรขึ้น?"
+    },
+    {
+      "cost": 25,
+      "text": "`curl -i -d \"username=admin'-- &password=x\" http://shop.acme.test/login`"
+    }
+  ],
+  "debrief": [
+    "`admin'-- ` ปิดเครื่องหมายคำพูดก่อนกำหนดแล้วคอมเมนต์ (`--`) ส่วนตรวจรหัสผ่านทั้งหมดทิ้งไป เหลือแค่ `WHERE username='admin'` ซึ่งตรงกับแถวของ admin พอดี — ล็อกอินสำเร็จโดยไม่ต้องรู้รหัสผ่านเลยแม้แต่ตัวเดียว",
+    "ฝั่งป้องกัน: ใช้ prepared statement/parameterized query เสมอ (`Database.bind()` ในเกมนี้จำลองสิ่งนี้) ไม่เคยต่อ input ของผู้ใช้เข้ากับ SQL โดยตรง"
+  ],
+  "references": [
+    "OWASP Top 10 A05:2025 Injection",
+    "CWE-89 SQL Injection",
+    "MITRE ATT&CK T1190 Exploit Public-Facing Application"
+  ],
+  "owasp": {
+    "2025": "A05",
+    "2021": "A03"
+  }
+}

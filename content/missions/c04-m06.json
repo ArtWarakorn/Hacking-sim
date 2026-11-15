@@ -1,0 +1,71 @@
+{
+  "id": "c04-m06",
+  "chapter": "c04",
+  "title": "ปลอม Remember-Me Cookie เป็น Admin",
+  "difficulty": "hard",
+  "xp": 400,
+  "estMinutes": 20,
+  "lesson": "c04-l03",
+  "briefing": "ShopZone มีฟีเจอร์ \"Remember me\" ที่ออก cookie แยกต่างหาก ลอง login พร้อมติ๊ก remember แล้วดูว่า cookie นั้นเก็บอะไรไว้ — จากนั้นลองปลอมมันขึ้นมาเองในฐานะ admin",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "login เป็น alice พร้อมเปิดใช้ remember me",
+      "type": "http",
+      "path": "^/login$",
+      "method": "POST",
+      "status": 302,
+      "body": "remember=1"
+    },
+    {
+      "id": "o2",
+      "text": "ถอด remember cookie ของ alice ด้วย base64 แล้วเจอข้อความอะไร?",
+      "type": "answer",
+      "answerHash": "3851d1567f4dd896e12c52ca93b95f0009893fc4a7dc22377873222beb55c75a"
+    },
+    {
+      "id": "o3",
+      "text": "ปลอม remember cookie เป็นของ admin แล้วเข้าหน้า /account สำเร็จ",
+      "type": "http",
+      "path": "^/account$",
+      "response": "Welcome, admin",
+      "cookie": "remember="
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`curl -i -d 'username=alice&password=alice123&remember=1' http://shop.acme.test/login` แล้วดู Set-Cookie: remember=... ถอดด้วย `base64 -d`"
+    },
+    {
+      "cost": 25,
+      "text": "`curl -b \"remember=$(echo -n admin | base64)\" http://shop.acme.test/account` — ไม่ต้องรู้รหัสผ่าน admin เลยแม้แต่น้อย"
+    }
+  ],
+  "debrief": [
+    "remember cookie เก็บแค่ `base64(username)` โดยไม่มีลายเซ็นหรือการเข้ารหัสใดๆ ป้องกันการปลอมแปลง — ใครก็เข้ารหัส `base64(\"admin\")` เองได้ และระบบจะยอมรับทันทีว่าเป็น admin จริง",
+    "นี่คือตัวอย่างชัดเจนของ \"Cryptographic Failure\" ที่ไม่ใช่แค่การเข้ารหัสผิด แต่คือการ **ไม่มี** กลไกพิสูจน์ความถูกต้องของ token เลย ฝั่งป้องกันต้องเซ็น token ด้วยกุญแจลับที่ปลอมแปลงไม่ได้ (เช่น HMAC)"
+  ],
+  "references": [
+    "OWASP Top 10 A04:2025 Cryptographic Failures",
+    "CWE-290 Authentication Bypass by Spoofing",
+    "CWE-347 Improper Verification of Cryptographic Signature"
+  ],
+  "owasp": {
+    "2025": "A04",
+    "2021": "A02"
+  }
+}

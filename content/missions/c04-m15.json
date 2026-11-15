@@ -1,0 +1,68 @@
+{
+  "id": "c04-m15",
+  "chapter": "c04",
+  "title": "จำนวนสินค้าติดลบ",
+  "difficulty": "medium",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c04-l06",
+  "briefing": "หน้าซื้อด่วนเดิมมีอีกจุดที่ไม่ได้ตรวจสอบ: จำนวนสินค้า (quantity) ลองดูว่าถ้าใส่ค่าที่ \"ไม่ควรเป็นไปได้\" จะเกิดอะไรขึ้น",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "สั่งซื้อด้วยจำนวนติดลบ",
+      "type": "http",
+      "path": "^/buy$",
+      "query": "qty=-"
+    },
+    {
+      "id": "o2",
+      "text": "ยืนยันว่ายอดรวมกลายเป็นค่าติดลบ",
+      "type": "http",
+      "path": "^/buy$",
+      "response": "\\$-"
+    },
+    {
+      "id": "o3",
+      "text": "ค่า qty ควรถูกจำกัดให้เป็นแบบใดเสมอ? (ตอบเป็นภาษาอังกฤษคำเดียว เช่น positive)",
+      "type": "answer",
+      "answerHash": "dc3b9ec334e5473c1b5808881bff87253918d554292cc2fad65bef56720b8cba"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "login แล้วลอง `qty=-5` แทนที่จะเป็นค่าบวกปกติ"
+    },
+    {
+      "cost": 20,
+      "text": "`curl -b 'session=...' -G --data-urlencode 'product_id=2' --data-urlencode 'qty=-5' --data-urlencode 'confirm=1' http://shop.acme.test/buy`"
+    }
+  ],
+  "debrief": [
+    "ไม่มีที่ใดในโค้ดตรวจสอบว่า `qty` ต้องเป็นจำนวนเต็มบวก — เมื่อคูณราคาด้วยจำนวนติดลบ ยอดรวมก็ติดลบตามไปด้วย ระบบบางตัวอาจตีความยอดติดลบว่าเป็นเครดิต/เงินคืนให้บัญชีนั้นโดยไม่ตั้งใจ",
+    "ฝั่งป้องกัน: ตรวจสอบขอบเขตของค่าที่สมเหตุสมผลเสมอ (จำนวนต้องเป็นจำนวนเต็มบวกเท่านั้น และไม่เกินสต็อกที่มี) ตั้งแต่ตอนออกแบบ ไม่ใช่แค่ตอนเขียนโค้ด"
+  ],
+  "references": [
+    "OWASP Top 10 A06:2025 Insecure Design",
+    "CWE-20 Improper Input Validation",
+    "CWE-1284 Improper Validation of Specified Quantity in Input"
+  ],
+  "owasp": {
+    "2025": "A06",
+    "2021": "A04"
+  }
+}

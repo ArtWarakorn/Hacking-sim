@@ -1,0 +1,68 @@
+{
+  "id": "c04-m10",
+  "chapter": "c04",
+  "title": "โฟลเดอร์ .git ที่หลุดขึ้นเว็บ",
+  "difficulty": "easy",
+  "xp": 250,
+  "estMinutes": 12,
+  "lesson": "c04-l04",
+  "briefing": "acme-site (web01) อาจถูก deploy ด้วยการ git clone ตรงๆ ลองดูว่าโฟลเดอร์ .git หลุดออกมาให้เข้าถึงได้หรือไม่",
+  "scope": {
+    "inScope": [
+      "acme-site (web01) — 10.10.20.5"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.5"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "เข้าถึง /.git/config บน acme-site",
+      "type": "http",
+      "host": "10.10.20.5",
+      "path": "^/\\.git/config$",
+      "status": 200
+    },
+    {
+      "id": "o2",
+      "text": "อ่านค่า remote url ที่เผยออกมา",
+      "type": "http",
+      "host": "10.10.20.5",
+      "response": "gitlab\\.acme\\.test"
+    },
+    {
+      "id": "o3",
+      "text": "ส่ง flag ที่พบ",
+      "type": "flag",
+      "flagHash": "16438ed471ae628ca68dfe7a9006486ea8204af24b5eba6755b6fef68eefd582"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`curl http://10.10.20.5/.git/config` — ลองดูว่าเซิร์ฟเวอร์ตอบ 200 หรือ 404"
+    },
+    {
+      "cost": 20,
+      "text": "อ่านทุกบรรทัดของไฟล์ที่ได้มา — flag อยู่ในคอมเมนต์"
+    }
+  ],
+  "debrief": [
+    "การ deploy ด้วย `git clone` ตรงๆ ลงเครื่อง production โดยไม่ปิดกั้นการเข้าถึงโฟลเดอร์ `.git/` ทำให้ประวัติซอร์สโค้ดทั้งหมด (รวมไฟล์ที่เคยลบไปแล้ว!) ถูกเสิร์ฟออกสู่สาธารณะ ไฟล์ `.git/config` เพียงไฟล์เดียวก็เผย URL ของ git server ภายในองค์กรแล้ว",
+    "ฝั่งป้องกัน: ตั้งค่าเว็บเซิร์ฟเวอร์ปฏิเสธการเข้าถึงไฟล์/โฟลเดอร์ที่ขึ้นต้นด้วยจุดเสมอ และใช้ deployment pipeline ที่คัดลอกเฉพาะไฟล์ที่ต้องใช้จริง"
+  ],
+  "references": [
+    "OWASP Top 10 A02:2025 Security Misconfiguration",
+    "CWE-527 Exposure of Version-Control Repository to an Unauthorized Control Sphere"
+  ],
+  "owasp": {
+    "2025": "A02",
+    "2021": "A05"
+  }
+}

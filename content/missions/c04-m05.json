@@ -1,0 +1,68 @@
+{
+  "id": "c04-m05",
+  "chapter": "c04",
+  "title": "รหัสผ่านที่เก็บเป็น Plaintext",
+  "difficulty": "medium",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c04-l03",
+  "briefing": "ใช้เทคนิค UNION SQLi ที่เพิ่งฝึกมาอีกครั้ง คราวนี้ให้สังเกตดีๆ ว่ารหัสผ่านที่ดึงออกมาได้นั้นถูกเก็บในรูปแบบใด",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ดึง username และ password ของผู้ใช้ทั้งหมดผ่าน UNION SQLi อีกครั้ง",
+      "type": "http",
+      "path": "^/search$",
+      "query": "union"
+    },
+    {
+      "id": "o2",
+      "text": "ยืนยันว่าเห็นรหัสผ่านของ alice ตรงๆ ในผลลัพธ์",
+      "type": "http",
+      "path": "^/search$",
+      "response": "alice123"
+    },
+    {
+      "id": "o3",
+      "text": "รหัสผ่านที่เจอถูกเก็บในรูปแบบใด? (ตอบเป็นภาษาอังกฤษคำเดียว เช่น plaintext)",
+      "type": "answer",
+      "answerHash": "502f7874aafff573cd862703457fe60ce0800d60f05d3a7378f7023548d0aff3"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "ใช้ payload เดิมจากด่าน UNION-based Extraction"
+    },
+    {
+      "cost": 20,
+      "text": "สังเกตว่าค่าที่ดึงออกมาคือ `alice123` ตรงๆ ไม่ใช่สตริงแบบ `$2b$10$...` ที่เป็น hash"
+    }
+  ],
+  "debrief": [
+    "รหัสผ่านที่อ่านออกได้ตรงๆ ทันทีโดยไม่ต้องถอดรหัสอะไรเลย หมายความว่าแอปนี้เก็บรหัสผ่านเป็น **plaintext** — ถ้าฐานข้อมูลรั่วไหลด้วยวิธีใดก็ตาม (ไม่จำเป็นต้องเป็น SQLi เสมอไป) รหัสผ่านผู้ใช้ทุกคนจะถูกเปิดเผยทันที และเนื่องจากคนมักใช้รหัสผ่านซ้ำกันหลายเว็บ ความเสียหายจะลุกลามไปไกลกว่าแค่เว็บนี้เว็บเดียว",
+    "ฝั่งป้องกัน: เก็บรหัสผ่านด้วย hash แบบช้าและมี salt เสมอ (bcrypt, scrypt, argon2) เพื่อให้ถึงแม้ฐานข้อมูลรั่วไหล รหัสผ่านจริงก็ยังคงปลอดภัยในทางปฏิบัติ"
+  ],
+  "references": [
+    "OWASP Top 10 A04:2025 Cryptographic Failures",
+    "CWE-256 Plaintext Storage of a Password",
+    "CWE-916 Use of Password Hash With Insufficient Computational Effort"
+  ],
+  "owasp": {
+    "2025": "A04",
+    "2021": "A02"
+  }
+}

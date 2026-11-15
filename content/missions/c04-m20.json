@@ -1,0 +1,64 @@
+{
+  "id": "c04-m20",
+  "chapter": "c04",
+  "title": "Error Message ที่บอกมากเกินไป",
+  "difficulty": "easy",
+  "xp": 250,
+  "estMinutes": 12,
+  "lesson": "c04-l10",
+  "briefing": "ลองส่ง payload ที่ทำให้ query ของหน้า login พังจริงๆ (ไม่ใช่แค่ bypass) แล้วดูว่าแอปตอบสนองอย่างไรเมื่อเกิดข้อผิดพลาดที่ไม่คาดคิด",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ส่ง username ที่มีเครื่องหมาย ' เดี่ยวๆ จนทำให้ query ผิดวากยสัมพันธ์จริง",
+      "type": "http",
+      "path": "^/login$",
+      "method": "POST",
+      "status": 500,
+      "response": "Uncaught mysqli_sql_exception"
+    },
+    {
+      "id": "o2",
+      "text": "ข้อความ error เผย path ของไฟล์ใดบนเซิร์ฟเวอร์?",
+      "type": "answer",
+      "answerHash": "513096092dbe37aca7cebc3067c7fffea577e9d965bffc9a1679d9a7fb8aa278"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "payload ก่อนหน้านี้ (`admin'-- `) ใช้วากยสัมพันธ์ถูกต้อง ลองไม่ใส่ `-- ` ต่อท้ายดูว่าเกิดอะไรขึ้น"
+    },
+    {
+      "cost": 15,
+      "text": "`curl -i -d \"username=admin'&password=x\" http://shop.acme.test/login`"
+    }
+  ],
+  "debrief": [
+    "เมื่อ query ผิดวากยสัมพันธ์จริงๆ (ไม่ใช่ injection ที่ถูกต้อง) แอปที่ตั้งค่า error reporting แบบ development บน production จะพ่น stack trace เต็มรูปแบบกลับมา เผย path เต็มของไฟล์บนเซิร์ฟเวอร์ (`/var/www/html/db.php:42`) และชื่อ exception class ที่ใช้ภายใน",
+    "ข้อมูลเหล่านี้ช่วยผู้โจมตีเข้าใจโครงสร้างระบบและปรับแต่ง payload ให้แม่นยำขึ้นในการโจมตีรอบต่อไป แม้จะดูเหมือนรายละเอียดเล็กน้อยก็ตาม",
+    "ฝั่งป้องกัน: production ต้องแสดง error แบบทั่วไปให้ผู้ใช้เห็นเท่านั้น และเก็บรายละเอียดเต็มไว้ใน log ฝั่งเซิร์ฟเวอร์ที่ผู้ใช้เข้าถึงไม่ได้"
+  ],
+  "references": [
+    "OWASP Top 10 A10:2025 Mishandling of Exceptional Conditions",
+    "CWE-209 Generation of Error Message Containing Sensitive Information",
+    "CWE-756 Missing Custom Error Page"
+  ],
+  "owasp": {
+    "2025": "A10",
+    "2021": "A05"
+  }
+}

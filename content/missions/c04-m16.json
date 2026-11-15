@@ -1,0 +1,70 @@
+{
+  "id": "c04-m16",
+  "chapter": "c04",
+  "title": "เดารายชื่อผู้ใช้จากหน้าลืมรหัสผ่าน",
+  "difficulty": "medium",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c04-l07",
+  "briefing": "หน้า /forgot-password ของ ShopZone บอกคุณว่าชื่อผู้ใช้ที่ใส่เข้าไปมีอยู่ในระบบหรือไม่ — ลองใช้ประโยชน์จากความต่างนี้",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ตรวจสอบ username ที่มีอยู่จริง (admin)",
+      "type": "http",
+      "path": "^/forgot-password$",
+      "query": "username=admin",
+      "response": "มีบัญชีนี้อยู่ในระบบ"
+    },
+    {
+      "id": "o2",
+      "text": "ตรวจสอบ username ที่ไม่มีอยู่จริง",
+      "type": "http",
+      "path": "^/forgot-password$",
+      "response": "ไม่พบบัญชีผู้ใช้"
+    },
+    {
+      "id": "o3",
+      "text": "จาก admin, alice และ ghost — username ใดไม่มีอยู่ในระบบ?",
+      "type": "answer",
+      "answerHash": "1e596bb81ce929f78976c6820c9cd47fe0474fa1db4e52e97649985436e69522"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`curl 'http://shop.acme.test/forgot-password?username=admin'` แล้วลองเทียบกับชื่อที่ไม่น่ามีอยู่จริง"
+    },
+    {
+      "cost": 20,
+      "text": "`curl 'http://shop.acme.test/forgot-password?username=ghost'`"
+    }
+  ],
+  "debrief": [
+    "ข้อความตอบกลับต่างกันระหว่าง \"มีบัญชีนี้อยู่ในระบบ\" กับ \"ไม่พบบัญชีผู้ใช้\" ทำให้ผู้โจมตีไล่เช็คชื่อผู้ใช้ทีละชื่อจนได้รายชื่อผู้ใช้จริงทั้งหมดในระบบ โดยยังไม่ต้องแตะรหัสผ่านเลยแม้แต่ครั้งเดียว",
+    "รายชื่อผู้ใช้ที่ยืนยันแล้วว่ามีอยู่จริงคือวัตถุดิบสำคัญสำหรับการโจมตีแบบ password spraying ในบทถัดไป — ยิ่งรู้ชื่อผู้ใช้แม่นยำเท่าไร การเดารหัสผ่านยิ่งมีประสิทธิภาพเท่านั้น",
+    "ฝั่งป้องกัน: ข้อความตอบกลับของระบบลืมรหัสผ่าน/สมัครสมาชิกต้องเหมือนกันเป๊ะไม่ว่า username จะมีอยู่จริงหรือไม่"
+  ],
+  "references": [
+    "OWASP Top 10 A07:2025 Authentication Failures",
+    "CWE-203 Observable Discrepancy",
+    "OWASP WSTG-IDNT-04 Testing for Account Enumeration"
+  ],
+  "owasp": {
+    "2025": "A07",
+    "2021": "A07"
+  }
+}

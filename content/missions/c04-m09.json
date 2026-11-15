@@ -1,0 +1,77 @@
+{
+  "id": "c04-m09",
+  "chapter": "c04",
+  "title": "Command Injection ผ่านเครื่องมือ Diagnostics",
+  "difficulty": "hard",
+  "xp": 450,
+  "estMinutes": 20,
+  "lesson": "c04-l02",
+  "briefing": "ใช้สิทธิ์ที่คุณได้มาจาก cookie role=admin เข้าหน้า /admin/diagnostics อีกครั้ง คราวนี้ลองดูว่าช่อง host ที่ใช้ ping ปลอดภัยแค่ไหน",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "เข้าหน้า diagnostics ด้วย cookie role=admin แล้วแทรกคำสั่งต่อท้ายค่า host",
+      "type": "http",
+      "path": "^/admin/diagnostics$",
+      "cookie": "role=admin",
+      "query": ";|%3[bB]"
+    },
+    {
+      "id": "o2",
+      "text": "ยืนยันว่าคำสั่งที่แทรกเข้าไปถูกรันจริง (เห็นผลของ id)",
+      "type": "http",
+      "path": "^/admin/diagnostics$",
+      "response": "uid=33"
+    },
+    {
+      "id": "o3",
+      "text": "อ่านไฟล์ flag.txt บนเซิร์ฟเวอร์ผ่านคำสั่งที่แทรกเข้าไป",
+      "type": "http",
+      "path": "^/admin/diagnostics$",
+      "response": "FLAG\\{command_injection_pops_the_shell\\}"
+    },
+    {
+      "id": "o4",
+      "text": "ส่ง flag ที่พบ",
+      "type": "flag",
+      "flagHash": "3330b9ccf77d4ef25a61e607f4d4038d0800efd960194ae9686a6c0e796afb04"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "ย้อนกลับไปใช้ cookie `role=admin` จากด่านก่อน แล้วใส่ `;` ต่อท้ายค่า host เช่น `host=127.0.0.1; id`"
+    },
+    {
+      "cost": 25,
+      "text": "`curl -s -b 'role=admin' -G --data-urlencode 'host=127.0.0.1; cat /var/www/html/flag.txt' http://shop.acme.test/admin/diagnostics`"
+    }
+  ],
+  "debrief": [
+    "ค่า host ถูกส่งตรงไปยังคำสั่ง shell (`ping -c 1 <host>`) โดยไม่มีการตรวจสอบหรือ escape ใดๆ — `;` คือตัวแบ่งคำสั่งใน shell ทำให้ทุกอย่างหลังจากนั้นถูกรันเป็นคำสั่งแยกต่างหาก",
+    "ช่องโหว่นี้ให้ผลลัพธ์ร้ายแรงที่สุดในบทนี้: **Remote Code Execution** เต็มรูปแบบในสิทธิ์ของ web server (www-data) — จากตรงนี้ผู้โจมตีสามารถอ่านไฟล์ใดๆ ที่ www-data เข้าถึงได้ หรือขยายผลต่อไปเป็น reverse shell (บทที่ 6)",
+    "ฝั่งป้องกัน: ไม่ใช้ input ของผู้ใช้สร้างคำสั่ง shell โดยตรงเด็ดขาด ถ้าจำเป็นต้องเรียกโปรแกรมภายนอกจริงๆ ให้ใช้ API ที่ไม่ผ่าน shell (เช่น `execve` แบบมี argument array แยก ไม่ใช่ string เดียว) และตรวจสอบ allowlist ของค่าที่รับได้อย่างเข้มงวด"
+  ],
+  "references": [
+    "OWASP Top 10 A05:2025 Injection",
+    "CWE-78 OS Command Injection",
+    "MITRE ATT&CK T1059 Command and Scripting Interpreter"
+  ],
+  "owasp": {
+    "2025": "A05",
+    "2021": "A03"
+  }
+}

