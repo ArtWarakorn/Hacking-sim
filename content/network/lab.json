@@ -116,6 +116,9 @@
           "pub": {
             "readme.txt": "Public drop folder. Please do not upload customer data here.\n"
           }
+        },
+        "accounts": {
+          "ftpuser": "Summer2024!"
         }
       },
       "smb": {
@@ -158,7 +161,8 @@
               "hr_admin": "Winter2024!"
             },
             "tree": {
-              "salaries.csv": "id,name,salary\n1,somchai,45000\n"
+              "salaries.csv": "id,name,salary\n1,somchai,45000\n",
+              "hr_audit_note.txt": "Reminder: rotate hr_admin password after the Q4 audit.\nFLAG{password_reuse_opens_every_door}\n"
             }
           },
           "IPC$": {

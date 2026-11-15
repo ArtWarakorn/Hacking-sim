@@ -5,11 +5,12 @@ import { webCommands } from './web.js';
 import { procCommands } from './proc.js';
 import { reconCommands } from './recon.js';
 import { shareCommands } from './shares.js';
+import { crackCommands } from './crack.js';
 
 /** Command registry. `docs` is the array from content/commands.json (used by help, man, --help). */
 export function createRegistry(docs = []) {
   const commands = new Map();
-  for (const c of [...fsCommands, ...miscCommands, ...netCommands, ...webCommands, ...procCommands, ...reconCommands, ...shareCommands]) commands.set(c.name, c);
+  for (const c of [...fsCommands, ...miscCommands, ...netCommands, ...webCommands, ...procCommands, ...reconCommands, ...shareCommands, ...crackCommands]) commands.set(c.name, c);
   const docMap = new Map(docs.map((d) => [d.name, d]));
 
   const registry = {

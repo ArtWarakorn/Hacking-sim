@@ -185,8 +185,8 @@ test('unlocking: lesson gate, sequential missions, chapter gate', () => {
 });
 
 test('planned chapters (no missions yet) show as coming soon and stay locked', () => {
-  const c05 = curriculum.chapters.find((c) => c.id === 'c05');
-  const s = chapterState(createDefaultProgress(), c05, curriculum, ranks);
+  const c06 = curriculum.chapters.find((c) => c.id === 'c06');
+  const s = chapterState(createDefaultProgress(), c06, curriculum, ranks);
   assert.equal(s.planned, true);
   assert.equal(s.unlocked, false);
 });

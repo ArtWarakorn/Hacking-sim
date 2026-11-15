@@ -1,0 +1,87 @@
+{
+  "id": "c05-m04",
+  "chapter": "c05",
+  "title": "NTLM และการใช้รหัสผ่านซ้ำ",
+  "difficulty": "hard",
+  "xp": 400,
+  "estMinutes": 20,
+  "lesson": "c05-l02",
+  "briefing": "ACME กำลังเตรียมย้ายไป Windows/Active Directory และส่งไฟล์ NTLM hash dump ของบัญชีสำคัญมาให้ตรวจสอบ ถอดรหัสผ่านของ hr_admin แล้วลองดูว่ารหัสผ่านนี้ถูกใช้ซ้ำที่ระบบอื่นหรือไม่ — ย้อนกลับไปที่ SMB share ของ ftp01 ที่คุณเข้าไม่ได้ในบทที่ 3",
+  "scope": {
+    "inScope": [
+      "10.10.20.6 (ftp01)"
+    ],
+    "outOfScope": [
+      "เครื่องอื่นทั้งหมด"
+    ],
+    "ips": [
+      "10.10.20.6"
+    ]
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "fsPatch": {
+    "/home/kali/Documents/clients/acme-ntlm-dump.txt": {
+      "owner": "kali",
+      "group": "kali",
+      "content": "hr_admin:7209d1e2b55d242551d2e7aba8604e47\nsvc_backup:72f0eefcc213ea8f350773b831cf2c9c\n"
+    }
+  },
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "อ่านไฟล์ NTLM dump",
+      "type": "file_read",
+      "path": "/home/kali/Documents/clients/acme-ntlm-dump.txt"
+    },
+    {
+      "id": "o2",
+      "text": "ถอดรหัสผ่านด้วย NTLM format (john --format=nt หรือ hashcat -m 1000)",
+      "type": "command",
+      "match": "(john\\b.*(--format=nt|\\bnt\\b))|(hashcat\\b.*-m\\s*1000)"
+    },
+    {
+      "id": "o3",
+      "text": "รหัสผ่านของ hr_admin คืออะไร?",
+      "type": "answer",
+      "answerHash": "b7c1a544be6c9f2dac6fa9655d581279146358741a5ab899d60bf7096ca6e0c9"
+    },
+    {
+      "id": "o4",
+      "text": "ใช้รหัสผ่านนี้เข้า share hr บน ftp01 ผ่าน smbclient",
+      "type": "event",
+      "name": "smb.connect",
+      "where": {
+        "share": "^hr$",
+        "ok": "^true$"
+      }
+    },
+    {
+      "id": "o5",
+      "text": "ส่ง flag ที่พบ",
+      "type": "flag",
+      "flagHash": "f540eb8ffb5117fa3e6a8e6aa14fb1566a9bc694a2a7bf9d2c99e0e0de144a28"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`john --format=nt --wordlist=/usr/share/wordlists/rockyou-mini.txt ~/Documents/clients/acme-ntlm-dump.txt`"
+    },
+    {
+      "cost": 25,
+      "text": "จำได้ไหมว่า user `hr_admin` อยู่ใน share `hr` ของ ftp01 ที่เคยเข้าไม่ได้ในบทที่ 3? ลอง `smbclient -U hr_admin%<รหัสผ่านที่ถอดได้> //10.10.20.6/hr`"
+    }
+  ],
+  "debrief": [
+    "รหัสผ่าน `Winter2024!` ที่ถอดได้จากไฟล์ NTLM dump เป็น **รหัสเดียวกัน** กับที่ hr_admin ใช้ล็อกอิน SMB share — พนักงานคนนี้ใช้รหัสผ่านเดียวกันในสองระบบที่แยกจากกันโดยสิ้นเชิง",
+    "นี่คือวิธีที่การโจมตีเล็กๆ (ถอด hash จากไฟล์ที่ \"แค่\" ส่งมาให้ตรวจสอบ) ขยายผลเป็นการเข้าถึงข้อมูลจริง (ไฟล์ HR) ได้ — pentester มืออาชีพจะลองรหัสผ่านที่ถอดได้กับทุก service ที่เกี่ยวข้องเสมอ",
+    "ฝั่งป้องกัน: ใช้ตัวจัดการรหัสผ่าน (password manager) เพื่อให้แต่ละระบบมีรหัสผ่านไม่ซ้ำกัน และเปิดใช้ multi-factor authentication กับระบบที่สำคัญ"
+  ],
+  "references": [
+    "OWASP Top 10 A07:2025 Authentication Failures",
+    "CWE-521 Weak Password Requirements",
+    "MITRE ATT&CK T1078 Valid Accounts"
+  ]
+}

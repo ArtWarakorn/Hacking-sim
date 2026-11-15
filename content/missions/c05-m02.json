@@ -1,0 +1,71 @@
+{
+  "id": "c05-m02",
+  "chapter": "c05",
+  "title": "ถอดรหัสผ่าน MD5 ด้วย john",
+  "difficulty": "medium",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c05-l01",
+  "briefing": "ACME ส่งไฟล์ hash dump จากระบบเก่าตัวหนึ่งมาให้ตรวจสอบความแข็งแรงของรหัสผ่านพนักงาน ใช้ john ถอดรหัสผ่านทั้งหมดด้วย wordlist ที่มีอยู่",
+  "scope": {
+    "inScope": [
+      "kali (เครื่องของคุณเอง — วิเคราะห์ไฟล์ offline)"
+    ],
+    "outOfScope": []
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "fsPatch": {
+    "/home/kali/Documents/clients/acme-md5-dump.txt": {
+      "owner": "kali",
+      "group": "kali",
+      "content": "jsmith:5f4dcc3b5aa765d61d8327deb882cf99\nagarcia:0d107d09f5bbe40cade3de5c71e9e9b7\nmchen:d8578edf8458ce06fbc5bb76a58c5ca4\n"
+    }
+  },
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "อ่านไฟล์ dump ก่อน",
+      "type": "file_read",
+      "path": "/home/kali/Documents/clients/acme-md5-dump.txt"
+    },
+    {
+      "id": "o2",
+      "text": "ใช้ john ถอดรหัสผ่านด้วย --format=raw-md5",
+      "type": "command",
+      "match": "^john\\b.*(--format=raw-md5|raw-md5)"
+    },
+    {
+      "id": "o3",
+      "text": "รหัสผ่านของ jsmith คืออะไร?",
+      "type": "answer",
+      "answerHash": "a98d26e1e72d5be40a1f5c2d3d8fba05c611911d2269101a75fe9ca350b1d00f"
+    },
+    {
+      "id": "o4",
+      "text": "รหัสผ่านของ mchen คืออะไร?",
+      "type": "answer",
+      "answerHash": "9be9b489fcca656038a8891538135e04e5037ada798396ed257d11eb1478b4d2"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`cat ~/Documents/clients/acme-md5-dump.txt` ดูรูปแบบไฟล์ก่อน (username:hash ต่อบรรทัด)"
+    },
+    {
+      "cost": 20,
+      "text": "`john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou-mini.txt ~/Documents/clients/acme-md5-dump.txt`"
+    }
+  ],
+  "debrief": [
+    "รหัสผ่านทั้งสามล้วนเป็นคำที่พบบ่อยมากและอยู่ในทุก wordlist สาธารณะ (password, letmein, qwerty) — การเก็บแค่ MD5 โดยไม่มี salt ทำให้ wordlist attack ได้ผลเร็วมาก",
+    "ฝั่งป้องกัน: ใช้ hash แบบช้าที่มี salt ในตัว (bcrypt/argon2) และบังคับนโยบายรหัสผ่านที่ไม่ใช่คำศัพท์ทั่วไป"
+  ],
+  "references": [
+    "OWASP Top 10 A04:2025 Cryptographic Failures",
+    "CWE-916 Use of Password Hash With Insufficient Computational Effort",
+    "MITRE ATT&CK T1110.002 Password Cracking"
+  ]
+}

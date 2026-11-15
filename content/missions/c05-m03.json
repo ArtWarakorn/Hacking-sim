@@ -1,0 +1,70 @@
+{
+  "id": "c05-m03",
+  "chapter": "c05",
+  "title": "ถอดรหัสผ่าน SHA1 ด้วย hashcat",
+  "difficulty": "medium",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c05-l01",
+  "briefing": "มีไฟล์ hash dump อีกชุดจากระบบที่ใช้ SHA1 แทน MD5 ลองใช้ hashcat แทน john เพื่อฝึกใช้ทั้งสองเครื่องมือ",
+  "scope": {
+    "inScope": [
+      "kali (เครื่องของคุณเอง — วิเคราะห์ไฟล์ offline)"
+    ],
+    "outOfScope": []
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "fsPatch": {
+    "/home/kali/Documents/clients/acme-sha1-dump.txt": {
+      "owner": "kali",
+      "group": "kali",
+      "content": "dthompson:e35bece6c5e6e0e86ca51d0440e92282a9d6ac8a\nrpatel:e59bea4979b25adc24ea6b0f59ce5e1942023a99\n"
+    }
+  },
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "อ่านไฟล์ dump ก่อน",
+      "type": "file_read",
+      "path": "/home/kali/Documents/clients/acme-sha1-dump.txt"
+    },
+    {
+      "id": "o2",
+      "text": "ใช้ hashcat โหมด 100 (SHA1) ถอดรหัสผ่าน",
+      "type": "command",
+      "match": "^hashcat\\b.*-m\\s*100"
+    },
+    {
+      "id": "o3",
+      "text": "รหัสผ่านของ dthompson คืออะไร?",
+      "type": "answer",
+      "answerHash": "509511aa6e088f30533502989cfc12f03b9a875e15636f38e94763d9d1a3c9dc"
+    },
+    {
+      "id": "o4",
+      "text": "รหัสผ่านของ rpatel คืออะไร?",
+      "type": "answer",
+      "answerHash": "a484000e48b5c0f3a52e9172447f3a950f2d63ae571e5cd6f60806f521050a7e"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "โหมดของ hashcat สำหรับ SHA1 คือ 100"
+    },
+    {
+      "cost": 20,
+      "text": "`hashcat -m 100 -a 0 ~/Documents/clients/acme-sha1-dump.txt /usr/share/wordlists/rockyou-mini.txt`"
+    }
+  ],
+  "debrief": [
+    "hashcat แสดงผลลัพธ์เป็น `hash:password` ต่างจาก john ที่แสดง `password (username)` — เป็นธรรมเนียมที่ต่างกันของสองเครื่องมือ แต่หลักการเดียวกัน: ลองทุกคำใน wordlist จนกว่าจะตรง",
+    "ฝั่งป้องกัน: SHA1 ถูกออกแบบมาเพื่อความเร็ว ไม่ใช่เพื่อเก็บรหัสผ่าน — ไม่ควรใช้ SHA1/MD5 กับรหัสผ่านเลยไม่ว่ากรณีใด"
+  ],
+  "references": [
+    "OWASP Top 10 A04:2025 Cryptographic Failures",
+    "CWE-916 Use of Password Hash With Insufficient Computational Effort"
+  ]
+}

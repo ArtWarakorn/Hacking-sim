@@ -1,0 +1,65 @@
+{
+  "id": "c05-m06",
+  "chapter": "c05",
+  "title": "ถอดรหัส SSH Key ด้วย ssh2john",
+  "difficulty": "medium",
+  "xp": 300,
+  "estMinutes": 15,
+  "lesson": "c05-l02",
+  "briefing": "ในชุดเอกสารเดียวกันมี SSH private key ที่มี passphrase ป้องกันไว้ ลองใช้ ssh2john แปลงแล้วถอดรหัสผ่านด้วย john",
+  "scope": {
+    "inScope": [
+      "kali (เครื่องของคุณเอง — วิเคราะห์ไฟล์ offline)"
+    ],
+    "outOfScope": []
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "fsPatch": {
+    "/home/kali/Documents/clients/id_rsa_backup": {
+      "owner": "kali",
+      "group": "kali",
+      "mode": "600",
+      "content": "-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAACmFlczI1Ni1jYmMAAAAGYmNyeXB0AAAAGAAAABD##CRACKHASH:65e84be33532fb784c48129675f9eff3a682b27168c0ea744b2cf58ee02337c5##\n-----END OPENSSH PRIVATE KEY-----\n"
+    }
+  },
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ใช้ ssh2john กับไฟล์ id_rsa_backup",
+      "type": "command",
+      "match": "^ssh2john\\b.*id_rsa_backup"
+    },
+    {
+      "id": "o2",
+      "text": "ส่งผลลัพธ์ต่อให้ john ถอดรหัสผ่าน",
+      "type": "command",
+      "match": "^john\\b"
+    },
+    {
+      "id": "o3",
+      "text": "passphrase ของ SSH key คืออะไร?",
+      "type": "answer",
+      "answerHash": "2c18378a006770b5252d6f76221893037eea054c220b7edb306d8437ead37e19"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`ssh2john ~/Documents/clients/id_rsa_backup > key.hash`"
+    },
+    {
+      "cost": 20,
+      "text": "`john --wordlist=/usr/share/wordlists/rockyou-mini.txt key.hash`"
+    }
+  ],
+  "debrief": [
+    "SSH private key ที่มี passphrase ก็ถอดรหัสผ่านด้วยหลักการเดียวกันได้ — ถ้า passphrase อ่อนแอและไฟล์ key รั่วไหลออกมา (เช่น หลุดจาก backup หรือ repository) ผู้โจมตีสามารถใช้ key นั้นเข้าสู่ระบบที่ key นี้มีสิทธิ์ได้ทันทีหลังถอด passphrase สำเร็จ",
+    "ฝั่งป้องกัน: ตั้ง passphrase ที่แข็งแรงสำหรับ SSH key เสมอ หรือใช้ hardware security key / SSH agent forwarding ที่ไม่ต้องเก็บ private key ไว้บนดิสก์เลย"
+  ],
+  "references": [
+    "CWE-522 Insufficiently Protected Credentials",
+    "MITRE ATT&CK T1552.004 Private Keys"
+  ]
+}

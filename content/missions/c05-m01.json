@@ -1,0 +1,57 @@
+{
+  "id": "c05-m01",
+  "chapter": "c05",
+  "title": "ระบุชนิด Hash ด้วย hashid",
+  "difficulty": "easy",
+  "xp": 200,
+  "estMinutes": 10,
+  "lesson": "c05-l01",
+  "briefing": "ACME ส่งตัวอย่าง hash สามค่ามาให้ตรวจสอบก่อนเริ่มงาน ใช้ hashid ระบุว่าแต่ละค่าน่าจะเป็นชนิดใด:\nH1 = 5f4dcc3b5aa765d61d8327deb882cf99\nH2 = 5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8\nH3 = 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+  "scope": {
+    "inScope": [
+      "kali (เครื่องของคุณเอง — วิเคราะห์ไฟล์ offline)"
+    ],
+    "outOfScope": []
+  },
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "ใช้ hashid ตรวจสอบ H1",
+      "type": "command",
+      "match": "^hashid\\b.*5f4dcc3b5aa765d61d8327deb882cf99"
+    },
+    {
+      "id": "o2",
+      "text": "H2 (40 ตัวอักษร) น่าจะเป็น hash ชนิดใด? (ตอบเป็นภาษาอังกฤษ เช่น md5)",
+      "type": "answer",
+      "answerHash": "d409e7270886c9723615e455ca3f7a18ee7e99cacc27bb6837a64f27aa5a8d2a"
+    },
+    {
+      "id": "o3",
+      "text": "H1 ยาว 32 ตัวอักษร นอกจาก MD5 แล้วยังอาจเป็น hash ชนิดใดได้อีก? (ตอบเป็นภาษาอังกฤษ)",
+      "type": "answer",
+      "answerHash": "55e0c42b2eb82ee1d45614a8ea4bbebbf88e8ddad55de6a70b49013d99a8068e"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 5,
+      "text": "`hashid 5f4dcc3b5aa765d61d8327deb882cf99`"
+    },
+    {
+      "cost": 10,
+      "text": "นับความยาวของ H2 แล้วเทียบกับตารางในบทเรียน: 40 ตัวอักษร = ?"
+    }
+  ],
+  "debrief": [
+    "ความยาวของ hash เป็นเบาะแสแรกเสมอ: 32=MD5/NTLM, 40=SHA1, 64=SHA256 — แต่ MD5 และ NTLM ชนกันพอดีที่ 32 ตัวอักษร ต้องอาศัยบริบท (มาจากไหน) ช่วยตัดสินใจ",
+    "ฝั่งป้องกัน: การรู้ว่า hash สร้างด้วยอัลกอริทึมใดไม่ได้ทำให้ระบบเสี่ยงขึ้น — ความเสี่ยงจริงอยู่ที่การใช้อัลกอริทึมเร็วและไม่มี salt (MD5/SHA1/NTLM) แทนที่จะใช้ bcrypt/argon2"
+  ],
+  "references": [
+    "OWASP Top 10 A04:2025 Cryptographic Failures",
+    "CWE-328 Use of Weak Hash"
+  ]
+}

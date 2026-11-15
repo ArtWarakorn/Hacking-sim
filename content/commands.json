@@ -653,5 +653,76 @@
       "crackmapexec smb 10.10.20.6 -u '' -p '' --shares"
     ],
     "unlockChapter": 3
+  },
+  {
+    "name": "hashid",
+    "category": "Password Cracking",
+    "summary": "ระบุชนิดของ hash",
+    "synopsis": "hashid <hash> | hashid -f <file>",
+    "description": "เดาอัลกอริทึมที่น่าจะใช้สร้าง hash จากความยาว/รูปแบบของมัน 32 ตัวอักษรฐานสิบหกอาจเป็น MD5 หรือ NTLM ก็ได้ (ความยาวเท่ากัน) ต้องดูบริบทประกอบ (เช่น มาจากเว็บ = มักเป็น MD5, มาจาก Windows/AD = มักเป็น NTLM)",
+    "examples": [
+      "hashid 5f4dcc3b5aa765d61d8327deb882cf99",
+      "hashid -f hashes.txt"
+    ],
+    "unlockChapter": 5
+  },
+  {
+    "name": "john",
+    "category": "Password Cracking",
+    "summary": "ถอดรหัส hash ด้วย wordlist (John the Ripper)",
+    "synopsis": "john [--format=TYPE] --wordlist=<path> <hashfile>",
+    "description": "ไฟล์ hash ใช้รูปแบบ username:hash บรรทัดละคู่ --format กำหนดชนิด hash เอง (raw-md5, raw-sha1, raw-sha256, nt) ถ้าไม่ระบุจะเดาจากความยาว ผลลัพธ์ที่ถอดได้แสดงเป็น password (username)",
+    "examples": [
+      "john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou-mini.txt dump.txt",
+      "john --wordlist=/usr/share/wordlists/rockyou-mini.txt dump.txt"
+    ],
+    "unlockChapter": 5
+  },
+  {
+    "name": "hashcat",
+    "category": "Password Cracking",
+    "summary": "ถอดรหัส hash ด้วย GPU (จำลอง)",
+    "synopsis": "hashcat -m <mode> -a 0 <hashfile> <wordlist>",
+    "description": "-m ระบุชนิด hash ด้วยตัวเลข (0=MD5, 100=SHA1, 1400=SHA256, 1000=NTLM) -a 0 คือโหมด wordlist attack ผลลัพธ์แสดงเป็น hash:password",
+    "examples": [
+      "hashcat -m 0 -a 0 dump.txt /usr/share/wordlists/rockyou-mini.txt",
+      "hashcat -m 1000 -a 0 ntlm.txt /usr/share/wordlists/rockyou-mini.txt"
+    ],
+    "unlockChapter": 5
+  },
+  {
+    "name": "zip2john",
+    "category": "Password Cracking",
+    "summary": "แปลงไฟล์ zip ที่มีรหัสผ่านให้ john ถอดได้",
+    "synopsis": "zip2john <file.zip> [> output.hash]",
+    "description": "ดึงข้อมูลที่จำเป็นออกจากไฟล์ zip ที่ถูกเข้ารหัสด้วยรหัสผ่าน แล้วพิมพ์เป็นรูปแบบที่ john ใช้ถอดรหัสต่อได้ ใช้ > บันทึกผลลัพธ์ลงไฟล์ก่อนส่งให้ john",
+    "examples": [
+      "zip2john secret.zip > secret.hash",
+      "cat secret.hash"
+    ],
+    "unlockChapter": 5
+  },
+  {
+    "name": "ssh2john",
+    "category": "Password Cracking",
+    "summary": "แปลง SSH private key ที่มี passphrase ให้ john ถอดได้",
+    "synopsis": "ssh2john <keyfile> [> output.hash]",
+    "description": "ดึงข้อมูลจาก SSH private key ที่ถูกป้องกันด้วย passphrase แล้วพิมพ์เป็นรูปแบบที่ john ใช้ถอดรหัสต่อได้",
+    "examples": [
+      "ssh2john id_rsa > id_rsa.hash",
+      "john --wordlist=/usr/share/wordlists/rockyou-mini.txt id_rsa.hash"
+    ],
+    "unlockChapter": 5
+  },
+  {
+    "name": "hydra",
+    "category": "Password Cracking",
+    "summary": "เดารหัสผ่านแบบ online ผ่านเครือข่าย (brute force)",
+    "synopsis": "hydra -L <userlist> -P <passlist> <target> <service>",
+    "description": "ลองทุกคู่ username/password จากสองไฟล์กับ service จริงบนเครือข่าย (รองรับ ftp, ssh) ต่างจาก john/hashcat ตรงที่ hydra โจมตี service ที่กำลังทำงานอยู่ ไม่ใช่ hash ที่ขโมยมาแล้ว ควรระวังเรื่อง account lockout ในระบบจริง",
+    "examples": [
+      "hydra -L users.txt -P /usr/share/wordlists/rockyou-mini.txt 10.10.20.6 ftp"
+    ],
+    "unlockChapter": 5
   }
 ]
