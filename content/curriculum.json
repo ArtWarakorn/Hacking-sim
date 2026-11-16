@@ -194,14 +194,17 @@
       "id": "c11",
       "title": "Capstone: Full Engagement",
       "difficulty": "insane",
-      "description": "งานทดสอบเต็มรูปแบบตั้งแต่ external recon ถึง Domain Admin พร้อมรายงาน",
+      "description": "งานทดสอบเต็มรูปแบบ: recon, หลาย foothold, ส่งมอบรายงาน",
       "unlock": {
         "requiresChapters": [
-          "c09",
+          "c06",
           "c10"
         ]
       },
-      "missions": []
+      "missions": [
+        "c11-m01",
+        "c11-m02"
+      ]
     }
   ]
 }

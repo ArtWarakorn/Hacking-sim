@@ -1,0 +1,94 @@
+{
+  "chapter": "c11",
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "id": "c11-m02",
+  "title": "ส่งมอบรายงานฉบับสุดท้าย",
+  "difficulty": "hard",
+  "xp": 600,
+  "estMinutes": 30,
+  "lesson": "c10-l02",
+  "scope": {
+    "inScope": [
+      "kali (เครื่องของคุณเอง — งานเอกสาร)"
+    ],
+    "outOfScope": []
+  },
+  "briefing": "จาก engagement log ที่ ~/Documents/engagement-log.txt เขียนรายงานฉบับสุดท้ายที่ ~/report/final-report.md ให้มี Executive Summary, finding ทั้งสองข้อพร้อมระดับความรุนแรง และ Remediation (ใช้ `cvss` ยืนยันคะแนน)",
+  "fsPatch": {
+    "/home/kali/Documents/engagement-log.txt": {
+      "owner": "kali",
+      "group": "kali",
+      "content": "ACME External Pentest - log\nFinding A: legacy01 (10.10.20.15) vsftpd 2.3.4 backdoor CVE-2011-2523 -> root\n  CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\nFinding B: shop.acme.test /admin/diagnostics\n  1) admin ตัดสินจาก cookie role=admin (client-side)\n  2) command injection ในช่อง host -> reverse shell เป็น www-data\n  CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\nrabbit hole: web01, ftp01 (ไม่พบทางเข้า)\n"
+    }
+  },
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "อ่าน ~/Documents/engagement-log.txt",
+      "type": "file_read",
+      "path": "/home/kali/Documents/engagement-log.txt"
+    },
+    {
+      "id": "o2",
+      "text": "ใช้ cvss คำนวณคะแนนของ finding",
+      "type": "event",
+      "name": "cvss.calc",
+      "where": {
+        "severity": "Critical"
+      }
+    },
+    {
+      "id": "o3",
+      "text": "รายงานมีหัวข้อ ## Executive Summary",
+      "type": "fs",
+      "path": "/home/kali/report/final-report.md",
+      "contains": "## Executive Summary"
+    },
+    {
+      "id": "o4",
+      "text": "รายงานอ้างถึง CVE-2011-2523",
+      "type": "fs",
+      "path": "/home/kali/report/final-report.md",
+      "contains": "CVE-2011-2523"
+    },
+    {
+      "id": "o5",
+      "text": "รายงานอธิบาย command injection ของ ShopZone",
+      "type": "fs",
+      "path": "/home/kali/report/final-report.md",
+      "contains": "command injection"
+    },
+    {
+      "id": "o6",
+      "text": "รายงานมีหัวข้อ ## Remediation",
+      "type": "fs",
+      "path": "/home/kali/report/final-report.md",
+      "contains": "## Remediation"
+    },
+    {
+      "id": "o7",
+      "text": "มี finding ระดับ Critical กี่ข้อ? (ตอบเป็นตัวเลข)",
+      "type": "answer",
+      "answerHash": "f3c21cc63f97be3e778dbe98d2aa6d20241e919b9cf83d1eafe2b382abef600d"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 10,
+      "text": "`cvss CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` ได้ 9.8 Critical ทั้งสองข้อ"
+    },
+    {
+      "cost": 20,
+      "text": "เขียนทีละบรรทัดด้วย `echo '...' >> ~/report/final-report.md`"
+    }
+  ],
+  "debrief": [
+    "รายงานที่ดีเรียงตามความรุนแรง มี Executive Summary ที่ผู้บริหารอ่านแล้วเข้าใจ และ Remediation ที่ทีมลงมือได้ทันที",
+    "ควรบันทึก rabbit hole ด้วย: บอกลูกค้าว่าตรวจแล้วและไม่พบ ช่วยให้ลูกค้ามั่นใจในความครอบคลุมของงาน"
+  ],
+  "references": [
+    "PTES — Reporting"
+  ]
+}

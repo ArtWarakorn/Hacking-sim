@@ -38,7 +38,7 @@ node tools/validate.mjs   # ตรวจความถูกต้องขอ�
 | 6 | Exploitation & Initial Access (searchsploit, reverse shell, msfconsole) | 3 | ✅ เล่นได้ |
 | 7–9 | Linux Privesc, Windows & AD, Pivoting | 0 | ❌ ยังไม่เริ่ม |
 | 10 | Reporting (CVSS v3.1, เขียน finding, Executive Summary) | 3 | ✅ เล่นได้ |
-| 11 | Capstone | 0 | ❌ ยังไม่เริ่ม |
+| 11 | Capstone: Full Engagement (recon → 2 foothold → รายงาน, บังคับ scope) | 2 | ✅ เล่นได้ (เวอร์ชันย่อ ยังไม่รวม privesc/AD/pivot) |
 
 เครื่องมือที่จำลองไว้แล้ว เช่น nmap, gobuster, nikto, whatweb, enum4linux, ftp, smbclient, curl, nc (รวม `-l`),
 hashid, john, hashcat, hydra, searchsploit, msfconsole (โมดูลจำลอง), python3 pty one-liner, stty, cvss (CVSS v3.1) พร้อม

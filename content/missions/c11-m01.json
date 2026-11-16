@@ -1,0 +1,100 @@
+{
+  "chapter": "c11",
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "id": "c11-m01",
+  "title": "ACME External Penetration Test",
+  "difficulty": "insane",
+  "xp": 900,
+  "estMinutes": 45,
+  "lesson": "c11-l01",
+  "scope": {
+    "inScope": [
+      "web01 — 10.10.20.5",
+      "ftp01 — 10.10.20.6",
+      "shop.acme.test — 10.10.20.9",
+      "legacy01 — 10.10.20.15"
+    ],
+    "outOfScope": [
+      "10.10.20.1 เกตเวย์ของผู้ให้บริการ (บุคคลที่สาม)",
+      "ทุกอย่างที่ไม่ได้ระบุ"
+    ],
+    "ips": [
+      "10.10.20.5",
+      "10.10.20.6",
+      "10.10.20.9",
+      "10.10.20.15"
+    ]
+  },
+  "reachableMachines": [
+    {
+      "ip": "10.10.20.15",
+      "machine": "legacy01"
+    }
+  ],
+  "briefing": "ACME Logistics จ้างทดสอบเจาะระบบจากภายนอกแบบ black-box ขอบเขตงานคือ 4 เครื่องตามรายการ scope ด้านซ้าย (ห้ามแตะ 10.10.20.1) ไม่มีใครบอกว่าเครื่องไหนอ่อนแอ: สำรวจ ตัดสินใจเอง หา foothold ให้ได้มากที่สุดเท่าที่พบและเก็บหลักฐานไว้ เพราะต้องเขียนรายงานจริงในด่านถัดไป",
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "สแกนเครื่องที่อยู่ใน scope ด้วย nmap -sV",
+      "type": "command",
+      "match": "^nmap\\b.*-sV.*10\\.10\\.20\\.(5|6|9|15)\\b"
+    },
+    {
+      "id": "o2",
+      "text": "เครื่องใดใน scope รัน FTP เวอร์ชันที่มี backdoor ที่รู้จักกันดี? (ตอบเป็น IP)",
+      "type": "answer",
+      "answerHash": "eba62693eccd94118c45b8ff74a1111159f8d03469be4d1710d6e25ab222e727"
+    },
+    {
+      "id": "o3",
+      "text": "ได้ root shell บน legacy01",
+      "type": "shell",
+      "host": "legacy01",
+      "user": "root"
+    },
+    {
+      "id": "o4",
+      "text": "ได้ shell เป็น www-data บน shop01 ผ่าน ShopZone",
+      "type": "shell",
+      "host": "shop01",
+      "user": "www-data"
+    },
+    {
+      "id": "o5",
+      "text": "ส่ง flag จาก legacy01",
+      "type": "flag",
+      "flagHash": "a0f6c7b9e29f44635ff5d2e3563987feddc0bd8e232a803bce093994ec52ddc2"
+    },
+    {
+      "id": "o6",
+      "text": "ส่ง flag จาก shop01",
+      "type": "flag",
+      "flagHash": "8091384696807cdd62d7c98ecc6079624b8c0a06e0be4c2c602424842b71fa8d"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 20,
+      "text": "สแกนทีละเครื่อง: `nmap -sV -sC 10.10.20.15` อย่าสแกนทั้ง /24 เพราะจะโดน 10.10.20.1"
+    },
+    {
+      "cost": 30,
+      "text": "เครื่องเก่าที่ลืมปิด: ใช้ `searchsploit` กับเวอร์ชัน FTP ที่เจอ (เทคนิคเดียวกับบท 6)"
+    },
+    {
+      "cost": 40,
+      "text": "ShopZone: ต้องผ่านหน้า /admin/diagnostics ก่อน (บท 4: cookie role) แล้วเปิด listener `nc -lvnp 4444` ก่อนยิง payload"
+    }
+  ],
+  "debrief": [
+    "งานนี้มี foothold สองทางที่ต่างชนิดกัน: เครื่องเก่าที่ถูกลืม (supply-chain backdoor ใน vsftpd 2.3.4) และช่องโหว่ในโค้ดเว็บ (access control + command injection) การรายงานต้องครอบคลุมทั้งคู่",
+    "ถ้าคุณสแกนทั้ง subnet คุณแตะ 10.10.20.1 ซึ่งเป็นของบุคคลที่สาม: ในงานจริงนี่คือการละเมิดสัญญาและอาจผิดกฎหมาย",
+    "เครื่อง web01 และ ftp01 เป็น rabbit hole ในงานนี้: มีเนื้อหาน่าสนใจแต่ไม่ใช่ทางเข้าที่นำไปสู่ shell"
+  ],
+  "references": [
+    "PTES",
+    "MITRE ATT&CK T1190, T1210, T1195"
+  ]
+}

