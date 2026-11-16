@@ -35,3 +35,16 @@ test('capstone: web01/ftp01 are rabbit holes - scanning them gives no shell obje
   await run('nmap -sV -sC 10.10.20.6');
   assert.ok(!engine.done.has('o3') && !engine.done.has('o4'));
 });
+
+test('achievements: finishing chapters 5, 6, 10 and 11 unlocks their badges', async () => {
+  const { createDefaultProgress, evaluateAchievements } = await import('../public/js/mission/progress.js');
+  const curriculum = readJSON('content/curriculum.json');
+  const defs = readJSON('content/achievements.json');
+  const p = createDefaultProgress();
+  const finish = (id) => { for (const m of curriculum.chapters.find((c) => c.id === id).missions) p.completedMissions[m] = { score: 1, hintsUsed: 0, seconds: 1 }; };
+  for (const [chapter, badge] of [['c05', 'chapter_5'], ['c06', 'chapter_6'], ['c10', 'chapter_10'], ['c11', 'chapter_11']]) {
+    assert.ok(!evaluateAchievements(p, defs, curriculum).some((d) => d.id === badge));
+    finish(chapter);
+    assert.ok(evaluateAchievements(p, defs, curriculum).some((d) => d.id === badge), `${badge} after ${chapter}`);
+  }
+});

@@ -124,5 +124,41 @@
       "type": "missions_completed",
       "count": 20
     }
+  },
+  {
+    "id": "chapter_5",
+    "title": "Hash Breaker",
+    "description": "จบบท 5 (Passwords & Cryptography)",
+    "condition": {
+      "type": "chapter_complete",
+      "chapter": "c05"
+    }
+  },
+  {
+    "id": "chapter_6",
+    "title": "Shell Popper",
+    "description": "จบบท 6 (Exploitation & Initial Access)",
+    "condition": {
+      "type": "chapter_complete",
+      "chapter": "c06"
+    }
+  },
+  {
+    "id": "chapter_10",
+    "title": "Report Writer",
+    "description": "จบบท 10 (Reporting)",
+    "condition": {
+      "type": "chapter_complete",
+      "chapter": "c10"
+    }
+  },
+  {
+    "id": "chapter_11",
+    "title": "Engagement Complete",
+    "description": "จบบท 11 (Capstone: Full Engagement)",
+    "condition": {
+      "type": "chapter_complete",
+      "chapter": "c11"
+    }
   }
 ]
