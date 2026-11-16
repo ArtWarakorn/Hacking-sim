@@ -21,27 +21,33 @@ npm start
 ## รันเทสต์ / ตรวจเนื้อหา
 
 ```bash
-npm test              # unit test ทั้งหมด (parser, VFS, mission engine, SQL engine, เครื่องมือต่างๆ)
+npm test              # unit test ทั้งหมด (~250 เทสต์: parser, VFS, mission engine, SQL engine, เครื่องมือ, walkthrough ทุกด่าน)
 node tools/validate.mjs   # ตรวจความถูกต้องของไฟล์เนื้อหาทั้งหมดใน content/
 ```
 
 ## สถานะปัจจุบัน
 
-| บท | เนื้อหา | สถานะ |
-|---|---|---|
-| 0 | Onboarding & Rules of Engagement | ✅ เล่นได้ |
-| 1 | Linux Fundamentals | ✅ เล่นได้ |
-| 2 | Networking Fundamentals | ✅ เล่นได้ |
-| 3 | Reconnaissance & Enumeration | ✅ เล่นได้ |
-| 4 | Web Application Attacks (OWASP Top 10) | 🚧 มีโครงสร้าง (SQL engine, เว็บช่องโหว่ ShopZone, Browser/Proxy) ยังไม่มีด่าน |
-| 5–11 | Passwords, Exploitation, Privesc, AD, Pivoting, Reporting, Capstone | ❌ ยังไม่เริ่ม |
+| บท | เนื้อหา | ด่าน | สถานะ |
+|---|---|---|---|
+| 0 | Onboarding & Rules of Engagement | 4 | ✅ เล่นได้ |
+| 1 | Linux Fundamentals | 5 | ✅ เล่นได้ |
+| 2 | Networking Fundamentals | 5 | ✅ เล่นได้ |
+| 3 | Reconnaissance & Enumeration | 7 | ✅ เล่นได้ |
+| 4 | Web Application Attacks (OWASP Top 10 ครบ 10 หมวด) | 20 | ✅ เล่นได้ |
+| 5 | Passwords & Cryptography (hashid, john, hashcat, hydra) | 7 | ✅ เล่นได้ |
+| 6 | Exploitation & Initial Access (searchsploit, reverse shell, msfconsole) | 3 | ✅ เล่นได้ |
+| 7–11 | Linux Privesc, Windows & AD, Pivoting, Reporting, Capstone | 0 | ❌ ยังไม่เริ่ม |
+
+เครื่องมือที่จำลองไว้แล้ว เช่น nmap, gobuster, nikto, whatweb, enum4linux, ftp, smbclient, curl, nc (รวม `-l`),
+hashid, john, hashcat, hydra, searchsploit, msfconsole (โมดูลจำลอง), python3 pty one-liner, stty พร้อม
+Browser (cookie/DevTools-lite) และ Proxy (History/Repeater/Decoder) ในเกม
 
 ## โครงสร้างโปรเจกต์
 
 ```
 server.js            # static server + progress API (Node built-in เท่านั้น ไม่มี dependency)
 public/              # ฝั่งเกม (HTML/CSS/JS, ES modules, ไม่มี build step)
-  js/sim/            # ตัวจำลอง: ระบบไฟล์ (vfs), เครือข่าย (network), HTTP, SQL
+  js/sim/            # ตัวจำลอง: ระบบไฟล์ (vfs), เครือข่าย (network), HTTP, SQL, hash (hashlib)
   js/commands/       # คำสั่ง terminal แต่ละตัว
   js/webapps/        # เว็บแอปที่มี logic จริง (เช่น ShopZone)
   js/mission/        # mission engine: objective, คะแนน, scope enforcement
@@ -59,7 +65,8 @@ tools/               # validate.mjs (ตรวจเนื้อหา), seal.mj
 
 1. เขียนไฟล์ `content/missions/<id>.json` ใส่ `"flagHash": "SEAL"` หรือ `"answerHash": "SEAL"` ไว้ก่อน
 2. เพิ่ม id ด่านใน `content/curriculum.json`
-3. เพิ่มเฉลยลงใน `tests/walkthroughs.json`
+3. เพิ่มเฉลยลงใน `tests/walkthroughs.json` (`steps` = คำสั่งที่พิมพ์ตามลำดับ, `submit` = flag/คำตอบของแต่ละ objective)
+   - ถ้าด่านต้องเข้าเครื่องอื่นในเครือข่าย (เช่น ได้ shell บน host อื่น) ให้ประกาศ `"reachableMachines": [{"ip": "...", "machine": "<id>"}]`
 4. รัน `node tools/seal.mjs` เพื่อเติม hash จากเฉลยให้อัตโนมัติ
 5. รัน `node tools/validate.mjs` และ `npm test` เพื่อยืนยันว่าด่านผ่านได้จริง
 
