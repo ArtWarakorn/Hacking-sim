@@ -126,6 +126,15 @@
     }
   },
   {
+    "id": "chapter_4",
+    "title": "Web Breaker",
+    "description": "จบบท 4 (Web Application Attacks — OWASP Top 10)",
+    "condition": {
+      "type": "chapter_complete",
+      "chapter": "c04"
+    }
+  },
+  {
     "id": "chapter_5",
     "title": "Hash Breaker",
     "description": "จบบท 5 (Passwords & Cryptography)",
