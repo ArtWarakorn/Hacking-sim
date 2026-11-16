@@ -535,5 +535,38 @@
     "submit": {
       "o6": "FLAG{vsftpd_234_backdoor_is_still_out_there}"
     }
+  },
+  "c10-m01": {
+    "steps": [
+      "cat ~/Documents/findings-raw.txt",
+      "cvss CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+      "cvss CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+    ],
+    "submit": {
+      "o3": "9.8",
+      "o4": "High",
+      "o5": "F1"
+    }
+  },
+  "c10-m02": {
+    "steps": [
+      "cat ~/Documents/evidence-notes.txt",
+      "mkdir -p ~/report",
+      "echo 'Severity: Critical (CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H)' > ~/report/finding-01.md",
+      "echo '## Evidence' >> ~/report/finding-01.md",
+      "echo '## Impact' >> ~/report/finding-01.md",
+      "echo '## Remediation' >> ~/report/finding-01.md"
+    ],
+    "submit": {}
+  },
+  "c10-m03": {
+    "steps": [
+      "cat ~/Documents/draft-report.txt",
+      "mkdir -p ~/report",
+      "echo 'พบช่องโหว่ระดับ Critical ที่อาจทำให้ข้อมูลลูกค้าทั้งหมดรั่วไหล ควรแก้ไขทันที' > ~/report/exec-summary.txt"
+    ],
+    "submit": {
+      "o2": "F-B"
+    }
   }
 }

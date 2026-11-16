@@ -8,7 +8,7 @@ import { objectiveHash } from '../public/js/core/hash.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const content = path.join(root, 'content');
 const OBJECTIVE_TYPES = new Set(['command', 'file_read', 'shell', 'privilege', 'answer', 'flag', 'http', 'fs', 'event', 'report']);
-const EVENT_NAMES = new Set(['ftp.login', 'ftp.get', 'ftp.backdoor', 'smb.connect', 'smb.get', 'enum4linux.run', 'nikto.scan', 'hydra.run', 'searchsploit.search', 'searchsploit.mirror', 'shell.stabilize', 'msf.exploit', 'msf.search', 'msf.use', 'msf.set']);
+const EVENT_NAMES = new Set(['ftp.login', 'ftp.get', 'ftp.backdoor', 'smb.connect', 'smb.get', 'enum4linux.run', 'nikto.scan', 'hydra.run', 'searchsploit.search', 'searchsploit.mirror', 'shell.stabilize', 'msf.exploit', 'msf.search', 'msf.use', 'msf.set', 'cvss.calc']);
 const DNS_TYPES = new Set(['A', 'AAAA', 'MX', 'TXT', 'NS', 'SOA', 'CNAME', 'PTR']);
 const DIFFICULTIES = new Set(['tutorial', 'easy', 'medium', 'hard', 'insane']);
 

@@ -1,0 +1,87 @@
+{
+  "chapter": "c10",
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "scope": {
+    "inScope": [
+      "kali (เครื่องของคุณเอง — งานเอกสารแบบ offline)"
+    ],
+    "outOfScope": []
+  },
+  "id": "c10-m02",
+  "title": "เขียน Finding หนึ่งข้อให้ครบ",
+  "difficulty": "medium",
+  "xp": 350,
+  "estMinutes": 20,
+  "lesson": "c10-l02",
+  "briefing": "เขียน finding ของ SQL injection ลงในไฟล์ ~/report/finding-01.md ให้ครบองค์ประกอบ: Severity พร้อม CVSS vector, Evidence, Impact และ Remediation (ดูหมายเหตุที่ ~/Documents/evidence-notes.txt)",
+  "fsPatch": {
+    "/home/kali/Documents/evidence-notes.txt": {
+      "owner": "kali",
+      "group": "kali",
+      "content": "เป้าหมาย : shop.acme.test (หน้า /login)\nพบว่า  : ใส่ ' OR 1=1-- - ในช่อง username แล้ว login เป็น admin ได้\nคำสั่งยืนยัน : curl -s -X POST -d \"username=admin'-- -&password=x\" http://shop.acme.test/login\nผลกระทบ : เข้าถึงข้อมูลลูกค้าและคำสั่งซื้อทั้งหมด\nวิธีแก้ : ใช้ prepared statement และตรวจ input\n"
+    }
+  },
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "อ่าน ~/Documents/evidence-notes.txt",
+      "type": "file_read",
+      "path": "/home/kali/Documents/evidence-notes.txt"
+    },
+    {
+      "id": "o2",
+      "text": "finding-01.md ระบุ Severity: Critical",
+      "type": "fs",
+      "path": "/home/kali/report/finding-01.md",
+      "contains": "Severity: Critical"
+    },
+    {
+      "id": "o3",
+      "text": "finding-01.md มี CVSS vector",
+      "type": "fs",
+      "path": "/home/kali/report/finding-01.md",
+      "contains": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+    },
+    {
+      "id": "o4",
+      "text": "finding-01.md มีหัวข้อ ## Evidence",
+      "type": "fs",
+      "path": "/home/kali/report/finding-01.md",
+      "contains": "## Evidence"
+    },
+    {
+      "id": "o5",
+      "text": "finding-01.md มีหัวข้อ ## Impact",
+      "type": "fs",
+      "path": "/home/kali/report/finding-01.md",
+      "contains": "## Impact"
+    },
+    {
+      "id": "o6",
+      "text": "finding-01.md มีหัวข้อ ## Remediation",
+      "type": "fs",
+      "path": "/home/kali/report/finding-01.md",
+      "contains": "## Remediation"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 5,
+      "text": "`mkdir -p ~/report` แล้วใช้ `echo '...' >> ~/report/finding-01.md` ทีละบรรทัด"
+    },
+    {
+      "cost": 15,
+      "text": "บรรทัดแรก: `echo 'Severity: Critical (CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H)' > ~/report/finding-01.md`"
+    }
+  ],
+  "debrief": [
+    "finding ที่ดีให้ผู้อ่านตัดสินใจและลงมือได้ทันที: ระดับความรุนแรง หลักฐานทำซ้ำได้ ผลกระทบ และวิธีแก้เฉพาะเจาะจง",
+    "Evidence ควรเป็นคำสั่งและผลลัพธ์จริง เพื่อให้ทีมของลูกค้าทำซ้ำและยืนยันได้ว่าแก้แล้วหาย"
+  ],
+  "references": [
+    "PTES — Reporting",
+    "OWASP Web Security Testing Guide — Reporting"
+  ]
+}

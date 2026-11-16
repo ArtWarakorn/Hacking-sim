@@ -1,0 +1,78 @@
+{
+  "chapter": "c10",
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "scope": {
+    "inScope": [
+      "kali (เครื่องของคุณเอง — งานเอกสารแบบ offline)"
+    ],
+    "outOfScope": []
+  },
+  "id": "c10-m03",
+  "title": "Executive Summary สำหรับผู้บริหาร",
+  "difficulty": "medium",
+  "xp": 350,
+  "estMinutes": 20,
+  "lesson": "c10-l02",
+  "briefing": "อ่านร่างรายงานที่ ~/Documents/draft-report.txt ซึ่งเรียงตามลำดับที่ค้นพบและเต็มไปด้วยศัพท์เทคนิค แล้วเขียน Executive Summary สั้นๆ สำหรับผู้บริหารลงใน ~/report/exec-summary.txt",
+  "fsPatch": {
+    "/home/kali/Documents/draft-report.txt": {
+      "owner": "kali",
+      "group": "kali",
+      "content": "ลำดับที่ค้นพบ:\nF-A  Server banner เปิดเผยเวอร์ชัน Apache      (CVSS 3.7 Low)\nF-B  SQL injection ที่หน้า login ดึงข้อมูลลูกค้าทั้งหมดได้ (CVSS 9.8 Critical)\nF-C  Missing security headers                 (CVSS 5.3 Medium)\n"
+    }
+  },
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "อ่าน ~/Documents/draft-report.txt",
+      "type": "file_read",
+      "path": "/home/kali/Documents/draft-report.txt"
+    },
+    {
+      "id": "o2",
+      "text": "finding ใดควรอยู่ลำดับแรกของรายงาน? (ตอบ F-A, F-B หรือ F-C)",
+      "type": "answer",
+      "answerHash": "0358a951cd3bad48b0d598284e6694634e22345839d1e43f394c0f9173f64cb9"
+    },
+    {
+      "id": "o3",
+      "text": "exec-summary.txt ระบุระดับ Critical",
+      "type": "fs",
+      "path": "/home/kali/report/exec-summary.txt",
+      "contains": "Critical"
+    },
+    {
+      "id": "o4",
+      "text": "exec-summary.txt บอกผลกระทบต่อธุรกิจ (ใช้คำว่า \"ลูกค้า\")",
+      "type": "fs",
+      "path": "/home/kali/report/exec-summary.txt",
+      "contains": "ลูกค้า"
+    },
+    {
+      "id": "o5",
+      "text": "exec-summary.txt บอกสิ่งที่ต้องทำ (ใช้คำว่า \"แก้ไข\")",
+      "type": "fs",
+      "path": "/home/kali/report/exec-summary.txt",
+      "contains": "แก้ไข"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 5,
+      "text": "เรียงจากรุนแรงที่สุดก่อน ไม่ใช่ตามลำดับที่ค้นพบ"
+    },
+    {
+      "cost": 15,
+      "text": "`echo 'พบช่องโหว่ระดับ Critical ที่อาจทำให้ข้อมูลลูกค้าทั้งหมดรั่วไหล ควรแก้ไขทันที' > ~/report/exec-summary.txt`"
+    }
+  ],
+  "debrief": [
+    "ผู้บริหารต้องการรู้สามอย่าง: เสี่ยงอะไร กระทบธุรกิจอย่างไร และต้องตัดสินใจอะไร — ไม่ใช่รายละเอียดของ payload",
+    "ลำดับในรายงานควรเรียงตามความรุนแรง เพื่อให้ผู้อ่านที่อ่านแค่หน้าแรกก็เห็นสิ่งสำคัญที่สุดก่อน"
+  ],
+  "references": [
+    "PTES — Reporting"
+  ]
+}

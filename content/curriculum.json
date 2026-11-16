@@ -181,10 +181,14 @@
       "description": "CVSS, เขียน finding, Executive Summary",
       "unlock": {
         "requiresChapters": [
-          "c07"
+          "c06"
         ]
       },
-      "missions": []
+      "missions": [
+        "c10-m01",
+        "c10-m02",
+        "c10-m03"
+      ]
     },
     {
       "id": "c11",

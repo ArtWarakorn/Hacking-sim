@@ -36,10 +36,12 @@ node tools/validate.mjs   # ตรวจความถูกต้องขอ�
 | 4 | Web Application Attacks (OWASP Top 10 ครบ 10 หมวด) | 20 | ✅ เล่นได้ |
 | 5 | Passwords & Cryptography (hashid, john, hashcat, hydra) | 7 | ✅ เล่นได้ |
 | 6 | Exploitation & Initial Access (searchsploit, reverse shell, msfconsole) | 3 | ✅ เล่นได้ |
-| 7–11 | Linux Privesc, Windows & AD, Pivoting, Reporting, Capstone | 0 | ❌ ยังไม่เริ่ม |
+| 7–9 | Linux Privesc, Windows & AD, Pivoting | 0 | ❌ ยังไม่เริ่ม |
+| 10 | Reporting (CVSS v3.1, เขียน finding, Executive Summary) | 3 | ✅ เล่นได้ |
+| 11 | Capstone | 0 | ❌ ยังไม่เริ่ม |
 
 เครื่องมือที่จำลองไว้แล้ว เช่น nmap, gobuster, nikto, whatweb, enum4linux, ftp, smbclient, curl, nc (รวม `-l`),
-hashid, john, hashcat, hydra, searchsploit, msfconsole (โมดูลจำลอง), python3 pty one-liner, stty พร้อม
+hashid, john, hashcat, hydra, searchsploit, msfconsole (โมดูลจำลอง), python3 pty one-liner, stty, cvss (CVSS v3.1) พร้อม
 Browser (cookie/DevTools-lite) และ Proxy (History/Repeater/Decoder) ในเกม
 
 ## โครงสร้างโปรเจกต์

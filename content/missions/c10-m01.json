@@ -1,0 +1,80 @@
+{
+  "chapter": "c10",
+  "machine": "training-box",
+  "network": "lab",
+  "startUser": "kali",
+  "scope": {
+    "inScope": [
+      "kali (เครื่องของคุณเอง — งานเอกสารแบบ offline)"
+    ],
+    "outOfScope": []
+  },
+  "id": "c10-m01",
+  "title": "ให้คะแนนช่องโหว่ด้วย CVSS",
+  "difficulty": "easy",
+  "xp": 250,
+  "estMinutes": 15,
+  "lesson": "c10-l01",
+  "briefing": "ทีมของคุณเจอช่องโหว่ 3 ข้อใน ACME เก็บ CVSS vector ไว้ที่ ~/Documents/findings-raw.txt ใช้ `cvss` คำนวณคะแนนและระดับความรุนแรง แล้วตอบว่าควรแก้ข้อไหนก่อน",
+  "fsPatch": {
+    "/home/kali/Documents/findings-raw.txt": {
+      "owner": "kali",
+      "group": "kali",
+      "content": "F1  SQL injection หน้า login (ไม่ต้อง login)\n    CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\nF2  Reflected XSS ในช่องค้นหา\n    CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N\nF3  Local privilege escalation (ต้องมี shell ธรรมดาก่อน)\n    CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H\n"
+    }
+  },
+  "objectives": [
+    {
+      "id": "o1",
+      "text": "อ่านไฟล์ ~/Documents/findings-raw.txt",
+      "type": "file_read",
+      "path": "/home/kali/Documents/findings-raw.txt"
+    },
+    {
+      "id": "o2",
+      "text": "ใช้ cvss คำนวณ vector ของ F1",
+      "type": "event",
+      "name": "cvss.calc",
+      "where": {
+        "vector": "AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+      }
+    },
+    {
+      "id": "o3",
+      "text": "คะแนน Base Score ของ F1 คือเท่าไร? (ตอบเป็นตัวเลข)",
+      "type": "answer",
+      "answerHash": "29a5957ca75499a8b55742da6f7e8c010ea38ee99c0bb792f7c03f34b985945c"
+    },
+    {
+      "id": "o4",
+      "text": "F3 อยู่ในระดับ Severity ใด? (ตอบเป็นภาษาอังกฤษ)",
+      "type": "answer",
+      "answerHash": "f96f9612e50212760a6a2297ba3c454d7852144f0209161d1b3bc3ef96260a9b"
+    },
+    {
+      "id": "o5",
+      "text": "ควรแก้ finding ไหนก่อน? (ตอบ F1, F2 หรือ F3)",
+      "type": "answer",
+      "answerHash": "a170d1e55ce2962f1cc29e5f04e7a319583526994f4a6f092175b8ec43b17cfb"
+    }
+  ],
+  "hints": [
+    {
+      "cost": 5,
+      "text": "`cvss CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H`"
+    },
+    {
+      "cost": 10,
+      "text": "คำนวณ F3 ด้วย แล้วเทียบช่วงคะแนน: High = 7.0–8.9"
+    }
+  ],
+  "debrief": [
+    "F1 ได้ 9.8 Critical เพราะโจมตีผ่านเครือข่ายได้ ไม่ต้อง login และกระทบครบทั้ง C/I/A จึงควรแก้ก่อนเสมอ",
+    "F3 ได้ 7.8 High แต่ต้องมี shell อยู่แล้ว (AV:L, PR:L) ความเสี่ยงจริงจึงต่ำกว่า F1 — นี่คือเหตุผลที่ CVSS ช่วยจัดลำดับความสำคัญ",
+    "คะแนนเป็นจุดเริ่มต้นเท่านั้น: ในรายงานจริงต้องอธิบายบริบทของลูกค้าประกอบเสมอ"
+  ],
+  "references": [
+    "FIRST CVSS v3.1 Specification",
+    "PTES — Reporting"
+  ]
+}
